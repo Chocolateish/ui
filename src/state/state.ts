@@ -1,6 +1,12 @@
-import { None, Ok, Option, Some } from "@chocolatelib/result";
+import { None, Ok, Option, Some } from "@src/result";
 import { StateBase } from "./stateBase";
-import { StateHelper, StateRelated, StateResult, StateWrite } from "./types";
+import {
+  StateHelper,
+  StateRead,
+  StateRelated,
+  StateResult,
+  StateWrite,
+} from "./types";
 
 export class State<R, W = R, L extends StateRelated = {}, A = W>
   extends StateBase<R, L>
@@ -109,5 +115,12 @@ export class State<R, W = R, L extends StateRelated = {}, A = W>
   set(value: StateResult<R>) {
     this.#value = value;
     this.updateSubscribers(value);
+  }
+
+  get StateRead(): StateRead<R, L> {
+    return this;
+  }
+  get StateWrite(): StateWrite<R, W, L> {
+    return this;
   }
 }

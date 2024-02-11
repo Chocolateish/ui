@@ -1,6 +1,11 @@
-import { None, Ok, Option, Some } from "@chocolatelib/result";
+import { None, Ok, Option, Some } from "@src/result";
 import { StateBase } from "./stateBase";
-import { StateHelper, StateResult, StateWriteAsync } from "./types";
+import {
+  StateHelper,
+  StateReadAsync,
+  StateResult,
+  StateWriteAsync,
+} from "./types";
 
 export class StateAsync<R, W = R, L extends {} = {}, A = W>
   extends StateBase<R, L>
@@ -119,5 +124,12 @@ export class StateAsync<R, W = R, L extends {} = {}, A = W>
   /**Gets the value of the state */
   get(): StateResult<R> {
     return this.#value!;
+  }
+
+  get StateReadAsync(): StateReadAsync<R, L> {
+    return this;
+  }
+  get StateWriteAsync(): StateWriteAsync<R, W, L> {
+    return this;
   }
 }

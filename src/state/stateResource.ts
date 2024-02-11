@@ -1,4 +1,4 @@
-import { Err, None, Option, Some } from "@chocolatelib/result";
+import { Err, None, Option, Some } from "@src/result";
 import { StateBase } from "./stateBase";
 import { StateResult, StateSubscriber, StateWriteAsync } from "./types";
 

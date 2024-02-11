@@ -1,6 +1,6 @@
-import DocumentHandler from "@chocolatelibui/document";
-import "./index.css";
-import * as theme from "../../../src";
+import "./index.scss";
+import { DocumentHandler } from "@src/page";
+import * as theme from "@src/theme";
 
 let documentHandler = new DocumentHandler(document);
 let themeEngine = new theme.ThemeEngine(documentHandler);

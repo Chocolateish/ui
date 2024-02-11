@@ -1,13 +1,13 @@
 /// <reference types="cypress" />
-import { State } from "@chocolatelib/state";
+import { State } from "@src/state";
+import { Ok } from "@src/result";
 import {
   Base,
   BaseEvents,
   defineElement,
   ConnectEventVal,
   AccessTypes,
-} from "../../src";
-import { Ok } from "@chocolatelib/result";
+} from "@src/base";
 
 describe("Base", function () {
   it("Instantiating undefined class", function () {

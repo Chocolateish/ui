@@ -1,4 +1,4 @@
-import { Ok, Option } from "@chocolatelib/result";
+import { Ok, Option } from "@src/result";
 import {
   State,
   StateAsync,
@@ -6,7 +6,7 @@ import {
   StateRelated,
   StateResult,
   StateWrite,
-} from "@chocolatelib/state";
+} from "@src/state";
 
 let nameTransformer: ((name: string) => string) | undefined;
 export let settingsSetNameTransform = (transform: (name: string) => string) => {
@@ -157,7 +157,7 @@ export class SettingsGroup {
     setter?: ((value: W) => Option<StateResult<R>>) | true,
     helper?: StateHelper<A, L>,
     versionChanged?: (existing: R, oldVersion: string) => R
-  ): State<R, W, L> {
+  ): State<R, W, L, A> {
     if (id in this.settings)
       throw new Error("Settings already registered " + id);
     let saved = localStorage[this.pathID + "/" + id];
@@ -215,7 +215,7 @@ export class SettingsGroup {
     setter?: ((value: W) => Option<StateResult<R>>) | true,
     helper?: StateHelper<A, L>,
     versionChanged?: (existing: R, oldVersion: string) => R
-  ): StateAsync<R, W, L> {
+  ): StateAsync<R, W, L, A> {
     if (id in this.settings)
       throw new Error("Settings already registered " + id);
     let saved = localStorage[this.pathID + "/" + id];

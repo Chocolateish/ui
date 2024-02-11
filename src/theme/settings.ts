@@ -1,19 +1,18 @@
-import { name, version } from "../package.json";
+import { name, version } from "../../package.json";
 import {
   StateEnumHelper,
   StateEnumHelperList,
-  StateEnumHelperType,
   StateNumberHelper,
   StateWrite,
-} from "@chocolatelib/state";
-import { settingsInit } from "@chocolatelibui/settings";
+} from "@src/state";
+import { settingsInit } from "@src/page/settings";
 import {
   material_hardware_mouse_rounded,
   material_image_edit_rounded,
   material_action_touch_app_rounded,
   material_device_light_mode_rounded,
   material_device_dark_mode_rounded,
-} from "@chocolatelibui/icons";
+} from "@src/util/icons";
 import { engines } from "./shared";
 
 const settings = settingsInit(
@@ -56,12 +55,7 @@ themeInternal.subscribe((val) => {
     engine.applyTheme(val.unwrap);
   });
 });
-
-export const theme = themeInternal as StateWrite<
-  Themes,
-  Themes,
-  StateEnumHelperType<typeof themesInternal>
->;
+export const theme = themeInternal.StateWrite;
 
 //Sets up automatic theme change based on operating system
 window
@@ -128,11 +122,7 @@ scrollBarModeInternal.subscribe((val) => {
     engine.applyScrollbar(val.unwrap);
   });
 });
-export const scrollBarMode = scrollBarModeInternal as StateWrite<
-  ScrollbarModes,
-  ScrollbarModes,
-  StateEnumHelperType<typeof scrollbarModesInternal>
->;
+export const scrollBarMode = scrollBarModeInternal.StateWrite;
 
 //Input Mode
 export const enum InputModes {
@@ -170,11 +160,7 @@ inputModeInternal.subscribe((val) => {
     engine.applyInput(val.unwrap);
   });
 });
-export const inputMode = inputModeInternal as StateWrite<
-  InputModes,
-  InputModes,
-  StateEnumHelperType<typeof inputModesInternal>
->;
+export const inputMode = inputModeInternal.StateWrite;
 
 //Animation Level
 export const enum AnimationLevels {
@@ -210,8 +196,4 @@ animationLevelInternal.subscribe((val) => {
   });
 });
 
-export const animationLevel = animationLevelInternal as StateWrite<
-  AnimationLevels,
-  AnimationLevels,
-  StateEnumHelperType<typeof animationLevelsInternal>
->;
+export const animationLevel = animationLevelInternal.StateWrite;

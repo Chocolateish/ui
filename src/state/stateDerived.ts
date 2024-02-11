@@ -1,6 +1,6 @@
 import { StateSubscriber, StateRead, StateResult } from "./types";
 import { StateBase } from "./stateBase";
-import { Err } from "@chocolatelib/result";
+import { Err } from "@src/result";
 
 type StateReadArray<T extends any[]> = {
   [K in keyof T]: StateRead<T[K]>;

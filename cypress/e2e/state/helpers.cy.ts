@@ -1,11 +1,6 @@
 /// <reference types="cypress" />
-import { Err, Ok, Result, Some } from "@chocolatelib/result";
-import {
-  State,
-  StateNumberHelper,
-  StateRead,
-  StateStringHelper,
-} from "../../src";
+import { Ok } from "@src/result";
+import { State, StateNumberHelper, StateStringHelper } from "@src/state";
 
 describe("State Number Min Max", function () {
   it("Checking limiter min max", function () {

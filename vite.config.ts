@@ -6,7 +6,7 @@ import dts from "vite-plugin-dts";
 let shared: UserConfigExport = {
   resolve: {
     alias: {
-      "@": resolve(__dirname, "src"),
+      "@src": resolve(__dirname, "src"),
     },
   },
 };
@@ -16,6 +16,7 @@ export default defineConfig(({ command, mode }) => {
     case "serve":
       if (mode === "pages") {
         return {
+          ...shared,
           server: {
             host: true,
             port: 666,
@@ -31,6 +32,7 @@ export default defineConfig(({ command, mode }) => {
         };
       } else {
         return {
+          ...shared,
           server: {
             host: true,
             port: 999,
@@ -47,6 +49,7 @@ export default defineConfig(({ command, mode }) => {
     case "build":
       if (mode === "pages") {
         return {
+          ...shared,
           root: "./pages",
           build: {
             outDir: "../docs",
@@ -56,6 +59,7 @@ export default defineConfig(({ command, mode }) => {
         };
       } else if (mode === "tests" || mode === "production") {
         return {
+          ...shared,
           root: "./cypress/pages",
           build: {
             outDir: "./dist",
@@ -64,6 +68,7 @@ export default defineConfig(({ command, mode }) => {
         };
       } else {
         return {
+          ...shared,
           build: {
             lib: {
               entry: resolve(__dirname, "src/index.ts"),

@@ -1,4 +1,4 @@
-import { StateEnumHelperList } from "@chocolatelib/state";
+import { StateEnumHelperList } from "@src/state";
 
 /**Enum of possible access types for base element*/
 export const enum AccessTypes {

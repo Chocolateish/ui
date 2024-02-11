@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
-import { Ok } from "@chocolatelib/result";
-import { StateDerived, State } from "../../src";
+import { Ok } from "@src/result";
+import { StateDerived, State } from "@src/state";
 
 describe("Getting value", function () {
   it("Getting value from StateDerived with no States", async function () {

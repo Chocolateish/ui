@@ -3,14 +3,14 @@ import {
   createEventHandler,
   EventConsumer,
   EventProducer,
-} from "@chocolatelib/events";
+} from "@src/util/events";
 import { BaseObserver, BaseObserverOptions } from "./observer";
 import {
   StateError,
   StateRead,
   StateReadAsync,
   StateSubscriber,
-} from "@chocolatelib/state";
+} from "@src/state";
 import { AccessTypes } from "./access";
 
 /**Event types for base*/

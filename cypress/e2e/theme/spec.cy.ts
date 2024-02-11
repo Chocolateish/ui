@@ -1,6 +1,4 @@
 /// <reference types="cypress" />
-import DocumentHandler from "@chocolatelibui/document";
-import { ThemeEngine } from "../../src";
 
 describe("Tests", async () => {
   it("inputmodes", async () => {

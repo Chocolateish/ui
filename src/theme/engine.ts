@@ -1,5 +1,5 @@
-import { ESubscriber } from "@chocolatelib/events";
-import DocumentHandler from "@chocolatelibui/document";
+import { ESubscriber } from "@src/util/events";
+import { DocumentHandler } from "@src/page";
 import { bottomGroups, engines } from "./shared";
 import {
   AnimationLevels,

@@ -1,13 +1,12 @@
 {
-  "include": ["src/**/*.ts"],
-  "exclude": ["dist", "node_modules"],
+  "include": ["e2e/**/*.ts", "pages/**/*.ts"],
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
     "lib": ["ESNext", "DOM"],
     "types": ["cypress"],
     "paths": {
-      "@src/*": ["./src/*"] // This mapping is relative to "baseUrl"
+      "@src/*": ["../src/*"] // This mapping is relative to "baseUrl"
     },
     "moduleResolution": "Node",
     "strict": true,

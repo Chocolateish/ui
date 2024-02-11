@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
-import { Err, Ok } from "@chocolatelib/result";
-import { StateResourceFunc } from "../../src";
+import { Err, Ok } from "@src/result";
+import { StateResourceFunc } from "@src/state";
 
 const generatePromises = (amount: number) => {
   let promises: Promise<any>[] = [];

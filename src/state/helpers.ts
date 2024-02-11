@@ -1,4 +1,4 @@
-import { None, Option, Some } from "@chocolatelib/result";
+import { None, Option, Some } from "@src/result";
 import { StateHelper } from "./types";
 
 export interface StateNumberHelperType {
@@ -155,9 +155,6 @@ export type StateEnumHelperList = {
 
 export interface StateEnumHelperType<T extends StateEnumHelperList> {
   list: T;
-}
-export interface StateEnumHelperAnyType {
-  list?: { [key: string | number | symbol]: { name: string } };
 }
 
 export class StateEnumHelper<

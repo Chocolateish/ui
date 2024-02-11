@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
-import { settingsInit, settingsSetNameTransform } from "../../src";
-import { name, version } from "../../package.json";
+import { settingsInit, settingsSetNameTransform } from "@src/util/settings";
+import { name, version } from "../../../package.json";
 
 describe("empty spec", () => {
   it("Initialise settings", async () => {

@@ -1,4 +1,4 @@
-import { Option, Result } from "@chocolatelib/result";
+import { Option, Result } from "@src/result";
 
 /**Shorthand for state result*/
 export type StateResult<R> = Result<R, StateError>;

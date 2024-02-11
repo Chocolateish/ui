@@ -1,4 +1,4 @@
-import { None, Option } from "@chocolatelib/result";
+import { None, Option } from "@src/result";
 import {
   StateReadAsync,
   StateRelated,
