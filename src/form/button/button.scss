@@ -1,0 +1,108 @@
+@import "../base.scss";
+
+chocolatelibui-form-button {
+    @include base;
+
+    >div {
+        display: flex;
+        align-items: center;
+        background-color: $backColor;
+        border: $border;
+        border-radius: $cornerRadius;
+        box-shadow: $shadowOut;
+        box-sizing: border-box;
+        -webkit-user-select: none;
+        user-select: none;
+        min-height: $height;
+        min-width: min-content;
+        outline: none;
+
+        &.active {
+            box-shadow: $shadowOutActive;
+        }
+
+        &:focus-visible {
+            box-shadow: $shadowOutFocusOut;
+
+            &.active {
+                box-shadow: $shadowOutActiveFocusOut;
+            }
+        }
+
+        @media(pointer: fine) {
+            &:hover {
+                background-color: $hoverColor;
+            }
+        }
+
+        .touch & {
+            min-height: $touchHeight;
+        }
+
+        >svg {
+            box-sizing: border-box;
+            fill: $textColor;
+            height: calc($height - 2px);
+            max-width: $height;
+            width: auto;
+            padding: 0.2rem;
+            padding-left: 0.4rem;
+            flex-shrink: 0;
+
+            .touch & {
+                height: $touchHeight;
+                max-width: $touchHeight + 1rem;
+                padding: 0.5rem;
+            }
+        }
+
+        >svg+span {
+            padding-left: 0.4rem !important;
+        }
+
+        >span {
+            color: $textColor;
+            justify-content: center;
+            min-width: 10rem;
+            padding-inline: 0.8rem;
+            padding-block: 0.2rem;
+
+            .touch & {
+                font-size: 1.4rem;
+            }
+
+            &:empty {
+                display: none;
+            }
+        }
+
+
+        &[color="black"] {
+            background-color: $blackColor;
+
+            >span {
+                color: $blackColorText;
+            }
+
+            >svg {
+                fill: $blackColorText;
+            }
+        }
+
+        &[color="green"] {
+            background-color: $greenColor;
+        }
+
+        &[color="red"] {
+            background-color: $redColor;
+        }
+
+        &[color="blue"] {
+            background-color: $blueColor;
+        }
+
+        &[color="yellow"] {
+            background-color: $yellowColor;
+        }
+    }
+}

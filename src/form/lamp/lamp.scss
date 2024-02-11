@@ -1,0 +1,106 @@
+@import "../base.scss";
+
+chocolatelibui-form-lamp {
+    @include base;
+
+    >div {
+        display: flex;
+        box-sizing: border-box;
+        min-height: $height;
+        min-width: min-content;
+        background-color: $backColor;
+        border: 1px solid $borderColor;
+        border-radius: $height;
+        box-shadow: $shadowOut;
+        -webkit-user-select: none;
+        user-select: none;
+        align-items: center;
+
+
+        .touch & {
+            border-radius: $touchHeight;
+            min-height: $touchHeight;
+        }
+
+        .anim & {
+            transition: min-height var(--sizeTransitionType) var(--sizeTransitionTime), box-shadow ease 200ms, border-color var(--colorTransitionType) var(--colorTransitionTime), background-color var(--colorTransitionType) var(--colorTransitionTime);
+        }
+
+        >svg {
+            box-sizing: border-box;
+            height: calc($height - 2px);
+            width: auto;
+            flex-shrink: 0;
+            background-color: initial;
+            fill: $textColor;
+            padding: 0.2rem;
+            padding-left: 0.4rem;
+
+            .touch & {
+                height: calc($touchHeight - 2px);
+                padding: 0.5rem;
+            }
+
+            .anim & {
+                transition: fill var(--colorTransitionType) var(--colorTransitionTime), height var(--sizeTransitionType) var(--sizeTransitionTime), max-width var(--sizeTransitionType) var(--sizeTransitionTime);
+            }
+        }
+
+
+        >span {
+            display: flex;
+            justify-content: center;
+            color: $textColor;
+            padding-inline: 0.8rem;
+            padding-block: 0.2rem;
+            min-width: 10rem;
+
+            &:empty {
+                display: none;
+            }
+
+            .touch & {
+                padding-inline: 1.6rem;
+                padding-block: 0.5rem;
+                font-size: 1.4rem;
+            }
+
+            .anim & {
+                transition: color var(--colorTransitionType) var(--colorTransitionTime);
+            }
+        }
+
+        >svg+span {
+            padding-left: 0.4rem !important;
+        }
+
+
+        &[color="black"] {
+            background-color: $blackColor;
+
+            >span {
+                color: $blackColorText;
+            }
+
+            >svg {
+                fill: $blackColorText;
+            }
+        }
+
+        &[color="green"] {
+            background-color: $greenColor;
+        }
+
+        &[color="red"] {
+            background-color: $redColor;
+        }
+
+        &[color="blue"] {
+            background-color: $blueColor;
+        }
+
+        &[color="yellow"] {
+            background-color: $yellowColor;
+        }
+    }
+}

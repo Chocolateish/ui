@@ -6,6 +6,9 @@
     "module": "ESNext",
     "lib": ["ESNext", "DOM"],
     "types": ["cypress"],
+    "paths": {
+      "@lib/*": ["./src/*"] // This mapping is relative to "baseUrl"
+    },
     "moduleResolution": "Node",
     "strict": true,
     "resolveJsonModule": true,

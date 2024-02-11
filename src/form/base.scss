@@ -1,0 +1,134 @@
+.h {
+    display: none;
+}
+
+//Sizes
+$minWidth: 14rem;
+$minWidthTouch: $minWidth * 1.6;
+$height: 1.8rem;
+$touchHeight: 3rem;
+$scrollBarWidth: 0.5rem;
+
+//Padding
+$padding: 0.2rem;
+
+//Font
+$fontSize: 1rem;
+$touchFontSize: 1.6rem;
+
+//Mixins
+@mixin base {
+    display: flex;
+    flex-direction: column;
+    min-width: $minWidth;
+    position: relative;
+
+    .touch & {
+        min-width: $minWidthTouch;
+    }
+
+    >span {
+        @include label;
+    }
+}
+
+//Shadows
+$shadowOut: 0 0.125rem 0.1875rem 0 var(--\@chocolatelibui\/form\/borderColor);
+$shadowOutActive: 0 0 0.1875rem 0 var(--\@chocolatelibui\/form\/borderColor);
+$shadowIn: inset 0 0.125rem 0.1875rem 0 var(--\@chocolatelibui\/form\/borderColor);
+$focusOut: 0 0 0 0.2rem var(--\@chocolatelibui\/form\/focusColor);
+$focusIn: inset 0 0 0 0.2rem var(--\@chocolatelibui\/form\/focusColor);
+$shadowOutFocusOut: $shadowOut, $focusOut;
+$shadowOutActiveFocusOut: $shadowOutActive, $focusOut;
+$shadowInFocusOut: $focusOut, $shadowIn ;
+$shadowOutFocusIn: $focusIn, $shadowOut;
+$shadowInFocusIn: $focusIn, $shadowIn;
+
+//Colors
+$backColor: var(--\@chocolatelibui\/form\/backColor);
+$hoverColor: var(--\@chocolatelibui\/form\/hoverColor);
+$textColor: var(--\@chocolatelibui\/form\/color);
+$selectedTextColor: var(--\@chocolatelibui\/form\/selectedColor);
+$unselectedTextColor: var(--\@chocolatelibui\/form\/unselectedColor);
+
+//Border
+$cornerRadius: 0.4rem;
+$borderColor: var(--\@chocolatelibui\/form\/borderColor);
+$borderThickness: 0.0625rem;
+$border: $borderThickness solid $borderColor;
+
+//Basic Colors
+$blackColor: var(--\@chocolatelibui\/form\/colors\/blackColor);
+$blackColorText: var(--\@chocolatelibui\/form\/colors\/blackColorText);
+$greenColor: var(--\@chocolatelibui\/form\/colors\/greenColor);
+$redColor: var(--\@chocolatelibui\/form\/colors\/redColor);
+$blueColor: var(--\@chocolatelibui\/form\/colors\/blueColor);
+$yellowColor: var(--\@chocolatelibui\/form\/colors\/yellowColor);
+
+//Mixins
+@mixin label {
+    display: block;
+    padding: 0rem 0.1rem 0.1rem 0.4rem;
+    color: $textColor;
+
+    &:empty {
+        display: none;
+    }
+
+    .anim & {
+        transition: color var(--colorTransitionType) var(--colorTransitionTime);
+    }
+
+    .touch & {
+        font-size: 1.3rem;
+    }
+}
+
+$valueFontSize: 1rem;
+$touchValueFontSize: $valueFontSize * 1.4;
+$unitFontSize: 0.75rem;
+$touchUnitFontSize: $unitFontSize * 1.4;
+$valueUnitFontHeight: max($valueFontSize, $unitFontSize) + 0.4rem;
+$touchValueUnitFontHeight: max($touchValueFontSize, $touchUnitFontSize) + 0.4rem;
+
+@mixin valueFont {
+    color: $textColor;
+    font-size: $valueFontSize;
+    line-height: $valueUnitFontHeight;
+
+    .touch & {
+        font-size: $touchValueFontSize;
+        line-height: $touchValueUnitFontHeight;
+    }
+}
+
+@mixin unitFont {
+    color: $textColor;
+    font-size: $unitFontSize;
+    line-height: $valueUnitFontHeight;
+
+    .touch & {
+        font-size: $touchUnitFontSize;
+        line-height: $touchValueUnitFontHeight;
+    }
+}
+
+$unitWidth: $unitFontSize * 5.6;
+$touchUnitWidth: $touchUnitFontSize * 5.6;
+
+@mixin unitContainer {
+    @include unitFont;
+    display: block;
+    max-width: $unitWidth;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    &:empty {
+        width: 0px !important;
+    }
+
+    .touch & {
+        max-width: $touchUnitWidth;
+    }
+}

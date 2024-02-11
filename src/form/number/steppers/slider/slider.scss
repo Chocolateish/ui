@@ -1,0 +1,145 @@
+@import "../stepperBase.scss";
+
+chocolatelibui-form-slider {
+    @include base;
+    @include number-base;
+    $textPadding : 0.2rem;
+    $thumbWidth : $unitWidth + 0.4rem + $textPadding;
+    $touchThumbWidth : $touchUnitWidth + 0.4rem + $textPadding;
+
+    >div {
+        -webkit-user-select: none;
+        user-select: none;
+        box-sizing: border-box;
+        height: $height;
+        position: relative;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        background-color: $backColor;
+        border-radius: $cornerRadius;
+        border: $border;
+        box-shadow: $shadowIn;
+        touch-action: none;
+
+        .touch & {
+            height: $touchHeight;
+        }
+
+        >div {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 100%;
+            width: calc(100% - (($thumbWidth + ($height * 2)) - ($borderThickness * 4)));
+            position: relative;
+            left: -$borderThickness * 2;
+            z-index: 1;
+
+            .touch & {
+                width: calc(100% - (($touchThumbWidth + ($touchHeight * 2)) - ($borderThickness * 4)));
+            }
+
+
+
+            >div {
+                box-sizing: border-box;
+                background-color: $backColor;
+                border-radius: $cornerRadius;
+                border: $border;
+                box-shadow: $shadowOut;
+                height: $height;
+                width: $thumbWidth;
+                top: - $borderThickness;
+                left: 50%;
+                position: absolute;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                padding-inline: 0.2rem;
+                outline: none;
+                cursor: grab;
+
+                &.active {
+                    cursor: grabbing;
+                }
+
+                &:focus-visible {
+                    box-shadow: $shadowOutFocusOut;
+                    z-index: 2;
+                }
+
+                @media(pointer: fine) {
+                    &:hover {
+                        background-color: $hoverColor;
+                    }
+                }
+
+                .touch & {
+                    height: $touchHeight;
+                    width: $touchThumbWidth;
+                }
+
+                >span:first-child {
+                    @include valueFont;
+                    box-sizing: border-box;
+                    line-height: $valueFontSize;
+                    text-align: center;
+                    max-width: $thumbWidth - $textPadding * 2;
+                    overflow: hidden;
+
+                    .touch & {
+                        line-height: $touchValueFontSize;
+                        max-width: $touchThumbWidth;
+                    }
+                }
+
+                >span:last-child {
+                    @include unitContainer;
+                    line-height: $unitFontSize;
+                    text-align: center;
+
+                    .touch & {
+                        line-height: $touchUnitFontSize;
+                    }
+                }
+            }
+        }
+
+        >svg {
+            @include svgStepperButton;
+            z-index: 1;
+
+            &:nth-child(2) {
+                left: -$borderThickness;
+            }
+
+            &:nth-child(4) {
+                position: absolute;
+                right: -$borderThickness;
+            }
+        }
+
+        >span {
+            position: absolute;
+            inset: 0;
+            padding-left: $height + 0.4rem;
+            padding-right: $height + 0.4rem;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.4rem;
+            display: flex;
+
+            .touch & {
+                padding-left: $touchHeight + 0.4rem;
+                padding-right: $touchHeight + 0.4rem;
+            }
+
+            >* {
+                @include limit-legend;
+                overflow: hidden;
+            }
+        }
+    }
+}
