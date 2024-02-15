@@ -12,7 +12,7 @@ import {
   material_action_touch_app_rounded,
   material_device_light_mode_rounded,
   material_device_dark_mode_rounded,
-} from "@src/util/icons";
+} from "@src/asset";
 import { engines } from "./shared";
 
 const settings = settingsInit(

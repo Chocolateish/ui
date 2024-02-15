@@ -1,4 +1,4 @@
-import { ESubscriber } from "@src/util/events";
+import { ESubscriber } from "@src/event";
 import { DocumentHandler } from "@src/page";
 import { bottomGroups, engines } from "./shared";
 import {

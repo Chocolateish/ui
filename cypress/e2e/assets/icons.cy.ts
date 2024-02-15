@@ -2,7 +2,7 @@
 import {
   material_action_123_filled,
   material_action_123_outlined,
-} from "@src/util/icons";
+} from "@src/asset";
 
 describe("Action", function () {
   it("drag_indicator", function () {

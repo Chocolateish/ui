@@ -1,5 +1,5 @@
 /// <reference types="cypress" />
-import { createEventHandler } from "@src/util/events";
+import { createEventHandler } from "@src/event";
 
 describe("Init", function () {
   it("Create Simple Event Handler", function () {

@@ -1,5 +1,5 @@
 /// <reference types="cypress" />
-import * as svg from "@src/util/svg";
+import * as svg from "@src/svg";
 
 describe("Generates Primitives", () => {
   it("circle", function () {

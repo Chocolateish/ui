@@ -1,4 +1,4 @@
-import { EventConsumer, EventHandler } from "@src/util/events";
+import { EventConsumer, EventHandler } from "@src/event";
 
 interface DocumentHandlerEvents {
   /**Fired when document is added*/

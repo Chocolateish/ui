@@ -1,5 +1,5 @@
 /// <reference types="cypress" />
-import { settingsInit, settingsSetNameTransform } from "@src/util/settings";
+import { settingsInit, settingsSetNameTransform } from "@src/page";
 import { name, version } from "../../../package.json";
 
 describe("empty spec", () => {

@@ -1,9 +1,5 @@
 import "./base.scss";
-import {
-  createEventHandler,
-  EventConsumer,
-  EventProducer,
-} from "@src/util/events";
+import { createEventHandler, EventConsumer, EventProducer } from "@src/event";
 import { BaseObserver, BaseObserverOptions } from "./observer";
 import {
   StateError,
