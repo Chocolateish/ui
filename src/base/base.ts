@@ -8,6 +8,8 @@ import {
   StateSubscriber,
 } from "@src/state";
 import { AccessTypes } from "./access";
+import { libraryNameSpace } from "@src/globals/globalsInternals";
+import { defineElement } from "./defineElement";
 
 /**Event types for base*/
 export const enum ConnectEventVal {
@@ -49,7 +51,7 @@ export interface BaseOptions {
  * write = normal interaction and look
  * read = inert attribute is added making the element uninteractable, and add opacity 0.5 to make the element look inaccessible
  * none = adds display:none to element to make it */
-export abstract class Base<
+export class Base<
   MoreEvents extends BaseEvents = BaseEvents
 > extends HTMLElement {
   /**Returns the name used to define the element */
@@ -58,7 +60,7 @@ export abstract class Base<
   }
   /**Returns the namespace override for the element*/
   static elementNameSpace() {
-    return "chocolatelibui-core";
+    return libraryNameSpace;
   }
   /**Events for element*/
   protected _events: EventProducer<MoreEvents, Base<MoreEvents>>;
@@ -373,3 +375,4 @@ export abstract class Base<
     }
   }
 }
+customElements.define(Base.elementNameSpace() + "-base", Base);

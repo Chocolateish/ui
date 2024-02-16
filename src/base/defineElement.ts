@@ -7,7 +7,6 @@ export let defineElement = <T extends BaseEvents>(element: typeof Base<T>) => {
   let check = element.elementName;
   let defineName = "";
   let runner = element;
-  // @ts-expect-error
   while (runner !== HTMLElement) {
     if (namespace !== runner.elementNameSpace()) {
       break;
@@ -28,7 +27,6 @@ export let defineElement = <T extends BaseEvents>(element: typeof Base<T>) => {
   }
   defineName = namespace + defineName;
   try {
-    // @ts-expect-error
     customElements.define(defineName, element);
   } catch (e) {
     if (

@@ -17,7 +17,7 @@ export class DocumentHandler {
   /**Manager events */
   public readonly events: EventConsumer<DocumentHandlerEvents, this>;
 
-  constructor(mainDocument: Document) {
+  constructor(mainDocument: Document = document) {
     this.main = mainDocument;
     this._documents = [mainDocument];
     this.events = this._events = new EventHandler(this);

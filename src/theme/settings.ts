@@ -1,4 +1,4 @@
-import { name, version } from "../../package.json";
+import { version } from "../../package.json";
 import {
   StateEnumHelper,
   StateEnumHelperList,
@@ -14,9 +14,10 @@ import {
   material_device_dark_mode_rounded,
 } from "@src/asset";
 import { engines } from "./shared";
+import { libraryNameSpace } from "../globals/globalsInternals";
 
 const settings = settingsInit(
-  name,
+  libraryNameSpace,
   version,
   "Theme/UI",
   "Settings for UI elements and and color themes"
@@ -151,7 +152,7 @@ const inputModeInternal = settings.addSetting(
   "input",
   "Input Mode",
   "Setting for preffered input mode, changes UI elements to be more optimized for the selected input mode",
-  InputModes.TOUCH,
+  navigator.maxTouchPoints > 0 ? InputModes.TOUCH : InputModes.MOUSE,
   true,
   new StateEnumHelper(inputModesInternal)
 );

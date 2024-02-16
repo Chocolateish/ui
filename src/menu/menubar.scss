@@ -1,0 +1,17 @@
+chui-menubar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
+
+  height: 2rem;
+  padding-inline: 0.5rem;
+  background-color: pink;
+  box-shadow: black 0px -3px 0.4rem 3px;
+  box-sizing: border-box;
+
+  .touch & {
+    height: 3rem;
+  }
+}
