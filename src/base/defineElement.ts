@@ -2,7 +2,7 @@ import { Base, BaseEvents } from "./base";
 import { validateElementName } from "./validateElementName";
 
 /**Defines elements inheriting from the base*/
-export let defineElement = <T extends BaseEvents>(element: typeof Base<T>) => {
+export function defineElement<T extends BaseEvents>(element: typeof Base<T>) {
   let namespace = element.elementNameSpace();
   let check = element.elementName;
   let defineName = "";
@@ -37,4 +37,4 @@ export let defineElement = <T extends BaseEvents>(element: typeof Base<T>) => {
       throw new Error(validateElementName(defineName) + " " + defineName);
     }
   }
-};
+}

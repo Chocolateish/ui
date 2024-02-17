@@ -1,5 +1,5 @@
 /**Returns the byte length of a string accounting for encoding*/
-export let stringByteLength = (string: string) => {
+export function stringByteLength(string: string) {
   let s = string.length;
   if (s > 2048) {
     return new TextEncoder().encode(string).length;
@@ -17,14 +17,14 @@ export let stringByteLength = (string: string) => {
     }
     return s;
   }
-};
+}
 
 /**Returns the byte length of a string accounting for encoding*/
-export let stringByteLimit = (string: string, limit: number) => {
+export function stringByteLimit(string: string, limit: number) {
   let encoder = new TextEncoder().encode(string);
   string = new TextDecoder().decode(encoder.slice(0, limit));
   if (string.at(-1)?.charCodeAt(0) === 65533) {
     return string.slice(0, -1);
   }
   return string;
-};
+}

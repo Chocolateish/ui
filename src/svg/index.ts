@@ -1,3 +1,4 @@
-export * from "./primitives/index"
-export * from "./attributes/index"
-export * from "./util/index"
+export * from "./primitives";
+export * from "./strokeFill";
+export * from "./anchorPoint";
+export * from "./shared";

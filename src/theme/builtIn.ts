@@ -1,7 +1,7 @@
 import { name } from "../../package.json";
 import { themeInitVariableRoot } from "./variables";
 
-export let themeBuildInVariables = () => {
+export function themeBuildInVariables() {
   let root = themeInitVariableRoot(
     name,
     "Shared Variables",
@@ -18,4 +18,4 @@ export let themeBuildInVariables = () => {
     "Color",
     undefined
   );
-};
+}

@@ -9,7 +9,6 @@ import {
 } from "@src/state";
 import { AccessTypes } from "./access";
 import { libraryNameSpace } from "@src/globals/globalsInternals";
-import { defineElement } from "./defineElement";
 
 /**Event types for base*/
 export const enum ConnectEventVal {

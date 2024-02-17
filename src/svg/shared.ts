@@ -1,8 +1,8 @@
 export let nameSpace: "http://www.w3.org/2000/svg" =
   "http://www.w3.org/2000/svg";
 
-export let createSvgElement = <K extends keyof SVGElementTagNameMap>(
+export function createSvgElement<K extends keyof SVGElementTagNameMap>(
   qualifiedName: K
-): SVGElementTagNameMap[K] => {
+): SVGElementTagNameMap[K] {
   return document.createElementNS<K>(nameSpace, qualifiedName);
-};
+}

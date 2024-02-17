@@ -2,19 +2,19 @@ import { Themes } from "./settings";
 import { bottomGroups, engines } from "./shared";
 
 let nameTransformer: ((name: string) => string) | undefined;
-export let themeSetNameTransform = (transform: (name: string) => string) => {
+export function themeSetNameTransform(transform: (name: string) => string) {
   nameTransformer = transform;
-};
+}
 
 /**Initialises the settings for the package
  * @param packageName use import {name} from "../package.json"
  * @param name name of group formatted for user reading
  * @param description a description of what the setting group is about*/
-export let themeInitVariableRoot = (
+export function themeInitVariableRoot(
   packageName: string,
   name: string,
   description: string
-) => {
+) {
   if (nameTransformer) {
     packageName = nameTransformer(packageName);
   }
@@ -24,7 +24,7 @@ export let themeInitVariableRoot = (
     description
   );
   return bottomGroups[packageName];
-};
+}
 
 /**Group of settings should never be instantiated manually use initSettings*/
 export class ThemeVariableGroup {
