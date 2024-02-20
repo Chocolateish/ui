@@ -1,6 +1,6 @@
 import { Err, None, Ok, Option, Some } from "@src/result";
 import { StateBase } from "./stateBase";
-import { StateError, StateHelper, StateResult, StateWrite } from "./types";
+import { StateError, StateHelper, StateResult, StateWriteSync } from "./types";
 
 export interface StateArrayRead<T> {
   array: readonly T[];
@@ -17,7 +17,7 @@ export interface StateArrayWrite<T> {
 
 export class StateArray<T, L extends {} = any>
   extends StateBase<StateArrayRead<T>>
-  implements StateWrite<StateArrayRead<T>, StateArrayWrite<T>, L>
+  implements StateWriteSync<StateArrayRead<T>, StateArrayWrite<T>, L>
 {
   /**Creates a state which holds a value
    * @param init initial value for state, use a promise for an eager async value, use a function returning a promise for a lazy async value

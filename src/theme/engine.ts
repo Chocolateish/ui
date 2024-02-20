@@ -2,11 +2,11 @@ import { ESubscriber } from "@src/event";
 import { DocumentHandler } from "@src/page";
 import { bottomGroups, engines } from "./shared";
 import {
-  AnimationLevels,
+  GraphicsLevels,
   InputModes,
   ScrollbarModes,
   Themes,
-  animationLevel,
+  graphicsLevel,
   inputMode,
   scale,
   scrollBarMode,
@@ -46,10 +46,7 @@ export class ThemeEngine {
     await new Promise((a) => {
       setTimeout(a, 100);
     });
-    this.applyAnimationToDoc(
-      doc,
-      <AnimationLevels>(await animationLevel).unwrap
-    );
+    this.applyAnimationToDoc(doc, <GraphicsLevels>(await graphicsLevel).unwrap);
   }
 
   /**This applies the current theme to a document*/
@@ -70,20 +67,18 @@ export class ThemeEngine {
   }
 
   /**This applies the current theme to a document*/
-  applyAnimation(anim: AnimationLevels) {
+  applyAnimation(anim: GraphicsLevels) {
     this._handler.forDocuments((doc) => {
       this.applyAnimationToDoc(doc, anim);
     });
   }
-  private applyAnimationToDoc(doc: Document, anim: AnimationLevels) {
-    doc.documentElement.classList.remove("anim-all", "anim-most", "anim-some");
+  private applyAnimationToDoc(doc: Document, anim: GraphicsLevels) {
+    doc.documentElement.classList.remove("graphics-all", "graphics-some");
     switch (anim) {
-      case AnimationLevels.ALL:
-        doc.documentElement.classList.add("anim-all");
-      case AnimationLevels.MOST:
-        doc.documentElement.classList.add("anim-most");
-      case AnimationLevels.SOME:
-        doc.documentElement.classList.add("anim-some");
+      case GraphicsLevels.ALL:
+        doc.documentElement.classList.add("graphics-all");
+      case GraphicsLevels.SOME:
+        doc.documentElement.classList.add("graphics-some");
         break;
     }
   }

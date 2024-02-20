@@ -1,14 +1,10 @@
 import "./base.scss";
 import { createEventHandler, EventConsumer, EventProducer } from "@src/event";
 import { BaseObserver, BaseObserverOptions } from "./observer";
-import {
-  StateError,
-  StateRead,
-  StateReadAsync,
-  StateSubscriber,
-} from "@src/state";
+import { StateError, StateRead, StateSubscriber } from "@src/state";
 import { AccessTypes } from "./access";
 import { libraryNameSpace } from "@src/globals/globalsInternals";
+import { Ok } from "@src/result";
 
 /**Event types for base*/
 export const enum ConnectEventVal {
@@ -29,7 +25,7 @@ export interface BaseEvents {
 /**Base options for base class */
 export interface BaseOptions {
   /**Access for element, default is write access */
-  access?: AccessTypes | StateReadAsync<AccessTypes>;
+  access?: AccessTypes | StateRead<AccessTypes>;
   /**Options to use for element observer */
   observerOptions?: BaseObserverOptions;
 }
@@ -66,7 +62,7 @@ export class Base<
   /**Events for element*/
   readonly events: EventConsumer<MoreEvents, Base<MoreEvents>>;
 
-  #connectStates?: StateReadAsync<any>[];
+  #connectStates?: StateRead<any>[];
   #connectSubscribers?: StateSubscriber<any>[];
 
   /**Observer for children of this element */
@@ -76,7 +72,7 @@ export class Base<
   /**Works when element is connected to observer, otherwise it is an alias for isConnected*/
   readonly isVisible: boolean = false;
   #attachedObserver?: BaseObserver;
-  #visibleStates?: StateReadAsync<any>[];
+  #visibleStates?: StateRead<any>[];
   #visibleSubscribers?: StateSubscriber<any>[];
 
   #access?: AccessTypes;
@@ -196,29 +192,34 @@ export class Base<
   }
 
   /**Attaches a state to a function, so that the function is subscribed to the state when the component is connected
+   * @param state the state to attach to the function, a normal value can also be passed, in which case the function is called with the value
    * @param visible when set true the function is only subscribed when the element is visible, this requires an observer to be attached to the element*/
   attachState<T>(
-    state: StateReadAsync<T>,
+    state: StateRead<T> | T,
     func: StateSubscriber<T>,
     visible?: boolean
   ) {
-    if (visible) {
-      if (!this.#visibleStates) {
-        this.#visibleStates = [];
-        this.#visibleSubscribers = [];
+    if (state instanceof StateRead) {
+      if (visible) {
+        if (!this.#visibleStates) {
+          this.#visibleStates = [];
+          this.#visibleSubscribers = [];
+        }
+        this.#visibleStates.push(state);
+        this.#visibleSubscribers!.push(func);
+        if (this.isVisible) state.subscribe(func, true);
+        return func;
       }
-      this.#visibleStates.push(state);
-      this.#visibleSubscribers!.push(func);
-      if (this.isVisible) state.subscribe(func, true);
-      return func;
+      if (!this.#connectStates) {
+        this.#connectStates = [];
+        this.#connectSubscribers = [];
+      }
+      this.#connectStates.push(state);
+      this.#connectSubscribers!.push(func);
+      if (this.isConnected) state.subscribe(func, true);
+    } else {
+      func(Ok(state as T));
     }
-    if (!this.#connectStates) {
-      this.#connectStates = [];
-      this.#connectSubscribers = [];
-    }
-    this.#connectStates.push(state);
-    this.#connectSubscribers!.push(func);
-    if (this.isConnected) state.subscribe(func, true);
     return func;
   }
 
@@ -253,11 +254,10 @@ export class Base<
    * @param prop the property to attach the state to
    * @param state the state to attach to the property
    * @param visible when set true the property is only updated when the element is visible, this requires an observer to be attached to the element
-   * @param fallback the fallback value for the property when the state is not ok, if undefined the property is not updated when the state is not ok
-   * */
+   * @param fallback the fallback value for the property when the state is not ok, if undefined the property is not updated when the state is not ok*/
   attachStateToProp<T extends keyof this>(
     prop: T,
-    state: StateReadAsync<(typeof this)[T]>,
+    state: StateRead<(typeof this)[T]> | (typeof this)[T],
     visible?: boolean,
     fallback?: (typeof this)[T],
     fallbackFunc?: (error: StateError) => (typeof this)[T]
@@ -362,7 +362,7 @@ export class Base<
   }
   /**Sets the access of the element, passing undefined is the same as passing write access*/
   accessByState(
-    access: StateReadAsync<AccessTypes> | undefined,
+    access: StateRead<AccessTypes> | undefined,
     visible?: boolean,
     fallback?: AccessTypes,
     fallbackFunc?: (error: StateError) => AccessTypes

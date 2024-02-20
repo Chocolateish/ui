@@ -1,15 +1,10 @@
 import { None, Ok, Option, Some } from "@src/result";
 import { StateBase } from "./stateBase";
-import {
-  StateHelper,
-  StateReadAsync,
-  StateResult,
-  StateWriteAsync,
-} from "./types";
+import { StateHelper, StateRead, StateResult, StateWrite } from "./types";
 
 export class StateAsync<R, W = R, L extends {} = {}, A = W>
   extends StateBase<R, L>
-  implements StateWriteAsync<R, W, L>
+  implements StateWrite<R, W, L>
 {
   /**Creates a state which holds a value, this one can be instantiated with an async value
    * @param init initial value for state, use a promise for an eager async value, use a function returning a promise for a lazy async value
@@ -17,10 +12,7 @@ export class StateAsync<R, W = R, L extends {} = {}, A = W>
    * @param limiter functions to check and limit
    * @param related function returning the related states to this one*/
   constructor(
-    init:
-      | StateResult<Exclude<R, Function>>
-      | Promise<StateResult<Exclude<R, Function>>>
-      | (() => Promise<StateResult<Exclude<R, Function>>>),
+    init: Promise<StateResult<R>>,
     setter?: ((value: W) => Option<StateResult<R>>) | true,
     helper?: StateHelper<A, L>
   ) {
@@ -36,48 +28,21 @@ export class StateAsync<R, W = R, L extends {} = {}, A = W>
                 : Some(Ok(value as any))
           : setter;
     if (helper) this.#helper = helper;
-    if (init instanceof Promise) {
-      this.then = init.then.bind(init);
-      init.then((value) => {
-        this.#value = value;
-        //@ts-expect-error
-        delete this.then;
+    this.then = init.then.bind(init);
+    init.then((value) => {
+      this.#value = value;
+      //@ts-expect-error
+      delete this.then;
+      //@ts-expect-error
+      delete this.write;
+    });
+    this.write = (value) => {
+      init.then(() => {
         //@ts-expect-error
         delete this.write;
+        this.write(value);
       });
-      this.write = (value) => {
-        init.then(() => {
-          //@ts-expect-error
-          delete this.write;
-          this.write(value);
-        });
-      };
-    } else if (typeof init === "function") {
-      let writePromise = new Promise<void>((a) => {
-        this.then = (func) => {
-          let promise = init();
-          this.then = promise.then.bind(promise);
-          promise.then((value) => {
-            this.#value = value;
-            //@ts-expect-error
-            delete this.then;
-            //@ts-expect-error
-            delete this.write;
-            a();
-          });
-          return promise.then(func);
-        };
-      });
-      this.write = (value) => {
-        writePromise.then(() => {
-          //@ts-expect-error
-          delete this.write;
-          this.write(value);
-        });
-      };
-    } else {
-      this.#value = init;
-    }
+    };
   }
 
   #value?: StateResult<R>;
@@ -126,10 +91,10 @@ export class StateAsync<R, W = R, L extends {} = {}, A = W>
     return this.#value!;
   }
 
-  get StateReadAsync(): StateReadAsync<R, L> {
+  get StateReadAsync(): StateRead<R, L> {
     return this;
   }
-  get StateWriteAsync(): StateWriteAsync<R, W, L> {
+  get StateWriteAsync(): StateWrite<R, W, L> {
     return this;
   }
 }

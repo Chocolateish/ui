@@ -3,7 +3,7 @@ import {
   StateEnumHelper,
   StateEnumHelperList,
   StateNumberHelper,
-  StateWrite,
+  StateWriteSync,
 } from "@src/state";
 import { settingsInit } from "@src/page/settings";
 import {
@@ -81,7 +81,7 @@ scaleInternal.subscribe((val) => {
     engine.applyScale(scaleValue);
   });
 });
-export const scale = scaleInternal as StateWrite<number>;
+export const scale = scaleInternal as StateWriteSync<number>;
 
 /**Converts the given rems to pixels */
 export const remToPx = (rem: number) => {
@@ -163,38 +163,33 @@ inputModeInternal.subscribe((val) => {
 });
 export const inputMode = inputModeInternal.StateWrite;
 
-//Animation Level
-export const enum AnimationLevels {
+//Graphics Level
+export const enum GraphicsLevels {
   ALL = "all",
-  MOST = "most",
   SOME = "some",
   NONE = "none",
 }
-const animationLevelsInternal = {
-  [AnimationLevels.ALL]: { name: "All", description: "All animations" },
-  [AnimationLevels.MOST]: {
-    name: "Most",
-    description: "All but the heaviest animations",
-  },
-  [AnimationLevels.SOME]: {
+const graphicsLevelsInternal = {
+  [GraphicsLevels.ALL]: { name: "All", description: "All animations" },
+  [GraphicsLevels.SOME]: {
     name: "Some",
     description: "Only the lightest animations",
   },
-  [AnimationLevels.NONE]: { name: "None", description: "No animations" },
+  [GraphicsLevels.NONE]: { name: "None", description: "No animations" },
 } satisfies StateEnumHelperList;
 
-const animationLevelInternal = settings.addSetting(
-  "animation",
-  "Animation Level",
-  "Setting for animation level, changes the amount of animations used in the UI",
-  AnimationLevels.ALL,
+const graphicsLevelInternal = settings.addSetting(
+  "graphics",
+  "Graphics Level",
+  "Setting for graphics level, changes the intensity of graphics used in the UI, like animations, opacity, etc.",
+  GraphicsLevels.ALL,
   true,
-  new StateEnumHelper(animationLevelsInternal)
+  new StateEnumHelper(graphicsLevelsInternal)
 );
-animationLevelInternal.subscribe((val) => {
+graphicsLevelInternal.subscribe((val) => {
   engines.forEach((engine) => {
     engine.applyAnimation(val.unwrap);
   });
 });
 
-export const animationLevel = animationLevelInternal.StateWrite;
+export const graphicsLevel = graphicsLevelInternal.StateWrite;

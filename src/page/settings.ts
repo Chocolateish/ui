@@ -5,7 +5,7 @@ import {
   StateHelper,
   StateRelated,
   StateResult,
-  StateWrite,
+  StateWriteSync,
 } from "@src/state";
 
 let nameTransformer: ((name: string) => string) | undefined;
@@ -65,9 +65,7 @@ class SettingsState<R, W = R, L extends StateRelated = {}, A = W> extends State<
   readonly name: string;
   readonly description: string;
   constructor(
-    init:
-      | StateResult<Exclude<R, Function>>
-      | (() => StateResult<Exclude<R, Function>>),
+    init: StateResult<R>,
     name: string,
     description: string,
     setter?: ((value: W) => Option<StateResult<R>>) | true,
@@ -87,10 +85,7 @@ class SettingsStateAsync<
   readonly name: string;
   readonly description: string;
   constructor(
-    init:
-      | StateResult<Exclude<R, Function>>
-      | Promise<StateResult<Exclude<R, Function>>>
-      | (() => Promise<StateResult<Exclude<R, Function>>>),
+    init: Promise<StateResult<R>>,
     name: string,
     description: string,
     setter?: ((value: W) => Option<StateResult<R>>) | true,
@@ -105,7 +100,7 @@ class SettingsStateAsync<
 /**Group of settings should never be instantiated manually use initSettings*/
 export class SettingsGroup {
   private pathID: string;
-  private settings: { [key: string]: StateWrite<any> } = {};
+  private settings: { [key: string]: StateWriteSync<any> } = {};
   private subGroups: { [key: string]: SettingsGroup } = {};
   readonly versionChanged: string | undefined;
   readonly name: string;
@@ -153,7 +148,7 @@ export class SettingsGroup {
     id: string,
     name: string,
     description: string,
-    init: R | (() => R),
+    init: R,
     setter?: ((value: W) => Option<StateResult<R>>) | true,
     helper?: StateHelper<A, L>,
     versionChanged?: (existing: R, oldVersion: string) => R
@@ -161,32 +156,17 @@ export class SettingsGroup {
     if (id in this.settings)
       throw new Error("Settings already registered " + id);
     let saved = localStorage[this.pathID + "/" + id];
-    let state = (this.settings[id] = new SettingsState<R, W, L, A>(
-      () => {
-        if (saved) {
-          try {
-            if (this.versionChanged && versionChanged) {
-              let changedValue = versionChanged(
-                JSON.parse(saved),
-                this.versionChanged
-              );
-              localStorage[this.pathID + "/" + id] =
-                JSON.stringify(changedValue);
-              return Ok<R>(changedValue) as any;
-            }
-            return Ok<R>(JSON.parse(saved));
-          } catch (e) {}
-        }
-        let initValue: R;
-        if (typeof init === "function") {
-          // @ts-expect-error
-          initValue = init();
+    if (saved) {
+      try {
+        if (this.versionChanged && versionChanged) {
+          init = versionChanged(JSON.parse(saved), this.versionChanged);
         } else {
-          initValue = init;
+          init = JSON.parse(saved);
         }
-        localStorage[this.pathID + "/" + id] = JSON.stringify(initValue);
-        return Ok(initValue);
-      },
+      } catch (error) {}
+    }
+    let state = (this.settings[id] = new SettingsState<R, W, L, A>(
+      Ok(init),
       name,
       description,
       setter,
@@ -211,42 +191,27 @@ export class SettingsGroup {
     id: string,
     name: string,
     description: string,
-    init: R | Promise<R> | (() => Promise<R>),
+    init: Promise<R>,
     setter?: ((value: W) => Option<StateResult<R>>) | true,
     helper?: StateHelper<A, L>,
     versionChanged?: (existing: R, oldVersion: string) => R
   ): StateAsync<R, W, L, A> {
     if (id in this.settings)
       throw new Error("Settings already registered " + id);
-    let saved = localStorage[this.pathID + "/" + id];
     let state = (this.settings[id] = new SettingsStateAsync<R, W, L, A>(
-      async () => {
+      (async () => {
+        let saved = localStorage[this.pathID + "/" + id];
         if (saved) {
           try {
             if (this.versionChanged && versionChanged) {
-              let changedValue = versionChanged(
-                JSON.parse(saved),
-                this.versionChanged
-              );
-              localStorage[this.pathID + "/" + id] =
-                JSON.stringify(changedValue);
-              return Ok<R>(changedValue) as any;
+              return Ok(versionChanged(JSON.parse(saved), this.versionChanged));
+            } else {
+              return Ok(JSON.parse(saved));
             }
-            return Ok<R>(JSON.parse(saved));
-          } catch (e) {}
+          } catch (error) {}
         }
-        let initValue: R;
-        if (init instanceof Promise) {
-          initValue = await init;
-        } else if (typeof init === "function") {
-          // @ts-expect-error
-          initValue = await init();
-        } else {
-          initValue = init;
-        }
-        localStorage[this.pathID + "/" + id] = JSON.stringify(initValue);
-        return Ok(initValue);
-      },
+        return Ok(await init);
+      })(),
       name,
       description,
       setter,

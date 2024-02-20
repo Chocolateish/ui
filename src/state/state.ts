@@ -2,24 +2,22 @@ import { None, Ok, Option, Some } from "@src/result";
 import { StateBase } from "./stateBase";
 import {
   StateHelper,
-  StateRead,
+  StateReadSync,
   StateRelated,
   StateResult,
-  StateWrite,
+  StateWriteSync,
 } from "./types";
 
 export class State<R, W = R, L extends StateRelated = {}, A = W>
   extends StateBase<R, L>
-  implements StateWrite<R, W, L>
+  implements StateWriteSync<R, W, L>
 {
   /**Creates a state which holds a value
-   * @param init initial value for state, use a function returning a value for a lazy value (does not call function until the state is first used)
+   * @param init initial value for state
    * @param setter function called when state value is set via setter, set true let write set it's value
    * @param helper functions to check and limit the value, and to return related states */
   constructor(
-    init:
-      | StateResult<Exclude<R, Function>>
-      | (() => StateResult<Exclude<R, Function>>),
+    init: StateResult<R>,
     setter?: ((value: W) => Option<StateResult<R>>) | true,
     helper?: StateHelper<A, L>
   ) {
@@ -35,41 +33,7 @@ export class State<R, W = R, L extends StateRelated = {}, A = W>
                 : Some(Ok(value as any))
           : setter;
     if (helper) this.#helper = helper;
-    if (typeof init === "function") {
-      let writePromise = new Promise<void>((a) => {
-        this.then = async (func) => {
-          this.#value = init();
-          //@ts-expect-error
-          delete this.then;
-          //@ts-expect-error
-          delete this.write;
-          //@ts-expect-error
-          delete this.get;
-          a();
-          return func(this.#value);
-        };
-        this.get = () => {
-          this.#value = init();
-          //@ts-expect-error
-          delete this.then;
-          //@ts-expect-error
-          delete this.write;
-          //@ts-expect-error
-          delete this.get;
-          a();
-          return this.#value;
-        };
-      });
-      this.write = (value) => {
-        writePromise.then(() => {
-          //@ts-expect-error
-          delete this.write;
-          this.write(value);
-        });
-      };
-    } else {
-      this.#value = init;
-    }
+    this.#value = init;
   }
 
   #value?: StateResult<R>;
@@ -82,6 +46,7 @@ export class State<R, W = R, L extends StateRelated = {}, A = W>
   ): Promise<TResult1> {
     return func(this.#value!);
   }
+
   /**Gets the value of the state */
   get(): StateResult<R> {
     return this.#value!;
@@ -117,10 +82,10 @@ export class State<R, W = R, L extends StateRelated = {}, A = W>
     this.updateSubscribers(value);
   }
 
-  get StateRead(): StateRead<R, L> {
+  get StateRead(): StateReadSync<R, L> {
     return this;
   }
-  get StateWrite(): StateWrite<R, W, L> {
+  get StateWrite(): StateWriteSync<R, W, L> {
     return this;
   }
 }

@@ -1,9 +1,9 @@
-import { StateSubscriber, StateRead, StateResult } from "./types";
+import { StateSubscriber, StateReadSync, StateResult } from "./types";
 import { StateBase } from "./stateBase";
 import { Err } from "@src/result";
 
 type StateReadArray<T extends any[]> = {
-  [K in keyof T]: StateRead<T[K]>;
+  [K in keyof T]: StateReadSync<T[K]>;
 };
 type StateResultArray<T extends any[]> = {
   [K in keyof T]: StateResult<T[K]>;
@@ -13,7 +13,7 @@ type Tail<T extends any[]> = T extends [any, ...infer Rest] ? Rest : never;
 /**The `StateDerived` class is used to create a state which is derived from other states. The derived state will update when any of the other states update.*/
 export class StateDerived<I extends any[], O = I[0]>
   extends StateBase<O>
-  implements StateRead<O>
+  implements StateReadSync<O>
 {
   /**Creates a state which is derived from other states. The derived state will update when any of the other states update.
    * @param state - The first state to be used in the derived state. If this is a function, it will be used as the getter function.
@@ -24,7 +24,9 @@ export class StateDerived<I extends any[], O = I[0]>
   );
   constructor(...states: StateReadArray<I>);
   constructor(
-    state?: StateRead<I[0]> | ((value: StateResultArray<I>) => StateResult<O>),
+    state?:
+      | StateReadSync<I[0]>
+      | ((value: StateResultArray<I>) => StateResult<O>),
     ...states: Tail<StateReadArray<I>>
   ) {
     super();

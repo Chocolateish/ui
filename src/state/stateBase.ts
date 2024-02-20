@@ -1,14 +1,10 @@
 import { None, Option } from "@src/result";
-import {
-  StateReadAsync,
-  StateRelated,
-  StateResult,
-  StateSubscriber,
-} from "./types";
+import { StateRead, StateRelated, StateResult, StateSubscriber } from "./types";
 
-export abstract class StateBase<R, L extends StateRelated = {}>
-  implements StateReadAsync<R, L>
-{
+export abstract class StateBase<
+  R,
+  L extends StateRelated = {}
+> extends StateRead<R, L> {
   protected subscribers: StateSubscriber<R>[] = [];
 
   //Reader Context
@@ -75,8 +71,3 @@ export abstract class StateBase<R, L extends StateRelated = {}>
     }
   }
 }
-
-/**Checks if a variable is an instance of a state*/
-export const instanceOfState = (state: any) => {
-  return state instanceof StateBase;
-};

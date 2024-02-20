@@ -1,7 +1,122 @@
+$blur: 25px;
+$rowHeight: 1.8rem;
+$menuOutsidePadding: 0.6rem;
+
 chui-contextmenucontainer {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
   position: fixed;
   width: max-content;
   height: max-content;
-  max-width: 20rem;
-  max-height: 20rem;
+  outline: none;
+  max-width: min(20rem, 100%);
+  max-height: min(30rem, 100%);
+  min-width: min(12rem, 100%);
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  border-radius: 0.6rem;
+  overflow: auto;
+  border: var(--chui-colors-border) 1px solid;
+  box-sizing: border-box;
+  box-shadow: 0 0 0.4rem 0.1px var(--chui-colors-border);
+  background-color: var(--chui-colors-layer2);
+
+  &::after {
+    content: "";
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-color: var(--chui-colors-layer2);
+  }
+}
+
+chui-contextmenu {
+  display: table;
+  outline: none;
+  position: relative;
+  > *:first-child {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 20rem) {
+  chui-contextmenucontainer {
+    width: 100% !important;
+    left: 0px !important;
+  }
+}
+@media screen and (max-height: 20rem) {
+  chui-contextmenucontainer {
+    height: 100% !important;
+    top: 0px !important;
+  }
+  chui-contextmenu {
+    > *:first-child {
+      display: table-row;
+    }
+  }
+}
+
+@mixin contextMenuLine {
+  display: table-row;
+  height: $rowHeight;
+  outline: none;
+  > * {
+    vertical-align: middle;
+    &:first-child {
+      padding-inline: $menuOutsidePadding;
+      width: $rowHeight;
+      > div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: nowrap;
+      }
+    }
+    &:last-child {
+      padding-inline: $menuOutsidePadding;
+      padding-left: 1rem;
+    }
+  }
+
+  &:hover {
+    background-color: var(--chui-colors-layer4);
+  }
+  &:focus-visible {
+    background-color: var(--chui-colors-focused);
+  }
+}
+
+chui-contextmenuline {
+  @include contextMenuLine;
+}
+
+chui-contextmenusub {
+  @include contextMenuLine;
+  position: relative;
+  z-index: 1;
+  > * {
+    &:last-child {
+      padding-right: 0.2rem;
+      > div {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        flex-wrap: nowrap;
+      }
+    }
+  }
+}
+
+chui-contextmenudevider {
+  display: table-row;
+  background-color: var(--chui-colors-border);
+  > td {
+    height: 1px;
+    padding: 0;
+  }
 }

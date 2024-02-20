@@ -34,8 +34,8 @@ export class ThemeVariableGroup {
       name: string;
       desc: string;
       vars: { [key: string]: string };
-      type: keyof VariableType;
-      typeParams: VariableType[keyof VariableType];
+      type: keyof ThemeVariableType;
+      typeParams: ThemeVariableType[keyof ThemeVariableType];
       example?: () => Element;
     };
   } = {};
@@ -58,7 +58,7 @@ export class ThemeVariableGroup {
       throw new Error("Sub group already registered " + id);
     } else {
       return (this.subGroups[id] = new ThemeVariableGroup(
-        this.pathID + "/" + id,
+        this.pathID + "-" + id,
         name,
         description
       ));
@@ -73,20 +73,20 @@ export class ThemeVariableGroup {
    * @param dark value for dark mode
    * @param type type of variable for editing
    * @param typeParams */
-  makeVariable<K extends keyof VariableType>(
+  makeVariable<K extends keyof ThemeVariableType>(
     id: string,
     name: string,
     description: string,
     light: string,
     dark: string,
     type: K,
-    typeParams: VariableType[K],
+    typeParams: ThemeVariableType[K],
     example?: () => Element
   ) {
     if (id in this.variables) {
       throw new Error("Settings already registered " + id);
     }
-    let key = "--" + this.pathID + "/" + id;
+    let key = "--" + this.pathID + "-" + id;
     let variable = (this.variables[key] = {
       name,
       desc: description,
@@ -117,7 +117,7 @@ export class ThemeVariableGroup {
 }
 
 /**Defines the parameters for a variable type */
-interface VariableType {
+interface ThemeVariableType {
   /**Text variable,  */
   String: undefined;
   /**Color variable */

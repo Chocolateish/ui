@@ -1,11 +1,11 @@
-@mixin scrollbar {
+* {
   &::-webkit-scrollbar {
     width: calc(var(--scrollbar));
     height: calc(var(--scrollbar));
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: var(--scrollbarColor);
+    background-color: var(--chui-colors-scrollbarColor);
     border-radius: 100vh;
     border: calc(var(--scrollbar) / 6) solid transparent;
     -webkit-background-clip: padding-box;
@@ -13,12 +13,12 @@
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background-color: var(--scrollbarHoverColor);
+    background-color: var(--chui-colors-scrollbarColor);
     border: calc(var(--scrollbar) / 6) solid transparent;
   }
 
   &::-webkit-scrollbar-thumb:active {
-    background-color: var(--scrollbarActiveColor);
+    background-color: var(--chui-colors-scrollbarColor);
     border: calc(var(--scrollbar) / 6) solid transparent;
   }
 

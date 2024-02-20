@@ -1,6 +1,6 @@
 import { Err, None, Option, Some } from "@src/result";
 import { StateBase } from "./stateBase";
-import { StateResult, StateSubscriber, StateWriteAsync } from "./types";
+import { StateResult, StateSubscriber, StateWrite } from "./types";
 
 /**State Resource
  * state for representing a remote resource
@@ -17,7 +17,7 @@ import { StateResult, StateSubscriber, StateWriteAsync } from "./types";
  * this can prevent unneeded calls if the user is switching around quickly between things referencing states */
 export abstract class StateResource<R, W extends R = R>
   extends StateBase<R>
-  implements StateWriteAsync<R, W>
+  implements StateWrite<R, W>
 {
   /**Stores the last time when buffer was valid*/
   #valid: number = 0;

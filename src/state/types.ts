@@ -29,21 +29,25 @@ export type StateRelated = {
   [key: string | symbol | number]: any;
 };
 
-export interface StateReadAsync<R, L extends StateRelated = {}> {
+export abstract class StateRead<R, L extends StateRelated = {}> {
   /**Allows getting value of state*/
-  then<TResult1 = R>(
+  abstract then<TResult1 = R>(
     func: (value: StateResult<R>) => TResult1 | PromiseLike<TResult1>
   ): PromiseLike<TResult1>;
   /**This adds a function as a subscriber to the state
    * @param update set true to update subscriber*/
-  subscribe<B extends StateSubscriber<R>>(func: B, update?: boolean): B;
+  abstract subscribe<B extends StateSubscriber<R>>(
+    func: B,
+    update?: boolean
+  ): B;
   /**This removes a function as a subscriber to the state*/
-  unsubscribe<B extends StateSubscriber<R>>(func: B): B;
+  abstract unsubscribe<B extends StateSubscriber<R>>(func: B): B;
   /**Returns a map of related states to this state*/
-  related(): Option<L>;
+  abstract related(): Option<L>;
 }
-export interface StateRead<R, L extends StateRelated = {}>
-  extends StateReadAsync<R, L> {
+
+export interface StateReadSync<R, L extends StateRelated = {}>
+  extends StateRead<R, L> {
   /**Gets the value of the state, only available for sync state*/
   get(): StateResult<R>;
 }
@@ -54,8 +58,8 @@ export interface StateRead<R, L extends StateRelated = {}>
 //     \ \/  \/ / |  _  /  | |    | |  |  __| |  _  /  | |   | |  | | . ` |  | |  |  __|   > <    | |
 //      \  /\  /  | | \ \ _| |_   | |  | |____| | \ \  | |___| |__| | |\  |  | |  | |____ / . \   | |
 //       \/  \/   |_|  \_\_____|  |_|  |______|_|  \_\  \_____\____/|_| \_|  |_|  |______/_/ \_\  |_|
-export interface StateWriteAsync<R, W = R, L extends StateRelated = {}>
-  extends StateReadAsync<R, L> {
+export interface StateWrite<R, W = R, L extends StateRelated = {}>
+  extends StateRead<R, L> {
   /** This sets the value of the state and updates all subscribers */
   write(value: W): void;
   /**Limits given value to valid range if possible returns None if not possible */
@@ -63,6 +67,6 @@ export interface StateWriteAsync<R, W = R, L extends StateRelated = {}>
   /**Checks if the value is valid and returns reason for invalidity */
   check: (value: W) => Option<string>;
 }
-export interface StateWrite<R, W = R, L extends StateRelated = {}>
-  extends StateRead<R, L>,
-    StateWriteAsync<R, W, L> {}
+export interface StateWriteSync<R, W = R, L extends StateRelated = {}>
+  extends StateReadSync<R, L>,
+    StateWrite<R, W, L> {}
