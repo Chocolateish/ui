@@ -64,7 +64,7 @@ export class ContextMenuLine extends Base {
     this.#label = this.appendChild(document.createElement("td"));
     this.#shortcut = this.appendChild(document.createElement("td"));
     this.tabIndex = 0;
-    this.onpointerdown = (e) => {
+    this.onclick = (e) => {
       e.stopPropagation();
       line.action?.();
       contextMenuClose();
@@ -134,7 +134,7 @@ export class ContextMenuSub extends Base {
       .appendChild(document.createElement("div"))
       .appendChild(material_navigation_chevron_right_rounded());
     this.tabIndex = 0;
-    this.onpointerdown = (e) => {
+    this.onclick = (e) => {
       e.stopPropagation();
       this.toggle();
     };
@@ -316,6 +316,9 @@ export class ContextMenuContainer extends Base {
     this.style.width = width + "rem";
     this.style.height = height + "rem";
     this.tabIndex = 0;
+    this.onpointerdown = (e) => {
+      e.stopPropagation();
+    };
     this.oncontextmenu = (e) => {
       e.preventDefault();
     };
@@ -457,7 +460,6 @@ let contextMenuClose = () => {
 document.addEventListener("pointerdown", contextMenuClose, {
   passive: true,
 });
-// window.addEventListener("blur", contextMenuClose, {
-//   capture: true,
-//   passive: true,
-// });
+window.addEventListener("blur", contextMenuClose, {
+  passive: true,
+});

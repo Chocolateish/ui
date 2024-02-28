@@ -1,5 +1,5 @@
 import "./builtIn.scss";
-import { themeInitVariableRoot } from "./variables";
+import { themeInitVariableRoot } from "./engine";
 import { blue, grey } from "@src/asset";
 
 let root = themeInitVariableRoot(

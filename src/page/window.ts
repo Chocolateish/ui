@@ -1,36 +1,42 @@
 import "./window.scss";
-import { Base, defineElement } from "..";
-import { DocumentHandler } from "./document";
+import { Base, defineElement, themeRegisterContainer } from "..";
 
-declare global {
-  interface Window {
-    windowManager: typeof WindowManager;
+let virtualLayer: HTMLDivElement[] = [];
+let virtualLayerFixed: HTMLDivElement[] = [];
+let externalWindows: WindowExternal[] = [];
+
+window.addEventListener("beforeunload", () => {
+  for (let i = 0; i < externalWindows.length; i++) {
+    //@ts-expect-error
+    externalWindows[i].unload();
   }
+});
+
+export function openWindowVirtual(options: WindowVirtualOptions) {
+  let window = new WindowVirtual();
+  //this.#windowVirtuals.push(window);
+  return window;
+}
+export function openWindowExternal(options: WindowExternalOptions) {
+  let window = new WindowExternal(options);
+  externalWindows.push(window);
+  return window;
 }
 
-export class WindowManager extends Base {
-  #windowContainer: HTMLDivElement;
-  #content?: Base;
-  constructor(documentHandler: DocumentHandler) {
-    super();
-    this.#windowContainer = this.appendChild(document.createElement("div"));
-  }
-  static elementName() {
-    return "windowmanager";
-  }
-  set content(content: Base) {
-    this.#content = content;
-    this.replaceChildren(content);
-  }
-
-  get content(): Base | undefined {
-    return this.#content;
-  }
-}
-defineElement(WindowManager);
+export type WindowVirtualOptions = {
+  /**Opener element, used to determine in which window to open the virtual window, just pass Window if there is no opening element*/
+  opener: HTMLElement;
+  /**X position of new window on total screen area*/
+  x: number;
+  /**Y position of new window on total screen area*/
+  y: number;
+  width: number;
+  height: number;
+  content: HTMLElement;
+};
 
 export class WindowVirtual extends Base {
-  #content?: Base;
+  #content?: HTMLElement;
   constructor() {
     super();
   }
@@ -38,27 +44,32 @@ export class WindowVirtual extends Base {
     return "window";
   }
 
-  set content(content: Base) {
+  set content(content: HTMLElement) {
     this.#content = content;
     this.replaceChildren(content);
   }
 
-  get content(): Base | undefined {
+  get content(): HTMLElement | undefined {
     return this.#content;
   }
 }
 defineElement(WindowVirtual);
 
-export type WindowContainerOptions = {
+export type WindowExternalOptions = {
+  /**X position of new window on total screen area*/
+  x: number;
+  /**Y position of new window on total screen area*/
+  y: number;
   width: number;
   height: number;
-  left: number;
-  top: number;
+  content: Base;
 };
 
-export class WindowContainer {
+export class WindowExternal {
+  #virtualLayer: HTMLDivElement[] = [];
+  #virtualLayerFixed: HTMLDivElement[] = [];
   #window: Window;
-  constructor(options: WindowContainerOptions) {
+  constructor(options: WindowExternalOptions) {
     let generatedWindow = window.open(
       "",
       "",
@@ -67,14 +78,40 @@ export class WindowContainer {
         ",height=" +
         options.height +
         ",left=" +
-        options.left +
+        options.x +
         ",top=" +
-        options.top
+        options.y
     );
     if (generatedWindow) {
       this.#window = generatedWindow;
     } else {
       throw new Error("Failed to open window");
     }
+    themeRegisterContainer(this.#window.document.documentElement);
+    if (typeof options.content !== "undefined") this.content = options.content;
+    generatedWindow.onbeforeunload = () => {
+      this.return();
+    };
+  }
+  /**Set the content of the window*/
+  set content(content: Base) {
+    this.#window.document.body.appendChild(content);
+  }
+  /**Get the content of the window*/
+  get content(): Base | undefined {
+    return undefined;
+  }
+  async close() {}
+  /**Returns window to main window as virtual window */
+  return() {
+    this.unload();
+  }
+
+  private unload() {
+    let index = externalWindows.indexOf(this);
+    if (index !== -1) {
+      externalWindows.splice(index, 1);
+    }
+    this.#window.close();
   }
 }

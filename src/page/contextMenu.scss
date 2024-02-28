@@ -1,9 +1,11 @@
 $blur: 25px;
 $rowHeight: 1.8rem;
+$rowHeightTouch: 1.8rem;
 $menuOutsidePadding: 0.6rem;
 
 chui-contextmenucontainer {
   display: flex;
+  z-index: 99999;
   flex-direction: column;
   flex-wrap: nowrap;
   position: fixed;
@@ -11,7 +13,7 @@ chui-contextmenucontainer {
   height: max-content;
   outline: none;
   max-width: min(20rem, 100%);
-  max-height: min(30rem, 100%);
+  max-height: min(30rem, calc(100% - 2rem));
   min-width: min(12rem, 100%);
   -moz-user-select: none;
   -webkit-user-select: none;
@@ -21,8 +23,10 @@ chui-contextmenucontainer {
   overflow: auto;
   border: var(--chui-colors-border) 1px solid;
   box-sizing: border-box;
-  box-shadow: 0 0 0.4rem 0.1px var(--chui-colors-border);
   background-color: var(--chui-colors-layer2);
+  .graphics-some & {
+    box-shadow: 0 0 0.4rem 0.1px var(--chui-colors-border);
+  }
 
   &::after {
     content: "";
@@ -49,10 +53,10 @@ chui-contextmenu {
     left: 0px !important;
   }
 }
-@media screen and (max-height: 20rem) {
+@media screen and (max-height: 30rem) {
   chui-contextmenucontainer {
-    height: 100% !important;
     top: 0px !important;
+    max-height: min(30rem, 100%);
   }
   chui-contextmenu {
     > *:first-child {
@@ -98,7 +102,6 @@ chui-contextmenuline {
 chui-contextmenusub {
   @include contextMenuLine;
   position: relative;
-  z-index: 1;
   > * {
     &:last-child {
       padding-right: 0.2rem;
@@ -108,6 +111,11 @@ chui-contextmenusub {
         align-items: center;
         flex-wrap: nowrap;
       }
+    }
+  }
+  chui-contextmenu {
+    > *:first-child {
+      display: table-row;
     }
   }
 }
