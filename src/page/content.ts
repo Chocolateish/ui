@@ -1,4 +1,4 @@
-import { Base } from "@src/base";
+import { Base, BaseEvents } from "@src/base";
 
 export type ContentEventTypes = {
   name: { name: string };
@@ -9,9 +9,11 @@ export type ContentEventTypes = {
   CLOSEABLE: {};
   MINSIZE: {};
   MAXSIZE: {};
-};
+} & BaseEvents;
 
-export abstract class ContentBase extends Base {
+export abstract class ContentBase<
+  MoreEvents extends ContentEventTypes = ContentEventTypes
+> extends Base<MoreEvents> {
   constructor() {
     super();
   }
@@ -20,7 +22,9 @@ export abstract class ContentBase extends Base {
   }
 }
 
-export class Content extends ContentBase {
+export class Content<
+  MoreEvents extends ContentEventTypes = ContentEventTypes
+> extends ContentBase<MoreEvents> {
   static elementName() {
     return "content";
   }

@@ -3,4 +3,10 @@ chui-ui {
   position: fixed;
   inset: 0;
   flex-direction: column;
+
+  > div {
+    position: relative;
+    flex-grow: 1;
+    overflow: auto;
+  }
 }

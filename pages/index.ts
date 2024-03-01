@@ -6,7 +6,8 @@ import { State } from "@src/state";
 import { Ok } from "@src/result";
 
 let ui = document.body.appendChild(new UI());
-attachContextMenu(document.body, [
+
+attachContextMenu(ui, [
   {
     label: "Open External Window",
     action: () => {

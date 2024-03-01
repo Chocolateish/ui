@@ -1,5 +1,6 @@
 import "./window.scss";
-import { Base, defineElement, themeRegisterContainer } from "..";
+import { Base, defineElement } from "@src/base";
+import { themeRegisterContainer } from "@src/theme";
 
 declare global {
   interface Window {
@@ -24,15 +25,17 @@ export class WindowContainer extends Base {
 }
 defineElement(WindowContainer);
 
-/**Viewport for relative position */
-export let windowVirtualContainer = (window.windowContainer =
-  new WindowContainer());
-
 /**Viewport for fixed position */
-let windowVirtualFixedContainer = document.documentElement.appendChild(
+window.windowContainer = document.documentElement.appendChild(
   new WindowContainer()
 );
 
+//   __          ___           _                 ______      _                        _
+//   \ \        / (_)         | |               |  ____|    | |                      | |
+//    \ \  /\  / / _ _ __   __| | _____      __ | |__  __  _| |_ ___ _ __ _ __   __ _| |
+//     \ \/  \/ / | | '_ \ / _` |/ _ \ \ /\ / / |  __| \ \/ / __/ _ \ '__| '_ \ / _` | |
+//      \  /\  /  | | | | | (_| | (_) \ V  V /  | |____ >  <| ||  __/ |  | | | | (_| | |
+//       \/  \/   |_|_| |_|\__,_|\___/ \_/\_/   |______/_/\_\\__\___|_|  |_| |_|\__,_|_|
 /**List of external windows */
 let externalWindows: WindowExternal[] = [];
 
@@ -43,29 +46,6 @@ window.addEventListener("beforeunload", () => {
   }
 });
 
-export function openWindowVirtual(options: WindowVirtualOptions) {
-  let window = new WindowVirtual(options);
-  if (options.fixed)
-    windowVirtualFixedContainer.appendWindow(window, options.layer || 0);
-  else
-    options.opener.ownerDocument.defaultView?.windowContainer.appendWindow(
-      window,
-      options.layer || 0
-    );
-  return window;
-}
-export function openWindowExternal(options: WindowExternalOptions) {
-  let window = new WindowExternal(options);
-  externalWindows.push(window);
-  return window;
-}
-
-//   __          ___           _                 ______      _                        _
-//   \ \        / (_)         | |               |  ____|    | |                      | |
-//    \ \  /\  / / _ _ __   __| | _____      __ | |__  __  _| |_ ___ _ __ _ __   __ _| |
-//     \ \/  \/ / | | '_ \ / _` |/ _ \ \ /\ / / |  __| \ \/ / __/ _ \ '__| '_ \ / _` | |
-//      \  /\  /  | | | | | (_| | (_) \ V  V /  | |____ >  <| ||  __/ |  | | | | (_| | |
-//       \/  \/   |_|_| |_|\__,_|\___/ \_/\_/   |______/_/\_\\__\___|_|  |_| |_|\__,_|_|
 export type WindowExternalOptions = {
   /**X position of new window on total screen area*/
   x: number;
@@ -75,6 +55,13 @@ export type WindowExternalOptions = {
   height: number;
   content: Base;
 };
+
+/**Opens external window */
+export function openWindowExternal(options: WindowExternalOptions) {
+  let window = new WindowExternal(options);
+  externalWindows.push(window);
+  return window;
+}
 
 export class WindowExternal {
   #window: Window;
@@ -136,8 +123,6 @@ export class WindowExternal {
 export type WindowVirtualOptions = {
   /**Opener element, used to determine in which window to open the virtual window, just pass Window if there is no opening element*/
   opener: HTMLElement;
-  /**If true coordinates are fixed in viewport, if false coordinates are relative*/
-  fixed?: boolean;
   /**Layer for window, higher layer number will stay on top of lower even when they are selected*/
   layer?: number;
   /**X position of new window in viewport*/
@@ -151,6 +136,16 @@ export type WindowVirtualOptions = {
   content: HTMLElement;
 };
 
+/**Opens virtual window */
+export function openWindowVirtual(options: WindowVirtualOptions) {
+  let window = new WindowVirtual(options);
+  options.opener.ownerDocument.defaultView?.windowContainer.appendWindow(
+    window,
+    options.layer || 0
+  );
+  return window;
+}
+
 export class WindowVirtual extends Base {
   #sizers: HTMLDivElement;
   #titelContainer: HTMLDivElement;
@@ -159,6 +154,21 @@ export class WindowVirtual extends Base {
   constructor(options: WindowVirtualOptions) {
     super();
     this.#titelContainer = this.appendChild(document.createElement("div"));
+    this.#titelContainer.onpointerdown = (e) => {
+      console.log(e);
+      this.#titelContainer.setPointerCapture(e.pointerId);
+
+      this.#titelContainer.onpointermove = (ev) => {
+        console.log(ev);
+
+        this.style.left = parseFloat(this.style.left) + ev.movementX + "rem";
+        this.style.top = parseFloat(this.style.top) + ev.movementY + "rem";
+      };
+      this.#titelContainer.onpointerup = () => {
+        this.#titelContainer.onpointerup = null;
+        this.#titelContainer.onpointermove = null;
+      };
+    };
     this.#contentContainer = this.appendChild(document.createElement("div"));
     this.#sizers = this.appendChild(document.createElement("div"));
     this.content = options.content;
@@ -171,7 +181,7 @@ export class WindowVirtual extends Base {
 
   set content(content: HTMLElement) {
     this.#content = content;
-    this.replaceChildren(content);
+    this.#contentContainer.replaceChildren(content);
   }
 
   get content(): HTMLElement | undefined {
