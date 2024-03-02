@@ -1,29 +1,171 @@
+@import "../theme/builtIn.scss";
+
+$titleHeight: 1.6rem;
+$titleHeightTouch: 3.2rem;
+$sizerBorder: 0.5rem;
+$sizerBorderTouch: 1rem;
+
 chui-window {
   position: absolute;
   display: flex;
   flex-direction: column;
   pointer-events: auto;
+  -webkit-user-select: none;
+  user-select: none;
+  z-index: 1;
+  outline: none;
+  border-radius: $chuiBorderRadius;
+  box-sizing: border-box;
+  border: $chuiColorBorder 1px solid;
+  .graphics-some & {
+    box-shadow: 0px 0px 4px 0px $chuiColorBorder,
+      0px 0px 1px 1px $chuiColorBorder;
+    &:focus-within {
+      box-shadow: $chuiBorder;
+    }
+    border: none;
+  }
+
+  //    _______ _ _   _      _
+  //   |__   __(_) | | |    | |
+  //      | |   _| |_| | ___| |__   __ _ _ __
+  //      | |  | | __| |/ _ \ '_ \ / _` | '__|
+  //      | |  | | |_| |  __/ |_) | (_| | |
+  //      |_|  |_|\__|_|\___|_.__/ \__,_|_|
   > div:first-child {
+    display: flex;
+    flex-wrap: nowrap;
     position: relative;
-    background-color: red;
-    flex-basis: 2rem;
+    cursor: grab;
+    background-color: $chuiColorLayer3;
+    flex-basis: $titleHeight;
     overflow: hidden;
-    border-radius: 0.8rem 0.8rem 0 0;
-    > :visib + div {
-      background-color: yellow;
+    border-radius: $chuiBorderRadius $chuiBorderRadius 0 0;
+    &.touch {
+      flex-basis: $titleHeightTouch;
+    }
+    &:active {
+      cursor: grabbing;
+    }
+    &[hidden] {
+      display: none;
+    }
+    > div:first-child > * {
+      border: 0.2rem solid transparent;
+      height: 100%;
+      width: auto;
+      box-sizing: border-box;
+    }
+    > div:nth-child(2) {
+      flex-grow: 1;
+    }
+    > div:last-child {
+      cursor: auto;
+      > * {
+        border: 0.2rem solid transparent;
+        height: 100%;
+        width: auto;
+        box-sizing: border-box;
+      }
     }
   }
+  //     _____            _             _
+  //    / ____|          | |           | |
+  //   | |     ___  _ __ | |_ ___ _ __ | |_
+  //   | |    / _ \| '_ \| __/ _ \ '_ \| __|
+  //   | |___| (_) | | | | ||  __/ | | | |_
+  //    \_____\___/|_| |_|\__\___|_| |_|\__|
   > div:nth-child(2) {
     flex-grow: 1;
     overflow: hidden;
-    background-color: green;
-    border-radius: 0 0 0.8rem 0.8rem;
+    background-color: $chuiColorLayer2;
+    border-radius: 0 0 $chuiBorderRadius $chuiBorderRadius;
+    -webkit-user-select: auto;
+    user-select: auto;
   }
+  div:first-child[hidden] + div:nth-child(2) {
+    border-radius: $chuiBorderRadius;
+  }
+  //     _____ _
+  //    / ____(_)
+  //   | (___  _ _______ _ __
+  //    \___ \| |_  / _ \ '__|
+  //    ____) | |/ /  __/ |
+  //   |_____/|_/___\___|_|
   > div:last-child {
     position: absolute;
-    inset: -10px;
+    inset: -$sizerBorder;
     z-index: -1;
-    background-color: blue;
+    outline: none;
+    > * {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    > .top,
+    > .bottom {
+      height: $sizerBorder;
+      .touch & {
+        height: $sizerBorderTouch;
+      }
+    }
+    > .right,
+    > .left {
+      width: $sizerBorder;
+      .touch & {
+        width: $sizerBorderTouch;
+      }
+    }
+    > .top {
+      bottom: unset;
+      cursor: n-resize;
+    }
+    > .bottom {
+      top: unset;
+      cursor: s-resize;
+    }
+    > .right {
+      left: unset;
+      cursor: e-resize;
+    }
+    > .left {
+      right: unset;
+      cursor: w-resize;
+    }
+    > .top-left,
+    > .top-right,
+    > .bottom-left,
+    > .bottom-right {
+      width: $sizerBorder * 2;
+      height: $sizerBorder * 2;
+      .touch & {
+        width: $sizerBorderTouch * 2;
+        height: $sizerBorderTouch * 2;
+      }
+    }
+    > .top-left {
+      bottom: unset;
+      right: unset;
+      cursor: nw-resize;
+    }
+    > .top-right {
+      bottom: unset;
+      left: unset;
+      cursor: ne-resize;
+    }
+    > .bottom-left {
+      top: unset;
+      right: unset;
+      cursor: sw-resize;
+    }
+    > .bottom-right {
+      top: unset;
+      left: unset;
+      cursor: se-resize;
+    }
   }
 }
 

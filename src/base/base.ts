@@ -6,6 +6,8 @@ import { AccessTypes } from "./access";
 import { libraryNameSpace } from "@src/globals/globalsInternals";
 import { Ok } from "@src/result";
 
+export let crel = document.createElement.bind(document);
+
 /**Event types for base*/
 export const enum ConnectEventVal {
   /**When element is connected from document*/

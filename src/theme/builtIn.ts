@@ -2,15 +2,15 @@ import "./builtIn.scss";
 import { themeInitVariableRoot } from "./engine";
 import { blue, grey } from "@src/asset";
 
-let root = themeInitVariableRoot(
+export let root = themeInitVariableRoot(
   "chui",
   "Shared Variables",
   "Shared variables across features"
 );
 
-let colors = root.makeSubGroup("colors", "Colors", "Color variables");
+let colors = root.makeSubGroup("clr", "Colors", "Color variables");
 colors.makeVariable(
-  "layer1",
+  "l1",
   "UI Layer 1",
   "Color of the first layer of the UI",
   grey[900],
@@ -19,7 +19,7 @@ colors.makeVariable(
   undefined
 );
 colors.makeVariable(
-  "layer2",
+  "l2",
   "UI Layer 2",
   "Color of the second layer of the UI",
   grey[700],
@@ -28,7 +28,7 @@ colors.makeVariable(
   undefined
 );
 colors.makeVariable(
-  "layer3",
+  "l3",
   "UI Layer 3",
   "Color of the third layer of the UI",
   grey[500],
@@ -37,7 +37,7 @@ colors.makeVariable(
   undefined
 );
 colors.makeVariable(
-  "layer4",
+  "l4",
   "UI Layer 4",
   "Color of the fourth layer of the UI",
   grey[300],
@@ -46,7 +46,7 @@ colors.makeVariable(
   undefined
 );
 colors.makeVariable(
-  "layer5",
+  "l5",
   "UI Layer 5",
   "Color of the fourth layer of the UI",
   grey[100],
@@ -55,7 +55,7 @@ colors.makeVariable(
   undefined
 );
 colors.makeVariable(
-  "border",
+  "brd",
   "UI border",
   "Color of the borders of the UI",
   grey[50],
@@ -64,7 +64,7 @@ colors.makeVariable(
   undefined
 );
 colors.makeVariable(
-  "focused",
+  "fcs",
   "UI focused element",
   "Color of the focused element of the UI",
   blue[300],
@@ -73,7 +73,7 @@ colors.makeVariable(
   undefined
 );
 colors.makeVariable(
-  "scrollbarColor",
+  "sbclr",
   "UI active element",
   "Color of the active (tab selected) element of the UI",
   grey[300],

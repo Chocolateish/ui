@@ -94,7 +94,7 @@ window
   });
 
 //Scale
-let scaleValue = 1;
+let scaleValue = 16;
 const scaleInternal = settings.addSetting(
   "scale",
   "Scale",
@@ -104,7 +104,7 @@ const scaleInternal = settings.addSetting(
   new StateNumberHelper(50, 400, "%", 0, 1)
 );
 scaleInternal.subscribe((val) => {
-  scaleValue = val.unwrap / 100;
+  scaleValue = (val.unwrap / 100) * 16;
   for (let i = 0; i < containers.length; i++) {
     applyScaleToDoc(containers[i], scaleValue);
   }

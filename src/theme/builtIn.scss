@@ -1,25 +1,40 @@
+$chuiScrollbarSize: var(--scrollbar);
+
+$chuiColorLayer1: var(--chui-clr-l1);
+$chuiColorLayer2: var(--chui-clr-l2);
+$chuiColorLayer3: var(--chui-clr-l3);
+$chuiColorLayer4: var(--chui-clr-l4);
+$chuiColorLayer5: var(--chui-clr-l5);
+$chuiColorBorder: var(--chui-clr-l5);
+$chuiColorFocused: var(--chui-clr-l5);
+$chuiColorScrollbarColor: var(--chui-clr-l5);
+
+//
+$chuiBorderRadius: 0.5rem;
+$chuiBorder: 0px 0px 8px 1px $chuiColorBorder, 0px 0px 1px 1px $chuiColorBorder;
+
 * {
   &::-webkit-scrollbar {
-    width: calc(var(--scrollbar));
-    height: calc(var(--scrollbar));
+    width: $chuiScrollbarSize;
+    height: $chuiScrollbarSize;
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: var(--chui-colors-scrollbarColor);
+    background-color: $chuiColorScrollbarColor;
     border-radius: 100vh;
-    border: calc(var(--scrollbar) / 6) solid transparent;
+    border: calc($chuiScrollbarSize / 6) solid transparent;
     -webkit-background-clip: padding-box;
     background-clip: padding-box;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background-color: var(--chui-colors-scrollbarColor);
-    border: calc(var(--scrollbar) / 6) solid transparent;
+    background-color: $chuiColorScrollbarColor;
+    border: calc($chuiScrollbarSize / 6) solid transparent;
   }
 
   &::-webkit-scrollbar-thumb:active {
-    background-color: var(--chui-colors-scrollbarColor);
-    border: calc(var(--scrollbar) / 6) solid transparent;
+    background-color: $chuiColorScrollbarColor;
+    border: calc($chuiScrollbarSize / 6) solid transparent;
   }
 
   &::-webkit-scrollbar-corner {

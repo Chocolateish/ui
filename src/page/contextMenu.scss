@@ -1,3 +1,4 @@
+@import "../theme/builtIn.scss";
 $blur: 25px;
 $rowHeight: 1.8rem;
 $rowHeightTouch: 1.8rem;
@@ -19,13 +20,14 @@ chui-contextmenucontainer {
   -webkit-user-select: none;
   user-select: none;
   -webkit-user-drag: none;
-  border-radius: 0.6rem;
+  border-radius: $chuiBorderRadius;
   overflow: auto;
-  border: var(--chui-colors-border) 1px solid;
+  border: $chuiColorBorder 1px solid;
   box-sizing: border-box;
-  background-color: var(--chui-colors-layer2);
+  background-color: $chuiColorLayer2;
   .graphics-some & {
-    box-shadow: 0 0 0.4rem 0.1px var(--chui-colors-border);
+    box-shadow: $chuiBorder;
+    border: none;
   }
 
   &::after {
@@ -34,7 +36,7 @@ chui-contextmenucontainer {
     position: absolute;
     inset: 0;
     z-index: -1;
-    background-color: var(--chui-colors-layer2);
+    background-color: $chuiColorLayer2;
   }
 }
 
@@ -88,10 +90,10 @@ chui-contextmenu {
   }
 
   &:hover {
-    background-color: var(--chui-colors-layer4);
+    background-color: $chuiColorLayer4;
   }
   &:focus-visible {
-    background-color: var(--chui-colors-focused);
+    background-color: $chuiColorFocused;
   }
 }
 
@@ -122,7 +124,7 @@ chui-contextmenusub {
 
 chui-contextmenudevider {
   display: table-row;
-  background-color: var(--chui-colors-border);
+  background-color: $chuiColorBorder;
   > td {
     height: 1px;
     padding: 0;
