@@ -17,6 +17,8 @@ chui-window {
   border-radius: $chuiBorderRadius;
   box-sizing: border-box;
   border: $chuiColorBorder 1px solid;
+  min-height: min-content;
+
   .graphics-some & {
     box-shadow: 0px 0px 4px 0px $chuiColorBorder,
       0px 0px 1px 1px $chuiColorBorder;
@@ -32,35 +34,55 @@ chui-window {
   //      | |  | | __| |/ _ \ '_ \ / _` | '__|
   //      | |  | | |_| |  __/ |_) | (_| | |
   //      |_|  |_|\__|_|\___|_.__/ \__,_|_|
+  &[moveable] > div:first-child {
+    cursor: grab;
+  }
+  &[empty] > div:first-child {
+    flex-grow: 1;
+    border-radius: $chuiBorderRadius;
+  }
   > div:first-child {
     display: flex;
     flex-wrap: nowrap;
+    align-items: center;
     position: relative;
-    cursor: grab;
     background-color: $chuiColorLayer3;
-    flex-basis: $titleHeight;
     overflow: hidden;
     border-radius: $chuiBorderRadius $chuiBorderRadius 0 0;
-    &.touch {
-      flex-basis: $titleHeightTouch;
-    }
     &:active {
       cursor: grabbing;
     }
     &[hidden] {
       display: none;
     }
-    > div:first-child > * {
-      border: 0.2rem solid transparent;
-      height: 100%;
-      width: auto;
-      box-sizing: border-box;
+    > div:first-child {
+      height: $titleHeight;
+      .touch & {
+        flex-basis: $titleHeightTouch;
+      }
+      > * {
+        border: 0.2rem solid transparent;
+        height: 100%;
+        width: auto;
+        box-sizing: border-box;
+      }
     }
     > div:nth-child(2) {
       flex-grow: 1;
+      flex-basis: 1px;
+      overflow-wrap: break-word;
+      word-break: normal;
+      display: flex;
+      align-items: center;
+      padding: 0.2rem 0.4rem;
+      line-height: 0.9rem;
     }
     > div:last-child {
       cursor: auto;
+      height: $titleHeight;
+      .touch & {
+        flex-basis: $titleHeightTouch;
+      }
       > * {
         border: 0.2rem solid transparent;
         height: 100%;
@@ -86,6 +108,9 @@ chui-window {
   div:first-child[hidden] + div:nth-child(2) {
     border-radius: $chuiBorderRadius;
   }
+  > div:first-child + div:nth-child(2):empty {
+    display: none;
+  }
   //     _____ _
   //    / ____(_)
   //   | (___  _ _______ _ __
@@ -97,6 +122,12 @@ chui-window {
     inset: -$sizerBorder;
     z-index: -1;
     outline: none;
+
+    &.visible {
+      background-color: $chuiColorLayer4;
+      border-radius: $chuiBorderRadius * 1.2;
+    }
+
     > * {
       position: absolute;
       top: 0;

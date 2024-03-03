@@ -150,6 +150,10 @@ export class Base<
     return this;
   }
 
+  get window() {
+    return this.ownerDocument?.defaultView;
+  }
+
   /**Returns an observer for the element */
   get observer(): BaseObserver {
     return this.#observer

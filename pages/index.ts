@@ -42,7 +42,8 @@ attachContextMenu(ui, [
 
 openWindowVirtual({
   opener: document.body,
-  title: "Test",
+  title: "ornare arcu dui vivamus arcu felis bibendum ut tristique et",
+  toolTip: "2ornare arcu dui vivamus arcu felis bibendum ut tristique et",
   position: {
     left: 2,
     top: 2,
@@ -74,6 +75,7 @@ openWindowVirtual({
     top: 14,
   },
   size: {
+    sizeable: "visible",
     width: 10,
     height: 10,
   },
@@ -91,5 +93,4 @@ openWindowVirtual({
     width: 10,
     height: 10,
   },
-  content: new Base(),
 });

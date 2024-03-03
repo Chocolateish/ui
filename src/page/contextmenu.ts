@@ -18,13 +18,11 @@ export type ContextMenuItem = {
   disabled?: boolean | StateReadSync<any>;
 };
 
+export type ContextMenuItemList = (ContextMenuItem | number)[];
+type ContextMenuParams = HTMLElement | ContextMenuItemList;
 export type ContextMenuParameter =
-  | HTMLElement
-  | (ContextMenuItem | number)[]
-  | (() =>
-      | HTMLElement
-      | (ContextMenuItem | number)[]
-      | Promise<HTMLElement | (ContextMenuItem | number)[]>);
+  | ContextMenuParams
+  | (() => ContextMenuParams | Promise<ContextMenuParams>);
 
 type KeyboardShortcut = {
   ctrl?: true;
@@ -422,6 +420,25 @@ export async function openContextMenu(
 //          | |
 //          |_|
 type ContextMenuOpenFunction = (e: MouseEvent) => void;
+
+export function attachContextMenu(
+  element: HTMLElement,
+  menu: ContextMenuParams,
+  width?: number,
+  height?: number
+): ContextMenuOpenFunction;
+export function attachContextMenu(
+  element: HTMLElement,
+  menu: () => ContextMenuParams,
+  width?: number,
+  height?: number
+): ContextMenuOpenFunction;
+export function attachContextMenu(
+  element: HTMLElement,
+  menu: () => Promise<ContextMenuParams>,
+  width?: number,
+  height?: number
+): ContextMenuOpenFunction;
 /**Attaches a context menu to the element
  * @param element The element to attach the context menu to
  * @param menu The context menu to attach
@@ -457,6 +474,10 @@ let contextMenuCloser = () => {};
 let contextMenuClose = () => {
   contextMenuCloser();
 };
+document.addEventListener("contextmenu", contextMenuClose, {
+  passive: true,
+  capture: true,
+});
 document.addEventListener("pointerdown", contextMenuClose, {
   passive: true,
 });
