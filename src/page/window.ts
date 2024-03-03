@@ -275,6 +275,25 @@ export class WindowVirtual extends Base {
             this.close();
           },
         });
+      if (this.#content) {
+        items.push({
+          label: "Pop Out",
+          action: () => {
+            openWindowExternal({
+              x: window.screenX + remToPx(this.left),
+              y:
+                window.screenY +
+                window.outerHeight -
+                window.innerHeight +
+                remToPx(this.top),
+              width: remToPx(this.width),
+              height: remToPx(this.height),
+              content: this.#content!,
+            });
+            this.close();
+          },
+        });
+      }
       if (this.title)
         items.push({
           label: "Copy Title",
