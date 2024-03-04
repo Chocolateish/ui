@@ -1,19 +1,6 @@
-import { Base, BaseEvents } from "@src/base";
+import { Base } from "@src/base";
 
-export type ContentEventTypes = {
-  name: { name: string };
-  SYMBOL: { symbol: () => SVGSVGElement };
-  REMOVED: {};
-  CLOSING: {};
-  SELECTED: {};
-  CLOSEABLE: {};
-  MINSIZE: {};
-  MAXSIZE: {};
-} & BaseEvents;
-
-export abstract class ContentBase<
-  MoreEvents extends ContentEventTypes = ContentEventTypes
-> extends Base<MoreEvents> {
+export abstract class ContentBase extends Base {
   constructor() {
     super();
   }
@@ -22,9 +9,7 @@ export abstract class ContentBase<
   }
 }
 
-export class Content<
-  MoreEvents extends ContentEventTypes = ContentEventTypes
-> extends ContentBase<MoreEvents> {
+export class Content extends ContentBase {
   static elementName() {
     return "content";
   }

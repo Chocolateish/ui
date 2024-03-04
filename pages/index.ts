@@ -40,57 +40,57 @@ attachContextMenu(ui, [
   },
 ]);
 
-openWindowVirtual({
-  opener: document.body,
-  title: "ornare arcu dui vivamus arcu felis bibendum ut tristique et",
-  toolTip: "2ornare arcu dui vivamus arcu felis bibendum ut tristique et",
-  position: {
-    left: 2,
-    top: 2,
-  },
-  size: {
-    width: 10,
-    height: 10,
-  },
-  content: new Base(),
-});
-openWindowVirtual({
-  opener: document.body,
-  bar: false,
-  position: {
-    left: 14,
-    top: 14,
-  },
-  size: {
-    width: 10,
-    height: 10,
-  },
-  content: new Base(),
-});
-openWindowVirtual({
-  opener: document.body,
-  symbol: material_av_3k_rounded,
-  position: {
-    left: 2,
-    top: 14,
-  },
-  size: {
-    sizeable: "visible",
-    width: 10,
-    height: 10,
-  },
-  content: new Base(),
-});
-openWindowVirtual({
-  opener: document.body,
-  symbol: material_av_3k_rounded,
-  closable: false,
-  position: {
-    left: 14,
-    top: 2,
-  },
-  size: {
-    width: 10,
-    height: 10,
-  },
-});
+// openWindowVirtual({
+//   opener: document.body,
+//   title: "ornare arcu dui vivamus arcu felis bibendum ut tristique et",
+//   toolTip: "2ornare arcu dui vivamus arcu felis bibendum ut tristique et",
+//   position: {
+//     left: 2,
+//     top: 2,
+//   },
+//   size: {
+//     width: 10,
+//     height: 10,
+//   },
+//   content: new Base(),
+// });
+// openWindowVirtual({
+//   opener: document.body,
+//   bar: false,
+//   position: {
+//     left: 14,
+//     top: 14,
+//   },
+//   size: {
+//     width: 10,
+//     height: 10,
+//   },
+//   content: new Base(),
+// });
+// openWindowVirtual({
+//   opener: document.body,
+//   symbol: material_av_3k_rounded,
+//   position: {
+//     left: 2,
+//     top: 14,
+//   },
+//   size: {
+//     sizeable: "visible",
+//     width: 10,
+//     height: 10,
+//   },
+//   content: new Base(),
+// });
+// openWindowVirtual({
+//   opener: document.body,
+//   symbol: material_av_3k_rounded,
+//   closable: false,
+//   position: {
+//     left: 14,
+//     top: 2,
+//   },
+//   size: {
+//     width: 10,
+//     height: 10,
+//   },
+// });

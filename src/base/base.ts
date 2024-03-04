@@ -48,9 +48,7 @@ export interface BaseOptions {
  * write = normal interaction and look
  * read = inert attribute is added making the element uninteractable, and add opacity 0.5 to make the element look inaccessible
  * none = adds display:none to element to make it */
-export class Base<
-  MoreEvents extends BaseEvents = BaseEvents
-> extends HTMLElement {
+export class Base extends HTMLElement {
   /**Returns the name used to define the element */
   static elementName() {
     return "@abstract@";
@@ -59,10 +57,6 @@ export class Base<
   static elementNameSpace() {
     return libraryNameSpace;
   }
-  /**Events for element*/
-  protected _events: EventProducer<MoreEvents, Base<MoreEvents>>;
-  /**Events for element*/
-  readonly events: EventConsumer<MoreEvents, Base<MoreEvents>>;
 
   #connectStates?: StateRead<any>[];
   #connectSubscribers?: StateSubscriber<any>[];
@@ -82,17 +76,22 @@ export class Base<
   #propStates?: { [k in keyof this]: [StateSubscriber<any>, boolean] };
   #attributeStates?: { [k: string]: [StateSubscriber<any>, boolean] };
 
-  constructor(...any: any[]) {
-    any;
+  constructor(options?: BaseOptions) {
     super();
-    let events = createEventHandler<MoreEvents, Base<MoreEvents>>(this);
-    this._events = events.producer;
-    this.events = events.consumer;
+    if (options) {
+      if (typeof options.access === "object") {
+        this.accessByState(options.access);
+      } else {
+        this.access = options.access ?? AccessTypes.write;
+      }
+      if (options.observerOptions) {
+        this.#observerOptions = options.observerOptions;
+      }
+    }
   }
 
   /**Runs when element is attached to document*/
   connectedCallback() {
-    this._events.emit("connect", ConnectEventVal.Connect);
     if (this.#connectStates && this.#connectSubscribers)
       for (let i = 0; i < this.#connectStates.length; i++)
         this.#connectStates[i].subscribe(this.#connectSubscribers[i], true);
@@ -105,7 +104,6 @@ export class Base<
 
   /**Runs when element is dettached from document*/
   disconnectedCallback() {
-    this._events.emit("connect", ConnectEventVal.Disconnect);
     if (this.#connectStates && this.#connectSubscribers)
       for (let i = 0; i < this.#connectStates.length; i++)
         this.#connectStates[i].unsubscribe(this.#connectSubscribers[i]);
@@ -115,16 +113,10 @@ export class Base<
     }
   }
 
-  /**Runs when element is attached to different document*/
-  adoptedCallback() {
-    this._events.emit("connect", ConnectEventVal.Adopted);
-  }
-
   private _setVisible(is: boolean) {
     if (this.isVisible !== is) {
       //@ts-expect-error
       this.isVisible = is;
-      this._events.emit("visible", is);
       if (is) {
         if (this.#visibleStates && this.#visibleSubscribers)
           for (let i = 0; i < this.#visibleStates.length; i++)
@@ -135,19 +127,6 @@ export class Base<
             this.#visibleStates[i].unsubscribe(this.#visibleSubscribers[i]);
       }
     }
-  }
-
-  /**Sets options for the element*/
-  options(options: BaseOptions): this {
-    if (typeof options.access === "object") {
-      this.accessByState(options.access);
-    } else {
-      this.access = options.access ?? AccessTypes.write;
-    }
-    if (options.observerOptions) {
-      this.#observerOptions = options.observerOptions;
-    }
-    return this;
   }
 
   get window() {

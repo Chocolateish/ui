@@ -2,8 +2,8 @@
 
 $titleHeight: 1.6rem;
 $titleHeightTouch: 3.2rem;
-$sizerBorder: 0.5rem;
-$sizerBorderTouch: 1rem;
+$sizerBorder: 0.6rem;
+$sizerBorderTouch: 1.2rem;
 
 chui-window {
   position: absolute;
@@ -46,7 +46,7 @@ chui-window {
     flex-wrap: nowrap;
     align-items: center;
     position: relative;
-    background-color: $chuiColorLayer3;
+    background-color: $chuiColorLayer4;
     overflow: hidden;
     border-radius: $chuiBorderRadius $chuiBorderRadius 0 0;
     &:active {
@@ -100,7 +100,7 @@ chui-window {
   > div:nth-child(2) {
     flex-grow: 1;
     overflow: hidden;
-    background-color: $chuiColorLayer2;
+    background-color: $chuiColorLayer1;
     border-radius: 0 0 $chuiBorderRadius $chuiBorderRadius;
     -webkit-user-select: auto;
     user-select: auto;
@@ -124,11 +124,32 @@ chui-window {
     outline: none;
 
     &.visible {
-      background-color: $chuiColorLayer4;
+      background-color: $chuiColorLayer6;
       border-radius: $chuiBorderRadius * 1.2;
+      > .top::after,
+      > .bottom::after {
+        content: "";
+        display: block;
+        background-color: $chuiColorLayer1Txt;
+        width: 2rem;
+        height: 0.2rem;
+        border-radius: 0.2rem;
+      }
+      > .left::after,
+      > .right::after {
+        content: "";
+        display: block;
+        background-color: $chuiColorLayer1Txt;
+        height: 2rem;
+        width: 0.2rem;
+        border-radius: 0.2rem;
+      }
     }
 
     > * {
+      display: flex;
+      justify-content: center;
+      align-items: center;
       position: absolute;
       top: 0;
       left: 0;

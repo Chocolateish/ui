@@ -101,7 +101,7 @@ const scaleInternal = settings.addSetting(
   "UI scale",
   100,
   true,
-  new StateNumberHelper(50, 400, "%", 0, 1)
+  new StateNumberHelper(50, 300, "%", 0, 1)
 );
 scaleInternal.subscribe((val) => {
   scaleValue = (val.unwrap / 100) * 16;
@@ -392,7 +392,7 @@ function applyAllToDoc(container: HTMLElement) {
   applyScrollbarToDoc(container, <ScrollbarModes>scrollBarMode.get().unwrap);
   applyThemeToDoc(container, theme.get().unwrap);
   applyInputToDoc(container, <InputModes>inputMode.get().unwrap);
-  applyScaleToDoc(container, scale.get().unwrap / 100);
+  applyScaleToDoc(container, scale.get().unwrap * 0.16);
   applyAnimationToDoc(container, <GraphicsLevels>graphicsLevel.get().unwrap);
 }
 
@@ -421,7 +421,7 @@ function applyThemeToDoc(container: HTMLElement, theme: Themes) {
     bottomGroups[key].applyThemes(container.style, theme);
 }
 function applyScaleToDoc(container: HTMLElement, scale: number) {
-  container.style.fontSize = scale * 16 + "px";
+  container.style.fontSize = scale + "px";
 }
 function applyInputToDoc(container: HTMLElement, mode: InputModes) {
   let style = container.style;
