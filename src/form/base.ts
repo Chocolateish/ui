@@ -166,7 +166,7 @@ export interface FormBaseReadOptions<
   /**Longer description what form element does */
   description?: string;
   /**Icon for form element */
-  icon?: () => SVGSVGElement;
+  symbol?: () => SVGSVGElement;
 }
 
 /** Base class for form elements for shared properties and methods*/
@@ -181,8 +181,8 @@ export abstract class FormBaseRead<
   }
   /**Stores local copy of form element value*/
   protected _value?: V;
-  /**Icon*/
-  protected _icon?: SVGSVGElement;
+  /**Symbol container*/
+  protected _symbolContainer: HTMLSpanElement = document.createElement("span");
   /**Label container*/
   protected _label: HTMLSpanElement = document.createElement("span");
   /**Description container*/
@@ -216,31 +216,26 @@ export abstract class FormBaseRead<
       this._valueUpdate(value);
     }
   }
-  /**Changes value of form element*/
-  valueByState(
-    state?: ReadWrite<V, RW>,
-    visible?: boolean,
-    fallback?: V,
-    fallbackFunc?: (error: StateError) => V
-  ) {
-    if (state) {
-      this.attachStateToProp("value", state, visible, fallback, fallbackFunc);
-    } else {
-      this.dettachStateFromProp("value");
-    }
-  }
   /**Called when value is changed */
   protected abstract _valueUpdate(value: V): void;
   /**Called when value cleared */
   protected abstract _valueClear(): void;
 
+  /**Sets the current label of the element*/
+  set label(text: string) {
+    this._label.innerHTML = text;
+  }
   /**Gets the current label of the element*/
   get label(): string {
     return this._label.innerHTML;
   }
-  /**Sets the current label of the element*/
-  set label(text: string) {
-    this._label.innerHTML = text;
+  /**Sets the current symbol of the element*/
+  set symbol(symbol: SVGSVGElement) {
+    this._symbolContainer.replaceChildren(symbol);
+  }
+  /**Gets the current symbol of the element*/
+  get symbol(): SVGSVGElement | undefined {
+    return this._symbolContainer.firstChild as SVGSVGElement | undefined;
   }
 }
 
