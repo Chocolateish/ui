@@ -1,5 +1,4 @@
 import "./base.scss";
-import { createEventHandler, EventConsumer, EventProducer } from "@src/event";
 import { BaseObserver, BaseObserverOptions } from "./observer";
 import { StateError, StateRead, StateSubscriber } from "@src/state";
 import { AccessTypes } from "./access";
@@ -18,12 +17,6 @@ export const enum ConnectEventVal {
   Adopted = 2,
 }
 
-/**Events for Base element */
-export interface BaseEvents {
-  connect: ConnectEventVal;
-  visible: Boolean;
-}
-
 /**Base options for base class */
 export interface BaseOptions {
   /**Access for element, default is write access */
@@ -31,6 +24,10 @@ export interface BaseOptions {
   /**Options to use for element observer */
   observerOptions?: BaseObserverOptions;
 }
+
+type BaseCustomEvent<T extends {}> = {
+  [K in keyof T]: CustomEvent<T[K]>;
+};
 
 /**Shared class for elements to extend
  * All none abstract elements must use the defineElement function to declare itself
@@ -48,7 +45,7 @@ export interface BaseOptions {
  * write = normal interaction and look
  * read = inert attribute is added making the element uninteractable, and add opacity 0.5 to make the element look inaccessible
  * none = adds display:none to element to make it */
-export class Base extends HTMLElement {
+export class Base<CE extends { [K: string]: any } = any> extends HTMLElement {
   /**Returns the name used to define the element */
   static elementName() {
     return "@abstract@";
@@ -79,15 +76,28 @@ export class Base extends HTMLElement {
   constructor(options?: BaseOptions) {
     super();
     if (options) {
-      if (typeof options.access === "object") {
-        this.accessByState(options.access);
-      } else {
-        this.access = options.access ?? AccessTypes.write;
-      }
-      if (options.observerOptions) {
+      if (options.access)
+        this.attachStateToProp("access", options.access ?? AccessTypes.write);
+      if (options.observerOptions)
         this.#observerOptions = options.observerOptions;
-      }
     }
+  }
+
+  addEventListener<K extends keyof HTMLElementEventMap | keyof CE>(
+    type: K,
+    listener: (
+      this: HTMLElement,
+      ev: (HTMLElementEventMap & BaseCustomEvent<CE>)[K]
+    ) => any,
+    options?: boolean | AddEventListenerOptions | undefined
+  ): void;
+  addEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions
+  ): void;
+  addEventListener(type: unknown, listener: unknown, options?: unknown): void {
+    super.addEventListener(type as any, listener as any, options as any);
   }
 
   /**Runs when element is attached to document*/
@@ -162,7 +172,7 @@ export class Base extends HTMLElement {
   }
 
   /**Attaches the component to an observer, which is needed for the isVisible state and event to work and for the state system to work on visible*/
-  attachToBaseObserver(baseElement?: Base) {
+  attachToBaseObserver(baseElement?: Base<any>) {
     if (baseElement) {
       if (this.isConnected) {
         if (this.#attachedObserver) this.#attachedObserver.unobserve(this);
@@ -344,19 +354,6 @@ export class Base extends HTMLElement {
   /**Returns the current access of the element */
   get access(): AccessTypes {
     return this.#access ?? AccessTypes.write;
-  }
-  /**Sets the access of the element, passing undefined is the same as passing write access*/
-  accessByState(
-    access: StateRead<AccessTypes> | undefined,
-    visible?: boolean,
-    fallback?: AccessTypes,
-    fallbackFunc?: (error: StateError) => AccessTypes
-  ) {
-    if (access) {
-      this.attachStateToProp("access", access, visible, fallback, fallbackFunc);
-    } else {
-      this.dettachStateFromProp("access");
-    }
   }
 }
 customElements.define(Base.elementNameSpace() + "-base", Base);

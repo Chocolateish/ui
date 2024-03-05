@@ -1,5 +1,5 @@
 //export { BasicColors } from "./base";
-// export * from "./button/button";
+export * from "./button/button";
 // export * from "./input/color/colorInput";
 // export * from "./input/dateTime/dateTimeInput";
 // export * from "./input/ip/ipInput";

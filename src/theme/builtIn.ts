@@ -2,13 +2,13 @@ import "./builtIn.scss";
 import { themeInitVariableRoot } from "./engine";
 import { blue, grey } from "@src/asset";
 
-export let root = themeInitVariableRoot(
+export let themeBuiltInRoot = themeInitVariableRoot(
   "chui",
   "Shared Variables",
   "Shared variables across features"
 );
 
-let colors = root.makeSubGroup("clr", "Colors", "Color variables");
+let colors = themeBuiltInRoot.makeSubGroup("clr", "Colors", "Color variables");
 colors.makeVariable(
   "l1",
   "UI Layer 1",
