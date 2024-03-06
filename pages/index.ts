@@ -5,6 +5,8 @@ import { Base } from "@src/base";
 import { State } from "@src/state";
 import { Ok } from "@src/result";
 import { material_av_3k_rounded } from "@src/asset";
+import { Content } from "@src/page/content";
+import { Lamp, Switch } from "@src/form";
 
 let ui = document.body.appendChild(new UI());
 
@@ -94,3 +96,19 @@ attachContextMenu(ui, [
 //     height: 10,
 //   },
 // });
+
+let Lamps = new Content();
+ui.content = Lamps;
+Lamps.appendChild(
+  new Lamp({
+    label: "YOYO",
+    value: true,
+    text: "Testing attention please, would the real slim shady take a seconds to appease",
+  })
+);
+
+Lamps.appendChild(
+  new Switch({
+    label: "YOYO",
+  })
+);

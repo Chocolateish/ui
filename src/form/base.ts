@@ -157,27 +157,27 @@ type ReadWrite<
 > = RW extends "Read" ? V | StateRead<V> : V | StateWrite<V>;
 export interface FormBaseReadOptions<
   V extends boolean | number | string,
-  RW extends "Read" | "Write"
+  RW extends "Read" | "Write" = "Read"
 > extends BaseOptions {
   /**Value for form element */
   value?: ReadWrite<V, RW>;
   /**Text for label above form element */
-  label: string;
+  label: string | StateRead<string>;
   /**Longer description what form element does */
-  description?: string;
+  description?: string | StateRead<string>;
   /**Icon for form element */
-  symbol?: () => SVGSVGElement;
+  symbol?: (() => SVGSVGElement) | StateRead<() => SVGSVGElement>;
 }
 
 /** Base class for form elements for shared properties and methods*/
 export abstract class FormBaseRead<
   V extends boolean | number | string,
-  RW extends "Read" | "Write",
+  RW extends "Read" | "Write" = "Read",
   E extends {} = any
 > extends Base<E> {
   /**Returns the name used to define the element*/
   static elementName() {
-    return "@abstract@";
+    return "form";
   }
   /**Stores local copy of form element value*/
   protected _value?: V;
@@ -196,8 +196,6 @@ export abstract class FormBaseRead<
     super(options);
     this.appendChild(this._label);
     this.appendChild(this._body);
-    if (typeof options.value !== "undefined")
-      this.attachStateToProp("value", options.value);
     if (options.label) this.attachStateToProp("label", options.label);
   }
 
@@ -220,6 +218,20 @@ export abstract class FormBaseRead<
   protected abstract _valueUpdate(value: V): void;
   /**Called when value cleared */
   protected abstract _valueClear(): void;
+
+  /**Changes value of form element*/
+  valueByState(
+    state: StateWrite<V> | undefined,
+    visible?: boolean,
+    fallback?: V,
+    fallbackFunc?: (error: StateError) => V
+  ) {
+    if (state) {
+      this.attachStateToProp("value", state, visible, fallback, fallbackFunc);
+    } else {
+      this.dettachStateFromProp("value");
+    }
+  }
 
   /**Sets the current label of the element*/
   set label(text: string) {
@@ -254,6 +266,11 @@ export abstract class FormBaseWrite<
   V extends boolean | number | string,
   E extends FormBaseWriteEvents<V> = FormBaseWriteEvents<V>
 > extends FormBaseRead<V, "Write", E> {
+  /**Returns the name used to define the element*/
+  static elementName() {
+    return "@abstract@";
+  }
+
   /**Buffer of linked state */
   private _state?: StateWrite<V>;
 

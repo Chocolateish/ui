@@ -1,4 +1,4 @@
-import { Base } from "@src/base";
+import { Base, defineElement } from "@src/base";
 
 export abstract class ContentBase extends Base {
   constructor() {
@@ -14,3 +14,4 @@ export class Content extends ContentBase {
     return "content";
   }
 }
+defineElement(Content);
