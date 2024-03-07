@@ -139,12 +139,22 @@ colors.makeVariable(
   "Color",
   undefined
 );
+colors.makeVariable(
+  "white",
+  "White",
+  "Basic White",
+  grey["900"],
+  grey["900"],
+  "Color",
+  undefined
+);
 
 export const NoValueText = "-";
 
 /**Basic colors used by form elements*/
 export const enum BasicColors {
   Black = "black",
+  White = "white",
   Green = "green",
   Red = "red",
   Blue = "blue",
@@ -306,4 +316,18 @@ export abstract class FormBaseWrite<
       )
     );
   }
+}
+
+export interface FormNumberBaseOptions<RW extends "Read" | "Write" = "Read">
+  extends FormBaseReadOptions<number, RW> {
+  /**Lower limit for slider value*/
+  min?: number | StateRead<number>;
+  /**Upper limit for slider value*/
+  max?: number | StateRead<number>;
+  /**Step size, use 0 for automatic step size*/
+  step?: number | StateRead<number>;
+  /**Amount of decimals to show*/
+  decimals?: number | StateRead<number>;
+  /**Unit to use for slider*/
+  unit?: string | StateRead<string>;
 }

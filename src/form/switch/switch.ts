@@ -1,13 +1,8 @@
 import "./switch.scss";
 import { defineElement } from "@src/base";
-import { BasicColors, FormBaseWrite, FormBaseWriteOptions } from "../base";
+import { FormBaseWrite, FormBaseWriteOptions } from "../base";
 
-interface SwitchOptions extends FormBaseWriteOptions<boolean> {
-  /**Color shown when switch is on*/
-  onColor?: BasicColors;
-  /**Color shown when switch is off*/
-  offColor?: BasicColors;
-}
+interface SwitchOptions extends FormBaseWriteOptions<boolean> {}
 
 /**Toggle Switch, switches between on and off*/
 export class Switch extends FormBaseWrite<boolean> {
@@ -100,6 +95,8 @@ export class Switch extends FormBaseWrite<boolean> {
       }
       this._valueSet(!this._value);
     };
+    if (typeof options.value !== "undefined")
+      this.attachStateToProp("value", options.value);
   }
 
   /**Called when value is changed */

@@ -4,6 +4,11 @@ export * from "./button/button";
 export * from "./lamp/lamp";
 export * from "./switch/switch";
 
+export * from "./progress/progress";
+export * from "./slider/slider";
+export * from "./stepper/stepper";
+
+//export * from "./input/numberInput/numberInput";
 // export * from "./input/color/colorInput";
 // export * from "./input/dateTime/dateTimeInput";
 // export * from "./input/ip/ipInput";
@@ -11,11 +16,6 @@ export * from "./switch/switch";
 // export * from "./input/phone/phoneInput";
 // export * from "./input/text/textInput";
 // export * from "./input/url/urlInput";
-
-// export * from "./number/numberInput/numberInput";
-// export * from "./number/progress/progress";
-// export * from "./number/steppers/slider/slider";
-// export * from "./number/steppers/stepper/stepper";
 
 // export * from "./selectors/dropDown/dropDown";
 // export * from "./selectors/toggleButton/toggleButton";

@@ -1,13 +1,15 @@
 import "./button.scss";
 import { defineElement } from "@src/base";
-import { FormBaseReadOptions, BasicColors, FormBaseRead } from "../base";
-import { Listener, State } from "@chocolatelib/state";
+import {
+  BasicColors,
+  FormBaseRead,
+  FormBaseWrite,
+  FormBaseWriteOptions,
+} from "../base";
 
-interface ButtonOptions extends FormBaseReadOptions<boolean> {
+interface ButtonOptions extends FormBaseWriteOptions<boolean> {
   /**Buttons text */
   text?: string;
-  /**Icon for button */
-  icon?: SVGSVGElement;
   /**Function to call on button click */
   clickAction?: () => void;
   /**Set true to make button toggle on click instead of normal */
@@ -17,11 +19,10 @@ interface ButtonOptions extends FormBaseReadOptions<boolean> {
 }
 
 /**Button for clicking*/
-export class Button extends FormBaseRead<boolean> {
+export class Button extends FormBaseWrite<boolean> {
   private _text: HTMLSpanElement = this._body.appendChild(
     document.createElement("span")
   );
-  private _textListener: Listener<string> | undefined;
   private _icon: SVGSVGElement | undefined;
   private _click: (() => void) | undefined;
   private _color: BasicColors | undefined;
@@ -32,8 +33,8 @@ export class Button extends FormBaseRead<boolean> {
     return "button";
   }
 
-  constructor() {
-    super();
+  constructor(options: ButtonOptions) {
+    super(options);
     this._body.setAttribute("tabindex", "0");
     this._body.onclick = () => {
       if (this._click) {
@@ -108,25 +109,13 @@ export class Button extends FormBaseRead<boolean> {
         }
       }
     };
-  }
-
-  /**Sets options for the button*/
-  options(options: ButtonOptions) {
-    super.options(options);
-    if (options.text) {
-      this.text = options.text;
-    }
-    if (options.icon) {
-      this.icon = options.icon;
-    }
-    if (options.clickAction) {
-      this.clickAction = options.clickAction;
-    }
-    if (options.color) {
-      this.color = options.color;
-    }
-    this.toggle = options.toggle;
-    return this;
+    if (options.text) this.attachStateToProp("text", options.text);
+    if (options.clickAction) this.clickAction = options.clickAction;
+    if (options.color) this.attachStateToProp("color", options.color);
+    if (typeof options.toggle !== "undefined")
+      this.attachStateToProp("toggle", options.toggle);
+    if (typeof options.value !== "undefined")
+      this.attachStateToProp("value", options.value);
   }
 
   /**Gets the current text of the button*/
@@ -134,39 +123,8 @@ export class Button extends FormBaseRead<boolean> {
     return this._text.innerHTML;
   }
   /**Sets the current text of the button*/
-  set text(value: Value<string> | string | undefined) {
-    if (this._textListener) {
-      this.dettachValue(this._textListener);
-      delete this._textListener;
-    }
-    if (typeof value === "object" && value instanceof Value) {
-      this._textListener = this.attachValue(value, (val) => {
-        if (val) {
-          this._text.innerHTML = val;
-        } else {
-          this._text.innerHTML = "";
-        }
-      });
-    } else if (value) {
-      this._text.innerHTML = value;
-    } else {
-      this._text.innerHTML = "";
-    }
-  }
-
-  /**Returns the icon of the button */
-  get icon() {
-    return this._icon;
-  }
-
-  /**Changes the icon of the button*/
-  set icon(icon: SVGSVGElement | undefined) {
-    if (icon) {
-      this._icon = this._body.insertBefore(icon, this._text);
-    } else if (this._icon) {
-      this._body.removeChild(this._icon);
-      delete this._icon;
-    }
+  set text(value: string) {
+    this._text.innerHTML = value;
   }
 
   /**Returns the button click action */
@@ -191,12 +149,16 @@ export class Button extends FormBaseRead<boolean> {
       delete this._color;
     }
   }
-  /**Called when Value is changed */
-  protected _ValueUpdate(value: Value<boolean>) {
-    value;
+
+  /**Changes whether the button is maintained or momentary*/
+  set toggle(toggle: boolean) {
+    this._toggle = Boolean(toggle);
   }
-  /**Called when the form element is set to not use a Value anymore*/
-  protected _ValueClear() {}
+  /**Returns */
+  get toggle(): boolean | undefined {
+    return this._toggle;
+  }
+
   /**Called when value is changed */
   protected _valueUpdate(value: Boolean) {
     if (value) {
@@ -208,16 +170,6 @@ export class Button extends FormBaseRead<boolean> {
   /**Called when value cleared */
   protected _valueClear() {
     this._body.classList.remove("active");
-  }
-
-  /**Returns */
-  get toggle() {
-    return this._toggle;
-  }
-
-  /**Changes whether the button is maintained or momentary*/
-  set toggle(toggle: boolean | undefined) {
-    this._toggle = Boolean(toggle);
   }
 }
 defineElement(Button);

@@ -6,7 +6,8 @@ import { State } from "@src/state";
 import { Ok } from "@src/result";
 import { material_av_3k_rounded } from "@src/asset";
 import { Content } from "@src/page/content";
-import { Lamp, Switch } from "@src/form";
+import { Button, Lamp, Switch, TextField, TitleField } from "@src/form";
+import { BasicColors } from "@src/form/base";
 
 let ui = document.body.appendChild(new UI());
 
@@ -110,5 +111,32 @@ Lamps.appendChild(
 Lamps.appendChild(
   new Switch({
     label: "YOYO",
+    value: true,
+  })
+);
+
+Lamps.appendChild(
+  new TextField({
+    label: "YOYO",
+    value:
+      "Testing attention please, would the real slim shady take a seconds to appease",
+    textSize: 2,
+  })
+);
+
+Lamps.appendChild(
+  new TitleField({
+    label: "YOYO",
+    value:
+      "Testing attention please, would the real slim shady take a seconds to appease",
+    textSize: 2,
+  })
+);
+
+Lamps.appendChild(
+  new Button({
+    label: "YOYO",
+    value: true,
+    text: "Testing attention please, would the real slim shady take a seconds to appease",
   })
 );
