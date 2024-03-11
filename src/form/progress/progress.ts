@@ -1,10 +1,13 @@
 import "./progress.scss";
 import { defineElement } from "@src/base";
-import { FormBaseRead, NoValueText } from "../base";
-import { FormNumberBaseOptions } from "../number/numberBase";
+import {
+  FormNumberReadBaseOptions,
+  NoValueText,
+  FormNumberReadBase,
+} from "../base";
 
 /**Slide Selector, displays all options in a slider*/
-export class Progress extends FormBaseRead<number> {
+export class Progress extends FormNumberReadBase {
   private _bar: HTMLDivElement;
   private _val: HTMLSpanElement;
 
@@ -13,11 +16,13 @@ export class Progress extends FormBaseRead<number> {
     return "progress";
   }
 
-  constructor(options: FormNumberBaseOptions<"Read">) {
+  constructor(options: FormNumberReadBaseOptions) {
     super(options);
     this._bar = this._body.appendChild(document.createElement("div"));
     this._val = this._body.appendChild(document.createElement("span"));
     this._body.appendChild(this._unit);
+    if (typeof options.value !== "undefined")
+      this.attachStateToProp("value", options.value);
   }
 
   /**Called when value is changed */

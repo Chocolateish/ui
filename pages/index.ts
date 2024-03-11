@@ -6,7 +6,17 @@ import { State } from "@src/state";
 import { Ok } from "@src/result";
 import { material_av_3k_rounded } from "@src/asset";
 import { Content } from "@src/page/content";
-import { Button, Lamp, Switch, TextField, TitleField } from "@src/form";
+import {
+  Button,
+  DropDown,
+  Lamp,
+  Progress,
+  Slider,
+  Stepper,
+  Switch,
+  TextField,
+  TitleField,
+} from "@src/form";
 import { BasicColors } from "@src/form/base";
 
 let ui = document.body.appendChild(new UI());
@@ -136,7 +146,47 @@ Lamps.appendChild(
 Lamps.appendChild(
   new Button({
     label: "YOYO",
-    value: true,
+    value: false,
     text: "Testing attention please, would the real slim shady take a seconds to appease",
+  })
+);
+
+Lamps.appendChild(
+  new Progress({
+    label: "YOYO",
+    value: 10,
+    min: 0,
+    max: 100,
+    unit: "%",
+  })
+);
+
+Lamps.appendChild(
+  new Slider({
+    label: "YOYO",
+    value: 10,
+    min: 0,
+    max: 100,
+    unit: "%",
+  })
+);
+Lamps.appendChild(
+  new Stepper({
+    label: "YOYO",
+    value: 10,
+    min: 0,
+    max: 100,
+    unit: "%",
+  })
+);
+
+Lamps.appendChild(
+  new DropDown({
+    label: "YOYO",
+    value: 10,
+    selections: [
+      { text: "YOYO", value: 10 },
+      { text: "YOYO12", value: 12 },
+    ],
   })
 );

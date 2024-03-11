@@ -1,0 +1,233 @@
+@import "../base.scss";
+
+chui-form-dropdownbox {
+  position: fixed;
+  display: none;
+  inset: 0;
+  z-index: 99999999;
+  -webkit-user-select: none;
+  user-select: none;
+
+  &.open {
+    display: block;
+  }
+
+  > div {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+
+    > div {
+      box-sizing: border-box;
+      background-color: $backColor;
+      border: $border;
+      border-radius: $cornerRadius;
+      padding-left: $padding;
+      padding-right: $padding;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: thin;
+      overscroll-behavior: contain;
+      outline: none;
+      touch-action: none;
+
+      &.scroll {
+        touch-action: auto;
+      }
+
+      > div {
+        width: 100%;
+        display: table;
+
+        > div {
+          display: table-row;
+          color: $unselectedTextColor;
+          fill: $unselectedTextColor;
+          outline: none;
+          position: relative;
+
+          &.selected {
+            color: $selectedTextColor;
+            fill: $selectedTextColor;
+
+            &::after {
+              content: "";
+              position: absolute;
+              inset: 0;
+              left: -$padding;
+              right: -($padding + $scrollBarWidth);
+              background-color: $hoverColor;
+              z-index: -1;
+            }
+          }
+
+          > div {
+            display: table-cell;
+            box-sizing: border-box;
+            vertical-align: middle;
+            height: $height;
+            position: relative;
+            z-index: 1;
+
+            &:first-child {
+              padding: $padding;
+              width: 0;
+
+              > svg {
+                height: $height - $padding * 2;
+                display: block;
+                box-sizing: border-box;
+                width: auto;
+
+                .touch & {
+                  height: $touchHeight - $padding * 4;
+                }
+              }
+
+              &:empty {
+                padding: 0;
+                padding-left: $padding;
+              }
+            }
+
+            &:last-child {
+              padding-left: $padding;
+              padding-right: 0.4rem;
+
+              .touch & {
+                font-size: $touchFontSize;
+              }
+            }
+
+            .touch & {
+              height: $touchHeight;
+            }
+          }
+
+          &:focus-visible {
+            box-shadow: $shadowOutFocusOut;
+          }
+
+          @media (pointer: fine) {
+            &:hover::after {
+              content: "";
+              position: absolute;
+              inset: 0;
+              left: -$padding;
+              right: -($padding + $scrollBarWidth);
+              background-color: $hoverColor;
+              z-index: 0;
+            }
+          }
+        }
+      }
+
+      &::-webkit-scrollbar {
+        width: $scrollBarWidth;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: none;
+        padding-top: $padding;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: $borderColor;
+        border-radius: 0.5rem;
+      }
+
+      &::-webkit-scrollbar-thumb:hover {
+        background: $hoverColor;
+      }
+    }
+  }
+}
+
+chui-form-dropdown {
+  @include base;
+
+  > div {
+    display: table;
+    background-color: $backColor;
+    border: $border;
+    border-radius: $cornerRadius;
+    box-shadow: $shadowOut;
+    box-sizing: border-box;
+    -webkit-user-select: none;
+    user-select: none;
+    min-height: $height;
+    outline: none;
+
+    &:focus-visible {
+      box-shadow: $shadowOutFocusOut;
+    }
+
+    @media (pointer: fine) {
+      &:hover {
+        background-color: $hoverColor;
+      }
+    }
+
+    .touch & {
+      min-height: $touchHeight;
+    }
+
+    > div {
+      display: table-row;
+      color: $textColor;
+      fill: $textColor;
+      outline: none;
+      position: relative;
+
+      .touch & {
+        font-size: $touchFontSize;
+      }
+
+      > div {
+        display: table-cell;
+        box-sizing: border-box;
+        vertical-align: middle;
+        height: $height;
+
+        &:first-child {
+          padding: $padding;
+          width: 0;
+
+          > svg {
+            padding-left: $padding;
+            height: $height - $padding * 2;
+            box-sizing: border-box;
+            display: block;
+            width: auto;
+
+            .touch & {
+              height: $touchHeight - $padding * 4;
+            }
+          }
+        }
+
+        &:nth-child(2) {
+          padding-left: $padding;
+          padding-right: $padding;
+        }
+
+        &:last-child {
+          padding: $padding;
+          width: $height - $padding * 2;
+
+          > svg {
+            padding-left: $padding;
+            height: $height - $padding * 2;
+            box-sizing: border-box;
+            display: block;
+            width: auto;
+
+            .touch & {
+              height: $touchHeight - $padding * 4;
+            }
+          }
+        }
+      }
+    }
+  }
+}

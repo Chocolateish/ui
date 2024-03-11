@@ -1,26 +1,19 @@
 import "./base.scss";
 import { BaseObserver, BaseObserverOptions } from "./observer";
-import { StateError, StateRead, StateSubscriber } from "@src/state";
+import { StateError, StateRead, StateSubscriber, StateWrite } from "@src/state";
 import { AccessTypes } from "./access";
 import { libraryNameSpace } from "@src/globals/globalsInternals";
 import { Ok } from "@src/result";
 
 export let crel = document.createElement.bind(document);
 
-/**Event types for base*/
-export const enum ConnectEventVal {
-  /**When element is connected from document*/
-  Connect = 0,
-  /**When element is disconnected from document*/
-  Disconnect = 1,
-  /**When element is adopted by another document*/
-  Adopted = 2,
-}
+export type StateROrValue<T> = StateRead<T> | T;
+export type StateWOrValue<T> = StateWrite<T> | T;
 
 /**Base options for base class */
 export interface BaseOptions {
   /**Access for element, default is write access */
-  access?: AccessTypes | StateRead<AccessTypes>;
+  access?: StateROrValue<AccessTypes>;
   /**Options to use for element observer */
   observerOptions?: BaseObserverOptions;
 }
