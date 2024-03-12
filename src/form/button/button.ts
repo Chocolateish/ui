@@ -19,7 +19,7 @@ interface ButtonOptions extends FormBaseWriteOptions<boolean> {
 }
 
 /**Button for clicking*/
-export class Button extends FormBaseWrite<boolean> {
+export class FormButton extends FormBaseWrite<boolean> {
   private _text: HTMLSpanElement = this._body.appendChild(
     document.createElement("span")
   );
@@ -172,4 +172,4 @@ export class Button extends FormBaseWrite<boolean> {
     this._body.classList.remove("active");
   }
 }
-defineElement(Button);
+defineElement(FormButton);

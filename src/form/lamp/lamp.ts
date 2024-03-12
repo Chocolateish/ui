@@ -10,7 +10,7 @@ interface LampOptions extends FormBaseReadOptions<number | boolean> {
 }
 
 /**Lamp for clicking*/
-export class Lamp extends FormBaseRead<number | boolean> {
+export class FormLamp extends FormBaseRead<number | boolean> {
   private _text: HTMLSpanElement = this._body.appendChild(
     document.createElement("span")
   );
@@ -61,4 +61,4 @@ export class Lamp extends FormBaseRead<number | boolean> {
     this.removeAttribute("color");
   }
 }
-defineElement(Lamp);
+defineElement(FormLamp);

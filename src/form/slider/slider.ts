@@ -7,7 +7,7 @@ import {
 import { FormNumberWriteBaseOptions, FormStepperBase } from "../base";
 
 /**Slide Selector, displays all options in a slider*/
-export class Slider extends FormStepperBase {
+export class FormSlider extends FormStepperBase {
   private _slide: HTMLDivElement;
   private _slider: HTMLDivElement;
   private _valueBox: HTMLSpanElement;
@@ -166,4 +166,4 @@ export class Slider extends FormStepperBase {
     this._valueBox.textContent = "";
   }
 }
-defineElement(Slider);
+defineElement(FormSlider);

@@ -5,7 +5,7 @@ import { FormBaseWrite, FormBaseWriteOptions } from "../base";
 interface SwitchOptions extends FormBaseWriteOptions<boolean> {}
 
 /**Toggle Switch, switches between on and off*/
-export class Switch extends FormBaseWrite<boolean> {
+export class FormSwitch extends FormBaseWrite<boolean> {
   private _switch: HTMLDivElement = this._body.appendChild(
     document.createElement("div")
   );
@@ -110,4 +110,4 @@ export class Switch extends FormBaseWrite<boolean> {
   /**Called when value cleared */
   protected _valueClear() {}
 }
-defineElement(Switch);
+defineElement(FormSwitch);

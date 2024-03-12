@@ -2,15 +2,8 @@
 
 chui-form-text {
   @include base;
-}
-
-chui-form-title {
-  @include base;
-
   > div {
     color: $textColor;
-    font-size: 1.6rem;
-    font-weight: bold;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -19,6 +12,11 @@ chui-form-title {
 
     .anim & {
       transition: color var(--colorTransitionType) var(--colorTransitionTime);
+    }
+
+    &[title] {
+      font-size: 1.6rem;
+      font-weight: bold;
     }
   }
 }

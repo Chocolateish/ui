@@ -14,6 +14,7 @@ import {
   theme,
 } from "@src/theme";
 import { openWindowVirtual } from "./window";
+import { FormStepper } from "@src/form";
 
 export class UI extends Base {
   readonly menubar: Menubar;
@@ -118,6 +119,7 @@ export class UIMenu extends ContentBase {
     });
 
     //Scale
+    this.appendChild(new FormStepper({ label: "UI Scale", value: scale }));
     let scaleIn = this.appendChild(crel("input"));
     scaleIn.type = "number";
     scaleIn.addEventListener("change", () => {

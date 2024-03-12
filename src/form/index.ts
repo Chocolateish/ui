@@ -9,7 +9,7 @@ export * from "./slider/slider";
 export * from "./stepper/stepper";
 
 export * from "./dropDown/dropDown";
-// export * from "./selectors/toggleButton/toggleButton";
+export * from "./toggleButton/toggleButton";
 
 //export * from "./input/numberInput/numberInput";
 // export * from "./input/color/colorInput";

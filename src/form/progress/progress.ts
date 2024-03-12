@@ -7,7 +7,7 @@ import {
 } from "../base";
 
 /**Slide Selector, displays all options in a slider*/
-export class Progress extends FormNumberReadBase {
+export class FormProgress extends FormNumberReadBase {
   private _bar: HTMLDivElement;
   private _val: HTMLSpanElement;
 
@@ -38,4 +38,4 @@ export class Progress extends FormNumberReadBase {
     this._val.innerHTML = NoValueText;
   }
 }
-defineElement(Progress);
+defineElement(FormProgress);

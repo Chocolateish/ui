@@ -2,22 +2,18 @@ import { attachContextMenu } from "@src/page/contextmenu";
 import "./index.scss";
 import { UI, openWindowExternal, openWindowVirtual } from "@src/page";
 import { Base } from "@src/base";
-import { State } from "@src/state";
-import { Ok } from "@src/result";
-import { material_av_3k_rounded } from "@src/asset";
 import { Content } from "@src/page/content";
 import {
-  Button,
-  DropDown,
-  Lamp,
-  Progress,
-  Slider,
-  Stepper,
-  Switch,
-  TextField,
-  TitleField,
+  FormButton,
+  FormDropDown,
+  FormLamp,
+  FormProgress,
+  FormSlider,
+  FormStepper,
+  FormSwitch,
+  FormTextField,
+  FormToggleButton,
 } from "@src/form";
-import { BasicColors } from "@src/form/base";
 
 let ui = document.body.appendChild(new UI());
 
@@ -82,7 +78,7 @@ attachContextMenu(ui, [
 // });
 // openWindowVirtual({
 //   opener: document.body,
-//   symbol: material_av_3k_rounded,
+//   icon: material_av_3k_rounded,
 //   position: {
 //     left: 2,
 //     top: 14,
@@ -96,7 +92,7 @@ attachContextMenu(ui, [
 // });
 // openWindowVirtual({
 //   opener: document.body,
-//   symbol: material_av_3k_rounded,
+//   icon: material_av_3k_rounded,
 //   closable: false,
 //   position: {
 //     left: 14,
@@ -111,7 +107,7 @@ attachContextMenu(ui, [
 let Lamps = new Content();
 ui.content = Lamps;
 Lamps.appendChild(
-  new Lamp({
+  new FormLamp({
     label: "YOYO",
     value: true,
     text: "Testing attention please, would the real slim shady take a seconds to appease",
@@ -119,32 +115,32 @@ Lamps.appendChild(
 );
 
 Lamps.appendChild(
-  new Switch({
+  new FormSwitch({
     label: "YOYO",
     value: true,
   })
 );
 
 Lamps.appendChild(
-  new TextField({
+  new FormTextField({
     label: "YOYO",
     value:
       "Testing attention please, would the real slim shady take a seconds to appease",
-    textSize: 2,
+    size: 1,
   })
 );
 
 Lamps.appendChild(
-  new TitleField({
+  new FormTextField({
     label: "YOYO",
     value:
       "Testing attention please, would the real slim shady take a seconds to appease",
-    textSize: 2,
+    title: true,
   })
 );
 
 Lamps.appendChild(
-  new Button({
+  new FormButton({
     label: "YOYO",
     value: false,
     text: "Testing attention please, would the real slim shady take a seconds to appease",
@@ -152,7 +148,7 @@ Lamps.appendChild(
 );
 
 Lamps.appendChild(
-  new Progress({
+  new FormProgress({
     label: "YOYO",
     value: 10,
     min: 0,
@@ -162,7 +158,7 @@ Lamps.appendChild(
 );
 
 Lamps.appendChild(
-  new Slider({
+  new FormSlider({
     label: "YOYO",
     value: 10,
     min: 0,
@@ -171,7 +167,7 @@ Lamps.appendChild(
   })
 );
 Lamps.appendChild(
-  new Stepper({
+  new FormStepper({
     label: "YOYO",
     value: 10,
     min: 0,
@@ -181,11 +177,22 @@ Lamps.appendChild(
 );
 
 Lamps.appendChild(
-  new DropDown({
+  new FormDropDown({
     label: "YOYO",
     value: 10,
     selections: [
-      { text: "YOYO", value: 10 },
+      { text: "YOYO", value: 10, details: "This is a test" },
+      { text: "YOYO12", value: 12 },
+    ],
+  })
+);
+
+let toggleButton = Lamps.appendChild(
+  new FormToggleButton({
+    label: "YOYO",
+    value: 10,
+    selections: [
+      { text: "YOYO", value: 10, details: "This is a test" },
       { text: "YOYO12", value: 12 },
     ],
   })

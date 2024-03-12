@@ -13,7 +13,7 @@ export type ContextMenuItem = {
   action?: () => void;
   sub?: ContextMenuItem[];
   shortcut?: KeyboardShortcut | StateReadSync<KeyboardShortcut>;
-  symbol?: (() => SVGSVGElement) | StateReadSync<() => SVGSVGElement>;
+  icon?: (() => SVGSVGElement) | StateReadSync<() => SVGSVGElement>;
   checked?: boolean | StateReadSync<any>;
   disabled?: boolean | StateReadSync<any>;
 };
@@ -51,12 +51,12 @@ function keyboardShortcutToString(shortcut: KeyboardShortcut) {
 //   | |____| | | | |  __/
 //   |______|_|_| |_|\___|
 export class ContextMenuLine extends Base {
-  #symbol: HTMLDivElement;
+  #icon: HTMLDivElement;
   #label: HTMLTableCellElement;
   #shortcut: HTMLTableCellElement;
   constructor(line: ContextMenuItem) {
     super();
-    this.#symbol = this.appendChild(document.createElement("td")).appendChild(
+    this.#icon = this.appendChild(document.createElement("td")).appendChild(
       document.createElement("div")
     );
     this.#label = this.appendChild(document.createElement("td"));
@@ -75,15 +75,13 @@ export class ContextMenuLine extends Base {
     };
     if (typeof line.checked !== "undefined")
       this.attachState(line.checked, (checked) => {
-        this.#symbol.replaceChildren(
+        this.#icon.replaceChildren(
           (checked.ok ? material_navigation_check_rounded() : undefined) as any
         );
       });
-    else if (line.symbol)
-      this.attachState(line.symbol, (symbol) => {
-        this.#symbol.replaceChildren(
-          (symbol.ok ? symbol.value() : undefined) as any
-        );
+    else if (line.icon)
+      this.attachState(line.icon, (icon) => {
+        this.#icon.replaceChildren((icon.ok ? icon.value() : undefined) as any);
       });
 
     if (line.label)
@@ -116,14 +114,14 @@ defineElement(ContextMenuLine);
 //    ____) | |__| | |_) |
 //   |_____/ \____/|____/
 export class ContextMenuSub extends Base {
-  #symbol: HTMLDivElement;
+  #icon: HTMLDivElement;
   #label: HTMLTableCellElement;
   #opener: HTMLDivElement;
   #sub: ContextMenuParameter;
   #container?: ContextMenuContainer;
   constructor(line: ContextMenuItem) {
     super();
-    this.#symbol = this.appendChild(document.createElement("td")).appendChild(
+    this.#icon = this.appendChild(document.createElement("td")).appendChild(
       document.createElement("div")
     );
     this.#label = this.appendChild(document.createElement("td"));
@@ -160,15 +158,13 @@ export class ContextMenuSub extends Base {
     }
     if (typeof line.checked !== "undefined")
       this.attachState(line.checked, (checked) => {
-        this.#symbol.replaceChildren(
+        this.#icon.replaceChildren(
           (checked.ok ? material_navigation_check_rounded() : undefined) as any
         );
       });
-    else if (line.symbol)
-      this.attachState(line.symbol, (symbol) => {
-        this.#symbol.replaceChildren(
-          (symbol.ok ? symbol.value() : undefined) as any
-        );
+    else if (line.icon)
+      this.attachState(line.icon, (icon) => {
+        this.#icon.replaceChildren((icon.ok ? icon.value() : undefined) as any);
       });
     if (line.label)
       this.attachState(line.label, (label) => {
@@ -229,7 +225,7 @@ export class ContextMenu extends Base {
     super();
     this.appendChild(
       new ContextMenuLine({
-        symbol: material_navigation_close_rounded,
+        icon: material_navigation_close_rounded,
         label: "Close",
       })
     );

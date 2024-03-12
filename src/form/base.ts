@@ -1,4 +1,10 @@
-import { StateError, StateRead, StateWrite } from "@src/state";
+import {
+  State,
+  StateEnumHelperList,
+  StateError,
+  StateRead,
+  StateWrite,
+} from "@src/state";
 import { Base, BaseOptions, StateROrValue, StateWOrValue } from "@src/base";
 import { grey, orange, green, red, blue, yellow } from "@src/asset";
 import { themeBuiltInRoot } from "@src/theme";
@@ -167,27 +173,24 @@ export const enum BasicColors {
 //   |  _  // _ \/ _` |/ _` | |  _ < / _` / __|/ _ \
 //   | | \ \  __/ (_| | (_| | | |_) | (_| \__ \  __/
 //   |_|  \_\___|\__,_|\__,_| |____/ \__,_|___/\___|
-type ReadWrite<
-  V extends boolean | number | string,
-  RW extends "Read" | "Write"
-> = RW extends "Read" ? V | StateRead<V> : V | StateWrite<V>;
-export interface FormBaseReadOptions<
-  V extends boolean | number | string,
-  RW extends "Read" | "Write" = "Read"
-> extends BaseOptions {
+type ReadWrite<V, RW extends "Read" | "Write"> = RW extends "Read"
+  ? V | StateRead<V>
+  : V | StateWrite<V>;
+export interface FormBaseReadOptions<V, RW extends "Read" | "Write" = "Read">
+  extends BaseOptions {
   /**Value for form element */
   value?: ReadWrite<V, RW>;
   /**Text for label above form element */
-  label: StateROrValue<string>;
+  label?: StateROrValue<string>;
   /**Longer description what form element does */
   description?: StateROrValue<string>;
   /**Icon for form element */
-  symbol?: StateROrValue<() => SVGSVGElement>;
+  icon?: StateROrValue<() => SVGSVGElement>;
 }
 
 /** Base class for form elements for shared properties and methods*/
 export abstract class FormBaseRead<
-  V extends boolean | number | string,
+  V,
   RW extends "Read" | "Write" = "Read",
   E extends {} = any
 > extends Base<E> {
@@ -197,8 +200,8 @@ export abstract class FormBaseRead<
   }
   /**Stores local copy of form element value*/
   protected _value?: V;
-  /**Symbol container*/
-  protected _symbolContainer: HTMLSpanElement = document.createElement("span");
+  /**icon container*/
+  protected _iconContainer: HTMLSpanElement = document.createElement("span");
   /**Label container*/
   protected _label: HTMLSpanElement = document.createElement("span");
   /**Description container*/
@@ -257,13 +260,13 @@ export abstract class FormBaseRead<
   get label(): string {
     return this._label.innerHTML;
   }
-  /**Sets the current symbol of the element*/
-  set symbol(symbol: SVGSVGElement) {
-    this._symbolContainer.replaceChildren(symbol);
+  /**Sets the current icon of the element*/
+  set icon(icon: SVGSVGElement) {
+    this._iconContainer.replaceChildren(icon);
   }
-  /**Gets the current symbol of the element*/
-  get symbol(): SVGSVGElement | undefined {
-    return this._symbolContainer.firstChild as SVGSVGElement | undefined;
+  /**Gets the current icon of the element*/
+  get icon(): SVGSVGElement | undefined {
+    return this._iconContainer.firstChild as SVGSVGElement | undefined;
   }
 }
 
@@ -273,19 +276,19 @@ export abstract class FormBaseRead<
 //     \ \/  \/ / '__| | __/ _ \ |  _ < / _` / __|/ _ \
 //      \  /\  /| |  | | ||  __/ | |_) | (_| \__ \  __/
 //       \/  \/ |_|  |_|\__\___| |____/ \__,_|___/\___|
-export interface FormBaseWriteOptions<V extends boolean | number | string>
+export interface FormBaseWriteOptions<V>
   extends FormBaseReadOptions<V, "Write"> {
   /**Value for form element */
   value?: StateWOrValue<V>;
 }
 
-interface FormBaseWriteEvents<T extends boolean | number | string> {
+interface FormBaseWriteEvents<T> {
   /**Event fired when user changes value */
   valueChangeUser: T;
 }
 
 export abstract class FormBaseWrite<
-  V extends boolean | number | string,
+  V,
   E extends FormBaseWriteEvents<V> = FormBaseWriteEvents<V>
 > extends FormBaseRead<V, "Write", E> {
   /**Returns the name used to define the element*/
@@ -574,7 +577,6 @@ export abstract class FormNumberWriteBase<
     }
   }
 }
-
 //    _   _                 _                  _____ _                               ____
 //   | \ | |               | |                / ____| |                             |  _ \
 //   |  \| |_   _ _ __ ___ | |__   ___ _ __  | (___ | |_ ___ _ __  _ __   ___ _ __  | |_) | __ _ ___  ___
@@ -587,9 +589,9 @@ export interface FormStepperBaseOptions extends FormNumberWriteBaseOptions {
   /**wether the events are live as the slider is moved or only when moving stops */
   live?: boolean;
   /**Icon to use for decreasing value*/
-  iconDec?: SVGSVGElement;
+  iconDecrease?: StateROrValue<() => SVGSVGElement>;
   /**Icon to use for increasing value*/
-  iconInc?: SVGSVGElement;
+  iconIncrease?: StateROrValue<() => SVGSVGElement>;
 }
 
 /**Base for stepper elements*/
@@ -600,8 +602,10 @@ export abstract class FormStepperBase extends FormNumberWriteBase {
   constructor(options: FormStepperBaseOptions) {
     super(options);
     this.live = options.live;
-    if (options.iconDec) this.iconLeft = options.iconDec;
-    if (options.iconInc) this.iconRight = options.iconInc;
+    if (options.iconDecrease)
+      this.attachStateToProp("iconLeft", options.iconDecrease);
+    if (options.iconIncrease)
+      this.attachStateToProp("iconRight", options.iconIncrease);
   }
 
   /**Gets wether the slider is in live mode*/
@@ -614,15 +618,17 @@ export abstract class FormStepperBase extends FormNumberWriteBase {
   }
 
   /**Changes the icon on the left of the slider*/
-  set iconLeft(icon: SVGSVGElement) {
-    this._iconDec?.replaceWith(icon);
-    this._stepperFunc(icon, false);
+  set iconLeft(icon: () => SVGSVGElement) {
+    let sym = icon();
+    this._iconDec?.replaceWith(sym);
+    this._stepperFunc(sym, false);
   }
 
   /**Changes the icon on the right of the slider*/
-  set iconRight(icon: SVGSVGElement) {
-    this._iconInc?.replaceWith(icon);
-    this._stepperFunc(icon, true);
+  set iconRight(icon: () => SVGSVGElement) {
+    let sym = icon();
+    this._iconInc?.replaceWith(sym);
+    this._stepperFunc(sym, true);
   }
 
   protected _stepperFunc(icon: SVGSVGElement, dir: boolean) {
@@ -705,51 +711,41 @@ export abstract class FormStepperBase extends FormNumberWriteBase {
 //    \___ \ / _ \ |/ _ \/ __| __/ _ \| '__| |  _ < / _` / __|/ _ \
 //    ____) |  __/ |  __/ (__| || (_) | |    | |_) | (_| \__ \  __/
 //   |_____/ \___|_|\___|\___|\__\___/|_|    |____/ \__,_|___/\___|
+
 export interface FormSelectorOption<T> {
-  /**Value to set when option is selected */
+  /**Value to set when option is selected*/
   value: T;
-  /**Text for selection */
+  /**Text for selection*/
   text: string;
-  /**Symbol to display for option*/
-  symbol?: () => SVGSVGElement;
+  /**Longer text shown as tooltip*/
+  details?: string;
+  /**icon to display for option*/
+  icon?: () => SVGSVGElement;
 }
 
-export interface FormSelectorBaseOptions<T extends string | number | boolean>
-  extends FormBaseWriteOptions<T> {
+export interface FormSelectorBaseOptions<T> extends FormBaseWriteOptions<T> {
   /**Options for selector*/
-  selections?: FormSelectorOption<T>[];
+  selections?: StateROrValue<FormSelectorOption<T>[]>;
+  /**Options using state enum */
+  enum?: T extends string ? StateROrValue<StateEnumHelperList> : undefined;
 }
 
-export interface SelectionBase<T> {
+export interface FormSelectionBase<T> {
   index: number;
   selection: FormSelectorOption<T>;
 }
 
 /**Base for number elements elements*/
 export abstract class FormSelectorBase<
-  T extends string | number | boolean,
-  S extends SelectionBase<T>
+  T,
+  S extends FormSelectionBase<T>
 > extends FormBaseWrite<T> {
   protected _selectionValues: T[] = [];
   protected _selections: S[] = [];
   protected _selection: S | undefined;
 
-  /**Gets the selection options for the selector */
-  get selections() {
-    let selections: FormSelectorOption<T>[] = [];
-    for (let i = 0; i < this._selections.length; i++) {
-      const sel = this._selections[i].selection;
-      if (sel.symbol) {
-        selections.push({
-          text: sel.text,
-          value: sel.value,
-          symbol: sel.symbol,
-        });
-      } else {
-        selections.push({ text: sel.text, value: sel.value });
-      }
-    }
-    return selections;
+  constructor(options: FormSelectorBaseOptions<T>) {
+    super(options);
   }
 
   /**Sets the selection options for the selector */
@@ -757,7 +753,7 @@ export abstract class FormSelectorBase<
     this._selectionValues = [];
     this._selections = [];
     this._clearSelections();
-    if (selections) {
+    if (selections)
       for (let i = 0; i < selections.length; i++) {
         const selection = selections[i];
         if (selection) {
@@ -765,8 +761,49 @@ export abstract class FormSelectorBase<
           this._selections[i] = this._addSelection(selections[i], i);
         }
       }
+  }
+
+  /**Gets the selection options for the selector */
+  get selections() {
+    let selections: FormSelectorOption<T>[] = [];
+    for (let i = 0; i < this._selections.length; i++) {
+      const { text, details, value, icon } = this._selections[i].selection;
+      selections.push(
+        icon ? { text, value, details, icon } : { text, value, details }
+      );
+    }
+    return selections;
+  }
+
+  /**Sets the selection options for the selector */
+  set enum(
+    enums: T extends string
+      ? StateROrValue<StateEnumHelperList>
+      : undefined | undefined
+  ) {
+    this._selectionValues = [];
+    this._selections = [];
+    this._clearSelections();
+    if (enums) {
+      let i = 0;
+      for (const key in enums) {
+        const selection = enums![
+          key
+        ] as StateEnumHelperList[keyof StateEnumHelperList];
+        this._selectionValues[i] = key as any as T;
+        this._selections[i] = this._addSelection(
+          {
+            text: selection.name,
+            details: selection.description,
+            value: key as any as T,
+            icon: selection.icon,
+          },
+          i++
+        );
+      }
     }
   }
+
   /**Clears all selections from the element */
   protected abstract _clearSelections(): void;
   /**Add a selection to the element */

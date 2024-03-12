@@ -7,7 +7,7 @@ import {
 import { FormStepperBase, FormStepperBaseOptions } from "../base";
 
 /**Slide Selector, displays all options in a slider*/
-export class Stepper extends FormStepperBase {
+export class FormStepper extends FormStepperBase {
   private _text: HTMLSpanElement;
   private _valueBox: HTMLSpanElement;
   private _legend: HTMLSpanElement;
@@ -145,6 +145,7 @@ export class Stepper extends FormStepperBase {
         }
       }
     };
+    if (options.value) this.attachStateToProp("value", options.value);
   }
 
   /**Moves the value to a position by the mouse x coordinates*/
@@ -178,4 +179,4 @@ export class Stepper extends FormStepperBase {
     this._valueBox.textContent = "";
   }
 }
-defineElement(Stepper);
+defineElement(FormStepper);

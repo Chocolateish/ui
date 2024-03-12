@@ -1,69 +1,86 @@
-// import "./toggleButton.scss"
-// import { SelectionBase, SelectorBase, SelectorOption } from "../selectorBase";
-// import { defineElement } from "@chocolatelibui/core";
+import {
+  FormSelectionBase,
+  FormSelectorBase,
+  FormSelectorBaseOptions,
+  FormSelectorOption,
+} from "../base";
+import "./toggleButton.scss";
+import { defineElement } from "@src/base";
 
-// interface Selection<T> extends SelectionBase<T> {
-//     top: HTMLDivElement,
-//     bot: HTMLDivElement
-// }
+interface Selection<T> extends FormSelectionBase<T> {
+  top: HTMLDivElement;
+  bot: HTMLDivElement;
+}
 
-// /**Toggle buttons, displays all options in a multi toggler*/
-// export class ToggleButton<T> extends SelectorBase<T, Selection<T>> {
+/**Toggle buttons, displays all options in a multi toggler*/
+export class FormToggleButton<
+  T extends string | number | boolean
+> extends FormSelectorBase<T, Selection<T>> {
+  /**Returns the name used to define the element*/
+  static elementName() {
+    return "togglebutton";
+  }
 
-//     /**Returns the name used to define the element*/
-//     static elementName() { return 'togglebutton' }
+  constructor(options: FormSelectorBaseOptions<T>) {
+    super(options);
+    if (options.selections)
+      this.attachStateToProp("selections", options.selections);
+    if (options.enum) this.attachStateToProp("enum", options.enum);
+  }
 
-//     protected _addSelection(selection: SelectorOption<T>, index: number) {
-//         let top = this._body.appendChild(document.createElement('div'));
-//         top.tabIndex = 0;
-//         let bot = this._body.appendChild(document.createElement('div'));
-//         if (selection.icon) {
-//             top.appendChild(selection.icon);
-//             bot.textContent = selection.text;
-//         } else {
-//             top.textContent = selection.text;
-//         }
-//         let click = () => { this._valueSet(selection.value); }
-//         top.onclick = click;
-//         bot.onclick = click;
-//         top.onkeydown = (e) => {
-//             switch (e.key) {
-//                 case ' ':
-//                 case 'Enter':
-//                     e.preventDefault();
-//                     e.stopPropagation();
-//                     this._valueSet(selection.value);
-//                     break;
-//                 case 'ArrowRight':
-//                     e.stopPropagation();
-//                     this._selectAdjacent(true);
-//                     break;
-//                 case 'ArrowLeft':
-//                     e.stopPropagation();
-//                     this._selectAdjacent(false);
-//                     break;
-//             }
-//         };
-//         return { top, bot, index, selection };
-//     }
+  protected _addSelection(selection: FormSelectorOption<T>, index: number) {
+    let top = this._body.appendChild(document.createElement("div"));
+    top.tabIndex = 0;
+    let bot = this._body.appendChild(document.createElement("div"));
+    if (selection.icon) {
+      top.appendChild(selection.icon());
+      bot.textContent = selection.text;
+      if (selection.details) bot.title = selection.details;
+    } else top.textContent = selection.text;
+    if (selection.details) top.title = selection.details;
 
-//     protected _clearSelections() {
-//         this._body.replaceChildren();
-//     }
+    let click = () => {
+      this._valueSet(selection.value);
+    };
+    top.onclick = click;
+    bot.onclick = click;
+    top.onkeydown = (e) => {
+      switch (e.key) {
+        case " ":
+        case "Enter":
+          e.preventDefault();
+          e.stopPropagation();
+          this._valueSet(selection.value);
+          break;
+        case "ArrowRight":
+          e.stopPropagation();
+          this._selectAdjacent(true);
+          break;
+        case "ArrowLeft":
+          e.stopPropagation();
+          this._selectAdjacent(false);
+          break;
+      }
+    };
+    return { top, bot, index, selection };
+  }
 
-//     protected _setSelection(selection: Selection<T>) {
-//         selection.top.classList.add('selected');
-//         selection.bot.classList.add('selected');
-//     }
+  protected _clearSelections() {
+    this._body.replaceChildren();
+  }
 
-//     protected _clearSelection(selection: Selection<T>) {
-//         selection.top.classList.remove('selected');
-//         selection.bot.classList.remove('selected');
-//     }
+  protected _setSelection(selection: Selection<T>) {
+    selection.top.classList.add("selected");
+    selection.bot.classList.add("selected");
+  }
 
-//     protected _focusSelection(selection: Selection<T>) {
-//         selection.top.focus();
-//     }
+  protected _clearSelection(selection: Selection<T>) {
+    selection.top.classList.remove("selected");
+    selection.bot.classList.remove("selected");
+  }
 
-// }
-// defineElement(ToggleButton);
+  protected _focusSelection(selection: Selection<T>) {
+    selection.top.focus();
+  }
+}
+defineElement(FormToggleButton);

@@ -1,5 +1,5 @@
 import "./dropDown.scss";
-import { Base, defineElement } from "@src/base";
+import { Base, StateROrValue, defineElement } from "@src/base";
 import {
   material_navigation_unfold_less_rounded,
   material_navigation_unfold_more_rounded,
@@ -8,18 +8,185 @@ import {
   FormSelectorBase,
   FormSelectorBaseOptions,
   FormSelectorOption,
-  SelectionBase,
+  FormSelectionBase,
 } from "../base";
 
-interface Selection<T> extends SelectionBase<T> {
+interface Selection<T> extends FormSelectionBase<T> {
   line: HTMLDivElement;
 }
 
-export interface DropDownOptions<T extends string | number | boolean>
+interface DropDownOptions<T extends string | number | boolean>
   extends FormSelectorBaseOptions<T> {
   /**Default text displayed*/
-  default?: string;
+  default?: StateROrValue<string>;
 }
+
+/**Dropdown box for selecting between multiple choices in a small space*/
+export class FormDropDown<
+  T extends string | number | boolean
+> extends FormSelectorBase<T, Selection<T>> {
+  private _box: HTMLDivElement = document.createElement("div");
+  private _icon: HTMLDivElement = document.createElement("div");
+  private _text: HTMLDivElement = document.createElement("div");
+  private _default: Text = document.createTextNode("Select something");
+  private _open: HTMLDivElement = document.createElement("div");
+  private _keyCombo: string = "";
+  private _keyIndex: number = 0;
+  private _keyTimeout: number = 0;
+  private _keyTimeoutIndex: number = 0;
+
+  /**Returns the name used to define the element*/
+  static elementName() {
+    return "dropdown";
+  }
+
+  constructor(options: DropDownOptions<T>) {
+    super(options);
+    this._body.tabIndex = 0;
+    this._body.onclick = () => {
+      box.openMenu(this._box, this, this._body, this._selection);
+    };
+    this._body.onpointerdown = (e) => {
+      if (e.pointerType === "mouse") {
+        box.openMenu(this._box, this, this._body, this._selection);
+        e.preventDefault();
+      }
+    };
+    this._body.onkeydown = (e) => {
+      switch (e.key) {
+        case " ":
+        case "Enter":
+          e.preventDefault();
+          box.openMenu(this._box, this, this._body, this._selection);
+          break;
+        case "ArrowDown":
+        case "ArrowUp":
+          e.preventDefault();
+          e.stopPropagation();
+          this._selectAdjacent(e.key === "ArrowDown");
+          break;
+      }
+      if (e.key.length === 1) {
+        const combo = (this._keyCombo += e.key).toLowerCase();
+        clearTimeout(this._keyTimeout);
+        clearTimeout(this._keyTimeoutIndex);
+        this._keyTimeout = setTimeout(() => {
+          this._keyCombo = "";
+        }, 200);
+        this._keyTimeout = setTimeout(() => {
+          this._keyIndex = 0;
+        }, 2000);
+        let keyIndex = this._keyIndex;
+        for (let i = this._keyIndex; i < this._selections.length; i++) {
+          const selection = this._selections[i].selection;
+          if (selection.text.toLowerCase().startsWith(combo)) {
+            this._valueSet(selection.value);
+            this._keyIndex = i + 1;
+            return;
+          }
+        }
+        if (keyIndex) {
+          for (let i = 0; i < keyIndex; i++) {
+            const selection = this._selections[i].selection;
+            if (selection.text.toLowerCase().startsWith(combo)) {
+              this._valueSet(selection.value);
+              this._keyIndex = i + 1;
+              return;
+            }
+          }
+        }
+      }
+    };
+    let line = this._body.appendChild(document.createElement("div"));
+    line.appendChild(this._icon);
+    line.appendChild(this._text);
+    this._text.appendChild(this._default);
+    line.appendChild(this._open);
+    this._open.appendChild(material_navigation_unfold_more_rounded());
+    if (options.selections)
+      this.attachStateToProp("selections", options.selections);
+    if (options.enum) this.attachStateToProp("enum", options.enum);
+    if (options.default) this.attachStateToProp("default", options.default);
+  }
+
+  /**Gets the default text displayed when nothing has been selected yet */
+  get default() {
+    return this._default.nodeValue || "";
+  }
+
+  /**Sets the default text displayed when nothing has been selected yet */
+  set default(def: string) {
+    this._default.nodeValue = def;
+  }
+
+  protected _addSelection(selection: FormSelectorOption<T>, index: number) {
+    let line = document.createElement("div");
+    if (selection.details) line.title = selection.details;
+    let icon = line.appendChild(document.createElement("div"));
+    if (selection.icon) {
+      icon.appendChild(selection.icon());
+    }
+    let text = line.appendChild(document.createElement("div"));
+    text.textContent = selection.text;
+    line.onpointerup = (e) => {
+      if (e.pointerType !== "touch") {
+        this._valueSet(selection.value);
+      }
+    };
+    line.onclick = () => {
+      this._valueSet(selection.value);
+    };
+    line.tabIndex = 0;
+    line.onkeydown = (e) => {
+      switch (e.key) {
+        case " ":
+        case "Enter":
+          e.preventDefault();
+          this._valueSet(selection.value);
+          break;
+      }
+    };
+    this._box.appendChild(line);
+    return { line, index, selection };
+  }
+
+  protected _clearSelections() {
+    this._box.replaceChildren();
+  }
+
+  protected _setSelection(selection: Selection<T>) {
+    selection.line.classList.add("selected");
+    if (selection.selection.icon) {
+      this._icon.replaceChildren(selection.selection.icon());
+    } else {
+      this._icon.replaceChildren();
+    }
+    this._text.textContent = selection.selection.text;
+  }
+
+  protected _clearSelection(selection: Selection<T>) {
+    selection.line.classList.remove("selected");
+    this._icon.replaceChildren();
+    this._text.textContent = selection.selection.text;
+  }
+
+  protected _focusSelection(selection: Selection<T>) {
+    selection;
+  }
+
+  protected set _doOpen(open: boolean) {
+    if (open) {
+      this._open.replaceChildren(material_navigation_unfold_less_rounded());
+    } else {
+      this._open.replaceChildren(material_navigation_unfold_more_rounded());
+    }
+  }
+
+  focus() {
+    this._body.focus();
+  }
+}
+defineElement(FormDropDown);
 
 class DropDownBox extends Base {
   private _container: HTMLDivElement = this.appendChild(
@@ -28,7 +195,7 @@ class DropDownBox extends Base {
   private _box: HTMLDivElement = this._container.appendChild(
     document.createElement("div")
   );
-  private _dropdown: DropDown<any> | undefined;
+  private _dropdown: FormDropDown<any> | undefined;
   private _resizeListener = () => {
     this.closeMenu();
   };
@@ -122,7 +289,7 @@ class DropDownBox extends Base {
 
   openMenu(
     box: HTMLDivElement,
-    parent: DropDown<any>,
+    parent: FormDropDown<any>,
     ref: HTMLDivElement,
     selection?: Selection<any>
   ) {
@@ -176,167 +343,3 @@ class DropDownBox extends Base {
 }
 defineElement(DropDownBox);
 let box = document.documentElement.appendChild(new DropDownBox());
-
-/**Dropdown box for selecting between multiple choices in a small space*/
-export class DropDown<
-  T extends string | number | boolean
-> extends FormSelectorBase<T, Selection<T>> {
-  private _box: HTMLDivElement = document.createElement("div");
-  private _icon: HTMLDivElement = document.createElement("div");
-  private _text: HTMLDivElement = document.createElement("div");
-  private _default: Text = document.createTextNode("Select something");
-  private _open: HTMLDivElement = document.createElement("div");
-  private _keyCombo: string = "";
-  private _keyIndex: number = 0;
-  private _keyTimeout: number = 0;
-  private _keyTimeoutIndex: number = 0;
-
-  /**Returns the name used to define the element*/
-  static elementName() {
-    return "dropdown";
-  }
-
-  constructor(options: DropDownOptions<T>) {
-    super(options);
-    this._body.tabIndex = 0;
-    this._body.onclick = () => {
-      box.openMenu(this._box, this, this._body, this._selection);
-    };
-    this._body.onpointerdown = (e) => {
-      if (e.pointerType === "mouse") {
-        box.openMenu(this._box, this, this._body, this._selection);
-        e.preventDefault();
-      }
-    };
-    this._body.onkeydown = (e) => {
-      switch (e.key) {
-        case " ":
-        case "Enter":
-          e.preventDefault();
-          box.openMenu(this._box, this, this._body, this._selection);
-          break;
-        case "ArrowDown":
-        case "ArrowUp":
-          e.preventDefault();
-          e.stopPropagation();
-          this._selectAdjacent(e.key === "ArrowDown");
-          break;
-      }
-      if (e.key.length === 1) {
-        const combo = (this._keyCombo += e.key).toLowerCase();
-        clearTimeout(this._keyTimeout);
-        clearTimeout(this._keyTimeoutIndex);
-        this._keyTimeout = setTimeout(() => {
-          this._keyCombo = "";
-        }, 200);
-        this._keyTimeout = setTimeout(() => {
-          this._keyIndex = 0;
-        }, 2000);
-        let keyIndex = this._keyIndex;
-        for (let i = this._keyIndex; i < this._selections.length; i++) {
-          const selection = this._selections[i].selection;
-          if (selection.text.toLowerCase().startsWith(combo)) {
-            this._valueSet(selection.value);
-            this._keyIndex = i + 1;
-            return;
-          }
-        }
-        if (keyIndex) {
-          for (let i = 0; i < keyIndex; i++) {
-            const selection = this._selections[i].selection;
-            if (selection.text.toLowerCase().startsWith(combo)) {
-              this._valueSet(selection.value);
-              this._keyIndex = i + 1;
-              return;
-            }
-          }
-        }
-      }
-    };
-    let line = this._body.appendChild(document.createElement("div"));
-    line.appendChild(this._icon);
-    line.appendChild(this._text);
-    this._text.appendChild(this._default);
-    line.appendChild(this._open);
-    this._open.appendChild(material_navigation_unfold_more_rounded());
-    if (options.selections) this.selections = options.selections;
-    if (options.default) this.default = options.default;
-  }
-
-  /**Gets the default text displayed when nothing has been selected yet */
-  get default() {
-    return this._default.nodeValue || "";
-  }
-
-  /**Sets the default text displayed when nothing has been selected yet */
-  set default(def: string) {
-    this._default.nodeValue = def;
-  }
-
-  protected _addSelection(selection: FormSelectorOption<T>, index: number) {
-    let line = document.createElement("div");
-    let icon = line.appendChild(document.createElement("div"));
-    if (selection.symbol) {
-      icon.appendChild(selection.symbol());
-    }
-    let text = line.appendChild(document.createElement("div"));
-    text.textContent = selection.text;
-    line.onpointerup = (e) => {
-      if (e.pointerType !== "touch") {
-        this._valueSet(selection.value);
-      }
-    };
-    line.onclick = () => {
-      this._valueSet(selection.value);
-    };
-    line.tabIndex = 0;
-    line.onkeydown = (e) => {
-      switch (e.key) {
-        case " ":
-        case "Enter":
-          e.preventDefault();
-          this._valueSet(selection.value);
-          break;
-      }
-    };
-    this._box.appendChild(line);
-    return { line, index, selection };
-  }
-
-  protected _clearSelections() {
-    this._box.replaceChildren();
-  }
-
-  protected _setSelection(selection: Selection<T>) {
-    selection.line.classList.add("selected");
-    if (selection.selection.symbol) {
-      this._icon.replaceChildren(selection.selection.symbol());
-    } else {
-      this._icon.replaceChildren();
-    }
-    this._text.textContent = selection.selection.text;
-  }
-
-  protected _clearSelection(selection: Selection<T>) {
-    selection.line.classList.remove("selected");
-    this._icon.replaceChildren();
-    this._text.textContent = selection.selection.text;
-  }
-
-  protected _focusSelection(selection: Selection<T>) {
-    selection;
-  }
-
-  protected set _doOpen(open: boolean) {
-    if (open) {
-      this._open.replaceChildren(material_navigation_unfold_less_rounded());
-    } else {
-      this._open.replaceChildren(material_navigation_unfold_more_rounded());
-    }
-  }
-
-  focus() {
-    this._body.focus();
-  }
-}
-defineElement(DropDown);

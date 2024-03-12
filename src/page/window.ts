@@ -166,8 +166,8 @@ export type WindowVirtualOptions = {
   bar?: boolean;
   /**If the window is closeable, default is true, if content provides overwrite for this, it will be used instead*/
   closable?: boolean;
-  /**Symbol of window to put in title bar, if content provised overwrite for this, it will be used instead*/
-  symbol?: () => SVGSVGElement;
+  /**icon of window to put in title bar, if content provised overwrite for this, it will be used instead*/
+  icon?: () => SVGSVGElement;
   /**Title of window to put in title bar, if content provised overwrite for this, it will be used instead*/
   title?: string;
   /**Tooltip for window, only visible as a hover tooltip, if content provised overwrite for this, it will be used instead*/
@@ -223,7 +223,7 @@ export function openWindowVirtual(options: WindowVirtualOptions) {
 
 export class WindowVirtual extends Base {
   #titelContainer: HTMLDivElement;
-  #titelSymbolContainer: HTMLDivElement;
+  #titeliconContainer: HTMLDivElement;
   #titelTextContainer: HTMLDivElement;
   #titelCloserContainer: HTMLDivElement;
   #contentContainer: HTMLDivElement;
@@ -304,7 +304,7 @@ export class WindowVirtual extends Base {
       return items;
     });
 
-    this.#titelSymbolContainer = this.#titelContainer.appendChild(crel("div"));
+    this.#titeliconContainer = this.#titelContainer.appendChild(crel("div"));
     this.#titelTextContainer = this.#titelContainer.appendChild(crel("div"));
     this.#titelCloserContainer = this.#titelContainer.appendChild(crel("div"));
     this.#titelCloserContainer.onpointerdown = (e) => {
@@ -318,7 +318,7 @@ export class WindowVirtual extends Base {
     if (typeof options.bar !== "undefined") this.bar = options.bar;
     if (typeof options.closable !== "undefined")
       this.closable = options.closable;
-    if (options.symbol) this.symbol = options.symbol;
+    if (options.icon) this.icon = options.icon;
     if (options.title) this.title = options.title;
     if (options.toolTip) this.toolTip = options.toolTip;
     if (options.position) {
@@ -381,9 +381,9 @@ export class WindowVirtual extends Base {
     return !this.#titelCloserContainer.hidden;
   }
 
-  /**Changes symbol for window */
-  set symbol(symbol: () => SVGSVGElement) {
-    this.#titelSymbolContainer.replaceChildren(symbol());
+  /**Changes icon for window */
+  set icon(icon: () => SVGSVGElement) {
+    this.#titeliconContainer.replaceChildren(icon());
   }
 
   /**Sets window title*/
