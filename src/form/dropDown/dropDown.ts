@@ -107,6 +107,7 @@ export class FormDropDown<
       this.attachStateToProp("selections", options.selections);
     if (options.enum) this.attachStateToProp("enum", options.enum);
     if (options.default) this.attachStateToProp("default", options.default);
+    if (options.value) this.attachStateToProp("value", options.value);
   }
 
   /**Gets the default text displayed when nothing has been selected yet */

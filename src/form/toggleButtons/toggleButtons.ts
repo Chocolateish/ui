@@ -4,7 +4,7 @@ import {
   FormSelectorBaseOptions,
   FormSelectorOption,
 } from "../base";
-import "./toggleButton.scss";
+import "./toggleButtons.scss";
 import { defineElement } from "@src/base";
 
 interface Selection<T> extends FormSelectionBase<T> {
@@ -13,7 +13,7 @@ interface Selection<T> extends FormSelectionBase<T> {
 }
 
 /**Toggle buttons, displays all options in a multi toggler*/
-export class FormToggleButton<
+export class FormToggleButtons<
   T extends string | number | boolean
 > extends FormSelectorBase<T, Selection<T>> {
   /**Returns the name used to define the element*/
@@ -26,6 +26,7 @@ export class FormToggleButton<
     if (options.selections)
       this.attachStateToProp("selections", options.selections);
     if (options.enum) this.attachStateToProp("enum", options.enum);
+    if (options.value) this.attachStateToProp("value", options.value);
   }
 
   protected _addSelection(selection: FormSelectorOption<T>, index: number) {
@@ -83,4 +84,4 @@ export class FormToggleButton<
     selection.top.focus();
   }
 }
-defineElement(FormToggleButton);
+defineElement(FormToggleButtons);

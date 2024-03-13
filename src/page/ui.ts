@@ -14,7 +14,7 @@ import {
   theme,
 } from "@src/theme";
 import { openWindowVirtual } from "./window";
-import { FormStepper } from "@src/form";
+import { FormStepper, FormToggleButtons } from "@src/form";
 
 export class UI extends Base {
   readonly menubar: Menubar;
@@ -34,11 +34,14 @@ export class UI extends Base {
     test2.onclick = () => {
       openWindowVirtual({
         opener: document.body,
+        bar: false,
         position: {
+          moveable: false,
           left: 2,
           top: 2,
         },
         size: {
+          sizeable: false,
           width: 10,
           height: 10,
         },
@@ -63,92 +66,41 @@ defineElement(UI);
 export class UIMenu extends ContentBase {
   constructor() {
     super();
-
-    //Theme
-    let themeAutoSel = this.appendChild(crel("select"));
-    let themes = theme.related().unwrap.list!;
-    for (const key in themes) {
-      let option = themeAutoSel.appendChild(crel("option"));
-      option.innerHTML = key;
-    }
-    themeAutoSel.addEventListener("change", async (e) => {
-      theme.write(
-        (<HTMLSelectElement>e.currentTarget).selectedOptions[0]
-          .innerHTML as Themes
-      );
-    });
-    themeAutoSel.value = theme.get().unwrap;
-    theme.subscribe((val) => {
-      themeAutoSel.value = val.unwrap;
-    });
-
-    //Scrollbar
-    let scrollSel = this.appendChild(crel("select"));
-    let scrollbarModes = scrollBarMode.related().unwrap.list!;
-    for (const key in scrollbarModes) {
-      let option = scrollSel.appendChild(crel("option"));
-      option.innerHTML = key;
-    }
-    scrollSel.addEventListener("change", (e) => {
-      scrollBarMode.write(
-        (<HTMLSelectElement>e.currentTarget).selectedOptions[0]
-          .innerHTML as ScrollbarModes
-      );
-    });
-    scrollSel.value = scrollBarMode.get().unwrap;
-    scrollBarMode.subscribe((val) => {
-      scrollSel.value = val.unwrap;
-    });
-
-    //Animations
-    let animAutoSel = this.appendChild(crel("select"));
-    let graphicsLevels = graphicsLevel.related().unwrap.list!;
-    for (const key in graphicsLevels) {
-      let option = animAutoSel.appendChild(crel("option"));
-      option.innerHTML = key;
-    }
-    animAutoSel.addEventListener("change", (e) => {
-      graphicsLevel.write(
-        (<HTMLSelectElement>e.currentTarget).selectedOptions[0]
-          .innerHTML as GraphicsLevels
-      );
-    });
-    animAutoSel.value = graphicsLevel.get().unwrap;
-    graphicsLevel.subscribe((val) => {
-      animAutoSel.value = val.unwrap;
-    });
-
-    //Scale
-    this.appendChild(new FormStepper({ label: "UI Scale", value: scale }));
-    let scaleIn = this.appendChild(crel("input"));
-    scaleIn.type = "number";
-    scaleIn.addEventListener("change", () => {
-      scale.write(scaleIn.valueAsNumber);
-      scaleIn.valueAsNumber = scale.get().unwrap;
-    });
-    scaleIn.valueAsNumber = scale.get().unwrap;
-    scale.subscribe((val) => {
-      scaleIn.valueAsNumber = val.unwrap;
-    });
-
-    //InputMode
-    let inputModeSel = this.appendChild(crel("select"));
-    let inputModes = inputMode.related().unwrap.list!;
-    for (const key in inputModes) {
-      let option = inputModeSel.appendChild(crel("option"));
-      option.innerHTML = key;
-    }
-    inputModeSel.addEventListener("change", (e) => {
-      inputMode.write(
-        (<HTMLSelectElement>e.currentTarget).selectedOptions[0]
-          .innerHTML as InputModes
-      );
-    });
-    inputModeSel.value = inputMode.get().unwrap;
-
-    inputMode.subscribe((val) => {
-      inputModeSel.value = val.unwrap;
-    });
+    this.appendChild(
+      new FormToggleButtons({
+        label: "UI Theme",
+        value: theme,
+        writer: theme,
+        enum: theme.related().unwrap.list,
+      })
+    );
+    this.appendChild(
+      new FormToggleButtons({
+        label: "Scrollbar Mode",
+        value: scrollBarMode,
+        writer: scrollBarMode,
+        enum: scrollBarMode.related().unwrap.list,
+      })
+    );
+    this.appendChild(
+      new FormToggleButtons({
+        label: "Graphics Level",
+        value: graphicsLevel,
+        writer: graphicsLevel,
+        enum: graphicsLevel.related().unwrap.list,
+      })
+    );
+    this.appendChild(
+      new FormStepper({ label: "UI Scale", value: scale, writer: scale })
+    );
+    this.appendChild(
+      new FormToggleButtons({
+        label: "Input Mode",
+        value: inputMode,
+        writer: inputMode,
+        enum: inputMode.related().unwrap.list,
+      })
+    );
   }
   static elementName() {
     return "uimenu";

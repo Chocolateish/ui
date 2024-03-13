@@ -4,7 +4,7 @@ import {
   material_navigation_chevron_left_rounded,
   material_navigation_chevron_right_rounded,
 } from "@src/asset";
-import { FormNumberWriteBaseOptions, FormStepperBase } from "../base";
+import { FormStepperBase, FormStepperBaseOptions } from "../base";
 
 /**Slide Selector, displays all options in a slider*/
 export class FormSlider extends FormStepperBase {
@@ -18,7 +18,7 @@ export class FormSlider extends FormStepperBase {
     return "slider";
   }
 
-  constructor(options: FormNumberWriteBaseOptions) {
+  constructor(options: FormStepperBaseOptions) {
     super(options);
     this._iconDec = this._stepperFunc(
       this._body.appendChild(material_navigation_chevron_left_rounded()),
@@ -111,6 +111,7 @@ export class FormSlider extends FormStepperBase {
           break;
       }
     };
+    if (options.value) this.attachStateToProp("value", options.value);
   }
 
   private _moveAbsolute(x: number, last: boolean) {

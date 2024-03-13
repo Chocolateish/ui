@@ -12,8 +12,10 @@ import {
   FormStepper,
   FormSwitch,
   FormTextField,
-  FormToggleButton,
+  FormToggleButtons,
 } from "@src/form";
+import { State } from "@src/state";
+import { Ok } from "@src/result";
 
 let ui = document.body.appendChild(new UI());
 
@@ -104,12 +106,14 @@ attachContextMenu(ui, [
 //   },
 // });
 
+let testStateBool = new State(Ok(false), true);
+
 let Lamps = new Content();
 ui.content = Lamps;
 Lamps.appendChild(
   new FormLamp({
     label: "YOYO",
-    value: true,
+    value: testStateBool,
     text: "Testing attention please, would the real slim shady take a seconds to appease",
   })
 );
@@ -117,7 +121,16 @@ Lamps.appendChild(
 Lamps.appendChild(
   new FormSwitch({
     label: "YOYO",
-    value: true,
+    value: testStateBool,
+    writer: testStateBool,
+  })
+);
+Lamps.appendChild(
+  new FormButton({
+    label: "YOYO",
+    value: testStateBool,
+    writer: testStateBool,
+    text: "Testing attention please, would the real slim shady take a seconds to appease",
   })
 );
 
@@ -139,18 +152,12 @@ Lamps.appendChild(
   })
 );
 
-Lamps.appendChild(
-  new FormButton({
-    label: "YOYO",
-    value: false,
-    text: "Testing attention please, would the real slim shady take a seconds to appease",
-  })
-);
+let testState = new State(Ok(10), true);
 
 Lamps.appendChild(
   new FormProgress({
     label: "YOYO",
-    value: 10,
+    value: testState,
     min: 0,
     max: 100,
     unit: "%",
@@ -160,7 +167,11 @@ Lamps.appendChild(
 Lamps.appendChild(
   new FormSlider({
     label: "YOYO",
-    value: 10,
+    description:
+      "Testing attention please, would the real slim shady take a seconds to appease",
+    live: true,
+    value: testState,
+    writer: testState,
     min: 0,
     max: 100,
     unit: "%",
@@ -169,17 +180,22 @@ Lamps.appendChild(
 Lamps.appendChild(
   new FormStepper({
     label: "YOYO",
-    value: 10,
+    live: true,
+    value: testState,
+    writer: testState,
     min: 0,
     max: 100,
     unit: "%",
   })
 );
 
+let testStateSel = new State<10 | 12>(Ok(10), true);
+
 Lamps.appendChild(
   new FormDropDown({
     label: "YOYO",
-    value: 10,
+    value: testStateSel,
+    writer: testStateSel,
     selections: [
       { text: "YOYO", value: 10, details: "This is a test" },
       { text: "YOYO12", value: 12 },
@@ -188,9 +204,10 @@ Lamps.appendChild(
 );
 
 let toggleButton = Lamps.appendChild(
-  new FormToggleButton({
+  new FormToggleButtons({
     label: "YOYO",
-    value: 10,
+    value: testStateSel,
+    writer: testStateSel,
     selections: [
       { text: "YOYO", value: 10, details: "This is a test" },
       { text: "YOYO12", value: 12 },

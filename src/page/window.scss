@@ -99,7 +99,7 @@ chui-window {
   //    \_____\___/|_| |_|\__\___|_| |_|\__|
   > div:nth-child(2) {
     flex-grow: 1;
-    overflow: hidden;
+    overflow: auto;
     background-color: $chuiColorLayer1;
     border-radius: 0 0 $chuiBorderRadius $chuiBorderRadius;
     -webkit-user-select: auto;

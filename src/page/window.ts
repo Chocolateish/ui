@@ -150,6 +150,7 @@ type Left = "-left" | "";
 type Right = "-right" | "";
 type Vis = "-visible" | "";
 type WindowVirtualSizeable =
+  | false
   | true
   | `${"top"}${Bot}${Left}${Right}${Vis}`
   | `${"bottom"}${Left}${Right}${Vis}`
@@ -536,6 +537,7 @@ export class WindowVirtual extends Base {
   set sizeable(sizeable: WindowVirtualSizeable) {
     this.#sizers.replaceChildren();
     this.#sizers.className = "";
+    if (sizeable === false) return;
     let sizers: string[];
     let visible = false;
     if (

@@ -1,11 +1,5 @@
-import {
-  State,
-  StateEnumHelperList,
-  StateError,
-  StateRead,
-  StateWrite,
-} from "@src/state";
-import { Base, BaseOptions, StateROrValue, StateWOrValue } from "@src/base";
+import { StateEnumHelperList, StateError, StateWrite } from "@src/state";
+import { Base, BaseOptions, StateROrValue } from "@src/base";
 import { grey, orange, green, red, blue, yellow } from "@src/asset";
 import { themeBuiltInRoot } from "@src/theme";
 
@@ -173,13 +167,11 @@ export const enum BasicColors {
 //   |  _  // _ \/ _` |/ _` | |  _ < / _` / __|/ _ \
 //   | | \ \  __/ (_| | (_| | | |_) | (_| \__ \  __/
 //   |_|  \_\___|\__,_|\__,_| |____/ \__,_|___/\___|
-type ReadWrite<V, RW extends "Read" | "Write"> = RW extends "Read"
-  ? V | StateRead<V>
-  : V | StateWrite<V>;
-export interface FormBaseReadOptions<V, RW extends "Read" | "Write" = "Read">
-  extends BaseOptions {
+export interface FormBaseReadOptions<V> extends BaseOptions {
+  /**Unique id for form element */
+  id?: StateROrValue<string | number | symbol>;
   /**Value for form element */
-  value?: ReadWrite<V, RW>;
+  value?: StateROrValue<V>;
   /**Text for label above form element */
   label?: StateROrValue<string>;
   /**Longer description what form element does */
@@ -189,15 +181,12 @@ export interface FormBaseReadOptions<V, RW extends "Read" | "Write" = "Read">
 }
 
 /** Base class for form elements for shared properties and methods*/
-export abstract class FormBaseRead<
-  V,
-  RW extends "Read" | "Write" = "Read",
-  E extends {} = any
-> extends Base<E> {
+export abstract class FormBaseRead<V, E extends {} = any> extends Base<E> {
   /**Returns the name used to define the element*/
   static elementName() {
     return "form";
   }
+  protected _id?: string | number | symbol;
   /**Stores local copy of form element value*/
   protected _value?: V;
   /**icon container*/
@@ -205,17 +194,31 @@ export abstract class FormBaseRead<
   /**Label container*/
   protected _label: HTMLSpanElement = document.createElement("span");
   /**Description container*/
-  protected _description?: HTMLSpanElement;
+  protected _description?: HTMLSpanElement = document.createElement("span");
   /**Body of form element*/
   protected _body: HTMLDivElement = document.createElement("div");
   /**Flag for when user has changed the value of the form element*/
   readonly changed: boolean = false;
 
-  constructor(options: FormBaseReadOptions<V, RW>) {
+  constructor(options: FormBaseReadOptions<V>) {
     super(options);
     this.appendChild(this._label);
     this.appendChild(this._body);
     if (options.label) this.attachStateToProp("label", options.label);
+    if (typeof options.id !== "undefined")
+      this.attachStateToProp("elementId", options.id);
+    if (options.description)
+      this.attachStateToProp("description", options.description);
+    if (options.icon) this.attachStateToProp("icon", options.icon);
+  }
+
+  /**Sets the id of the element*/
+  set elementId(id: string | number | symbol | undefined) {
+    this._id = id;
+  }
+  /**Gets the id of the element*/
+  get elementId(): string | number | symbol | undefined {
+    return this._id;
   }
 
   /**Returns value of form element*/
@@ -238,20 +241,6 @@ export abstract class FormBaseRead<
   /**Called when value cleared */
   protected abstract _valueClear(): void;
 
-  /**Changes value of form element*/
-  valueByState(
-    state: StateWrite<V> | undefined,
-    visible?: boolean,
-    fallback?: V,
-    fallbackFunc?: (error: StateError) => V
-  ) {
-    if (state) {
-      this.attachStateToProp("value", state, visible, fallback, fallbackFunc);
-    } else {
-      this.dettachStateFromProp("value");
-    }
-  }
-
   /**Sets the current label of the element*/
   set label(text: string) {
     this._label.innerHTML = text;
@@ -260,13 +249,19 @@ export abstract class FormBaseRead<
   get label(): string {
     return this._label.innerHTML;
   }
+
   /**Sets the current icon of the element*/
-  set icon(icon: SVGSVGElement) {
-    this._iconContainer.replaceChildren(icon);
+  set icon(icon: () => SVGSVGElement) {
+    this._iconContainer.replaceChildren(icon());
   }
-  /**Gets the current icon of the element*/
-  get icon(): SVGSVGElement | undefined {
-    return this._iconContainer.firstChild as SVGSVGElement | undefined;
+
+  /**Sets the current label of the element*/
+  set description(description: string) {
+    this.title = description;
+  }
+  /**Gets the current label of the element*/
+  get description(): string {
+    return this.title;
   }
 }
 
@@ -276,10 +271,9 @@ export abstract class FormBaseRead<
 //     \ \/  \/ / '__| | __/ _ \ |  _ < / _` / __|/ _ \
 //      \  /\  /| |  | | ||  __/ | |_) | (_| \__ \  __/
 //       \/  \/ |_|  |_|\__\___| |____/ \__,_|___/\___|
-export interface FormBaseWriteOptions<V>
-  extends FormBaseReadOptions<V, "Write"> {
-  /**Value for form element */
-  value?: StateWOrValue<V>;
+export interface FormBaseWriteOptions<V> extends FormBaseReadOptions<V> {
+  /**Writer for change of value */
+  writer?: StateWrite<V> | ((val: V) => void);
 }
 
 interface FormBaseWriteEvents<T> {
@@ -290,37 +284,40 @@ interface FormBaseWriteEvents<T> {
 export abstract class FormBaseWrite<
   V,
   E extends FormBaseWriteEvents<V> = FormBaseWriteEvents<V>
-> extends FormBaseRead<V, "Write", E> {
+> extends FormBaseRead<V, E> {
   /**Returns the name used to define the element*/
   static elementName() {
     return "@abstract@";
   }
 
+  constructor(options: FormBaseWriteOptions<V>) {
+    super(options);
+    if (options.writer) this.writer = options.writer;
+  }
+
   /**Buffer of linked state */
-  private _state?: StateWrite<V>;
+  private _writer?: StateWrite<V> | ((val: V) => void);
 
   /**Changes value of form element*/
-  valueByState(
-    state: StateWrite<V> | undefined,
-    visible?: boolean,
-    fallback?: V,
-    fallbackFunc?: (error: StateError) => V
-  ) {
-    if (state) {
-      this._state = state;
-      this.attachStateToProp("value", state, visible, fallback, fallbackFunc);
-    } else {
-      delete this._state;
-      this.dettachStateFromProp("value");
-    }
+  set writer(value: StateWrite<V> | ((val: V) => void) | undefined) {
+    this._writer = value;
+  }
+  /**Returns value of form element*/
+  get writer() {
+    return this._writer;
   }
 
   /**Called to change value*/
   protected _valueSet(value: V) {
     //@ts-expect-error
     this.changed = true;
-    if (this._state) {
-      this._state.write(value);
+    switch (typeof this._writer) {
+      case "function":
+        this._writer(value);
+        break;
+      case "object":
+        this._writer.write(value);
+        break;
     }
     this._value = value;
     this._valueUpdate(value);
@@ -341,8 +338,7 @@ export abstract class FormBaseWrite<
 //   |_| \_|\__,_|_| |_| |_|_.__/ \___|_|    |_|  \_\___|\__,_|\__,_| |____/ \__,_|___/\___|
 
 type StepFunc = (value: number) => number;
-export interface FormNumberReadBaseOptions<RW extends "Read" | "Write" = "Read">
-  extends FormBaseReadOptions<number, RW> {
+export interface FormNumberReadBaseOptions extends FormBaseReadOptions<number> {
   /**Lower limit for slider value*/
   min?: StateROrValue<number>;
   /**Upper limit for slider value*/
@@ -357,9 +353,8 @@ export interface FormNumberReadBaseOptions<RW extends "Read" | "Write" = "Read">
 
 /**Base for number elements elements*/
 export abstract class FormNumberReadBase<
-  RW extends "Read" | "Write" = "Read",
   E extends {} = any
-> extends FormBaseRead<number, RW, E> {
+> extends FormBaseRead<number, E> {
   static elementName() {
     return "@abstract@";
   }
@@ -374,7 +369,7 @@ export abstract class FormNumberReadBase<
   /**Unit of input*/
   protected _unit: HTMLSpanElement = document.createElement("span");
 
-  constructor(options: FormNumberReadBaseOptions<RW>) {
+  constructor(options: FormNumberReadBaseOptions) {
     super(options);
     if (typeof options.step !== "undefined")
       this.attachStateToProp("step", options.step);
@@ -471,49 +466,51 @@ export abstract class FormNumberReadBase<
 //   | |\  | |_| | | | | | | |_) |  __/ |       \  /\  /| |  | | ||  __/ | |_) | (_| \__ \  __/
 //   |_| \_|\__,_|_| |_| |_|_.__/ \___|_|        \/  \/ |_|  |_|\__\___| |____/ \__,_|___/\___|
 
-export interface FormNumberWriteBaseOptions
-  extends FormNumberReadBaseOptions<"Write"> {
-  /**Value for form element */
-  value?: StateWOrValue<number>;
+export interface FormNumberWriteBaseOptions extends FormNumberReadBaseOptions {
+  /**Writer for change of value */
+  writer?: StateWrite<number> | ((val: number) => void);
 }
 
 /**Base for number elements elements*/
 export abstract class FormNumberWriteBase<
   E extends FormBaseWriteEvents<number> = FormBaseWriteEvents<number>
-> extends FormNumberReadBase<"Write", E> {
+> extends FormNumberReadBase<E> {
   static elementName() {
     return "@abstract@";
   }
+  constructor(options: FormNumberWriteBaseOptions) {
+    super(options);
+    if (options.writer) this.writer = options.writer;
+  }
+
   /**Element used to display validation warnings*/
   protected _validator: HTMLButtonElement = this._body.appendChild(
     document.createElement("button")
   );
 
   /**Buffer of linked state */
-  private _state?: StateWrite<number>;
+  private _writer?: StateWrite<number> | ((val: number) => void);
 
   /**Changes value of form element*/
-  valueByState(
-    state: StateWrite<number> | undefined,
-    visible?: boolean,
-    fallback?: number,
-    fallbackFunc?: (error: StateError) => number
-  ) {
-    if (state) {
-      this._state = state;
-      this.attachStateToProp("value", state, visible, fallback, fallbackFunc);
-    } else {
-      delete this._state;
-      this.dettachStateFromProp("value");
-    }
+  set writer(writer: StateWrite<number> | ((val: number) => void) | undefined) {
+    this._writer = writer;
+  }
+  /**Returns value of form element*/
+  get writer() {
+    return this._writer;
   }
 
   /**Called to change value*/
   protected _valueSet(value: number) {
     //@ts-expect-error
     this.changed = true;
-    if (this._state) {
-      this._state.write(value);
+    switch (typeof this._writer) {
+      case "function":
+        this._writer(value);
+        break;
+      case "object":
+        this._writer.write(value);
+        break;
     }
     this._value = value;
     this._valueUpdate(value);
@@ -527,9 +524,9 @@ export abstract class FormNumberWriteBase<
 
   /**Validates given value then sets it*/
   protected _setValueValidate(val: number, warn: boolean): boolean | void {
-    if (this._state) {
-      let reason = this._state.check(val);
-      let limit = this._state.limit(val);
+    if (typeof this._writer === "object") {
+      let reason = this._writer.check(val);
+      let limit = this._writer.limit(val);
       if (reason.some) {
         this._warnValidator(reason.value, warn);
         this._valueSet(limit.some ? limit.value : val);
