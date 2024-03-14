@@ -1,5 +1,5 @@
 import "./menubar.scss";
-import { Base, defineElement } from "..";
+import { Base, crel, defineElement } from "..";
 
 export class Menubar extends Base {
   #start: HTMLDivElement;
@@ -7,9 +7,9 @@ export class Menubar extends Base {
   #end: HTMLDivElement;
   constructor() {
     super();
-    this.#start = this.appendChild(document.createElement("div"));
-    this.#mid = this.appendChild(document.createElement("div"));
-    this.#end = this.appendChild(document.createElement("div"));
+    this.#start = this.appendChild(crel("div"));
+    this.#mid = this.appendChild(crel("div"));
+    this.#end = this.appendChild(crel("div"));
   }
   /**Returns the name used to define the element */
   static elementName() {

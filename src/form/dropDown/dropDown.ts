@@ -1,5 +1,5 @@
 import "./dropDown.scss";
-import { Base, StateROrValue, defineElement } from "@src/base";
+import { Base, StateROrValue, crel, defineElement } from "@src/base";
 import {
   material_navigation_unfold_less_rounded,
   material_navigation_unfold_more_rounded,
@@ -25,11 +25,11 @@ interface DropDownOptions<T extends string | number | boolean>
 export class FormDropDown<
   T extends string | number | boolean
 > extends FormSelectorBase<T, Selection<T>> {
-  private _box: HTMLDivElement = document.createElement("div");
-  private _icon: HTMLDivElement = document.createElement("div");
-  private _text: HTMLDivElement = document.createElement("div");
+  private _box: HTMLDivElement = crel("div");
+  private _icon: HTMLDivElement = crel("div");
+  private _text: HTMLDivElement = crel("div");
   private _default: Text = document.createTextNode("Select something");
-  private _open: HTMLDivElement = document.createElement("div");
+  private _open: HTMLDivElement = crel("div");
   private _keyCombo: string = "";
   private _keyIndex: number = 0;
   private _keyTimeout: number = 0;
@@ -97,7 +97,7 @@ export class FormDropDown<
         }
       }
     };
-    let line = this._body.appendChild(document.createElement("div"));
+    let line = this._body.appendChild(crel("div"));
     line.appendChild(this._icon);
     line.appendChild(this._text);
     this._text.appendChild(this._default);
@@ -121,13 +121,13 @@ export class FormDropDown<
   }
 
   protected _addSelection(selection: FormSelectorOption<T>, index: number) {
-    let line = document.createElement("div");
+    let line = crel("div");
     if (selection.details) line.title = selection.details;
-    let icon = line.appendChild(document.createElement("div"));
+    let icon = line.appendChild(crel("div"));
     if (selection.icon) {
       icon.appendChild(selection.icon());
     }
-    let text = line.appendChild(document.createElement("div"));
+    let text = line.appendChild(crel("div"));
     text.textContent = selection.text;
     line.onpointerup = (e) => {
       if (e.pointerType !== "touch") {
@@ -190,12 +190,8 @@ export class FormDropDown<
 defineElement(FormDropDown);
 
 class DropDownBox extends Base {
-  private _container: HTMLDivElement = this.appendChild(
-    document.createElement("div")
-  );
-  private _box: HTMLDivElement = this._container.appendChild(
-    document.createElement("div")
-  );
+  private _container: HTMLDivElement = this.appendChild(crel("div"));
+  private _box: HTMLDivElement = this._container.appendChild(crel("div"));
   private _dropdown: FormDropDown<any> | undefined;
   private _resizeListener = () => {
     this.closeMenu();

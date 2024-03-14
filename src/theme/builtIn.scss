@@ -18,6 +18,10 @@ $chuiColorScrollbarColor: var(--chui-clr-sbclr);
 $chuiBorderRadius: 0.5rem;
 $chuiBorder: 0px 0px 8px 1px $chuiColorBorder, 0px 0px 1px 1px $chuiColorBorder;
 
+@mixin fontRoboto {
+  font-family: "Roboto", Arial, Helvetica, sans-serif;
+}
+
 * {
   &::-webkit-scrollbar {
     width: $chuiScrollbarSize;
@@ -56,4 +60,46 @@ $chuiBorder: 0px 0px 8px 1px $chuiColorBorder, 0px 0px 1px 1px $chuiColorBorder;
   &::-webkit-scrollbar-button:horizontal:start:decrement {
     display: none;
   }
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 100;
+  src: url("./font/Roboto-Thin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-style: italic;
+  font-weight: 100;
+  src: url("./font/Roboto-ThinItalic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 400;
+  src: url("./font/Roboto-Regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-style: italic;
+  font-weight: 400;
+  src: url("./font/Roboto-Italic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 700;
+  src: url("./font/Roboto-Bold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-style: italic;
+  font-weight: 700;
+  src: url("./font/Roboto-BoldItalic.woff2") format("woff2");
 }

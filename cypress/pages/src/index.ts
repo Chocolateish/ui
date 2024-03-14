@@ -8,5 +8,5 @@ let themeEngine = new theme.ThemeEngine(documentHandler);
 //@ts-ignore
 document.body.theme = theme;
 
-let scaleBox = document.body.appendChild(document.createElement("div"));
+let scaleBox = document.body.appendChild(crel("div"));
 scaleBox.id = scaleBox.innerHTML = "ScaleBox";

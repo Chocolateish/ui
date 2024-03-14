@@ -1,3 +1,5 @@
+@import "@src/theme/builtIn.scss";
+
 .h {
   display: none;
 }
@@ -62,6 +64,7 @@ $sizeTransitionTime: 0.2s;
   flex-direction: column;
   min-width: $minWidth;
   position: relative;
+  @include fontRoboto;
 
   .touch & {
     min-width: $minWidthTouch;
@@ -188,7 +191,7 @@ $touchUnitWidth: $touchUnitFontSize * 5.6;
   }
 }
 
-@mixin svgStepperButton {
+@mixin stepperButton {
   background-color: $backColor;
   border-radius: $cornerRadius;
   border: $border;
@@ -218,5 +221,10 @@ $touchUnitWidth: $touchUnitFontSize * 5.6;
     &:hover {
       background-color: $hoverColor;
     }
+  }
+
+  > svg {
+    width: 100%;
+    height: 100%;
   }
 }

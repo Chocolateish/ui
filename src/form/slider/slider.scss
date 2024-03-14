@@ -26,7 +26,7 @@ chui-form-slider {
       height: $touchHeight;
     }
 
-    > div {
+    > div:nth-child(3) {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -110,21 +110,20 @@ chui-form-slider {
       }
     }
 
-    > svg {
-      @include svgStepperButton;
+    > span:nth-child(2) {
+      @include stepperButton;
       z-index: 1;
-
-      &:nth-child(2) {
-        left: -$borderThickness;
-      }
-
-      &:nth-child(4) {
-        position: absolute;
-        right: -$borderThickness;
-      }
+      left: -$borderThickness;
     }
 
-    > span {
+    > span:nth-child(4) {
+      @include stepperButton;
+      z-index: 1;
+      position: absolute;
+      right: -$borderThickness;
+    }
+
+    > span:nth-child(5) {
       position: absolute;
       inset: 0;
       padding-left: $height + 0.4rem;

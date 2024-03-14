@@ -56,11 +56,9 @@ export class ContextMenuLine extends Base {
   #shortcut: HTMLTableCellElement;
   constructor(line: ContextMenuItem) {
     super();
-    this.#icon = this.appendChild(document.createElement("td")).appendChild(
-      document.createElement("div")
-    );
-    this.#label = this.appendChild(document.createElement("td"));
-    this.#shortcut = this.appendChild(document.createElement("td"));
+    this.#icon = this.appendChild(crel("td")).appendChild(crel("div"));
+    this.#label = this.appendChild(crel("td"));
+    this.#shortcut = this.appendChild(crel("td"));
     this.tabIndex = 0;
     this.onclick = (e) => {
       e.stopPropagation();
@@ -121,13 +119,11 @@ export class ContextMenuSub extends Base {
   #container?: ContextMenuContainer;
   constructor(line: ContextMenuItem) {
     super();
-    this.#icon = this.appendChild(document.createElement("td")).appendChild(
-      document.createElement("div")
-    );
-    this.#label = this.appendChild(document.createElement("td"));
-    this.#opener = this.appendChild(document.createElement("td"));
+    this.#icon = this.appendChild(crel("td")).appendChild(crel("div"));
+    this.#label = this.appendChild(crel("td"));
+    this.#opener = this.appendChild(crel("td"));
     this.#opener
-      .appendChild(document.createElement("div"))
+      .appendChild(crel("div"))
       .appendChild(material_navigation_chevron_right_rounded());
     this.tabIndex = 0;
     this.onclick = (e) => {
@@ -204,7 +200,7 @@ defineElement(ContextMenuSub);
 export class ContextMenuDevider extends Base {
   constructor() {
     super();
-    this.appendChild(document.createElement("td")).colSpan = 3;
+    this.appendChild(crel("td")).colSpan = 3;
   }
   static elementName() {
     return "contextmenudevider";
@@ -317,7 +313,7 @@ export class ContextMenuContainer extends Base {
       e.preventDefault();
     };
     if (typeof element === "function") {
-      this.appendChild(document.createElement("div"));
+      this.appendChild(crel("div"));
       (async () => {
         let result = await element();
         this.replaceChild(
@@ -331,7 +327,7 @@ export class ContextMenuContainer extends Base {
       this.appendChild(
         element instanceof HTMLElement ? element : new ContextMenu(element)
       );
-    let catcher = this.appendChild(document.createElement("div"));
+    let catcher = this.appendChild(crel("div"));
     catcher.tabIndex = 0;
     this.onkeydown = (e) => {
       if (e.key === "Escape") contextMenuClose();

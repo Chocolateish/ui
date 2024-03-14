@@ -1,5 +1,5 @@
 import "./lamp.scss";
-import { defineElement } from "@src/base";
+import { crel, defineElement } from "@src/base";
 import { FormBaseReadOptions, BasicColors, FormBaseRead } from "../base";
 
 interface LampOptions extends FormBaseReadOptions<number | boolean> {
@@ -11,9 +11,7 @@ interface LampOptions extends FormBaseReadOptions<number | boolean> {
 
 /**Lamp for clicking*/
 export class FormLamp extends FormBaseRead<number | boolean> {
-  private _text: HTMLSpanElement = this._body.appendChild(
-    document.createElement("span")
-  );
+  private _text: HTMLSpanElement = this._body.appendChild(crel("span"));
   private _colors: BasicColors[] = [];
 
   constructor(options: LampOptions) {

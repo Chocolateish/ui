@@ -1,5 +1,5 @@
-import { StateEnumHelperList, StateError, StateWrite } from "@src/state";
-import { Base, BaseOptions, StateROrValue } from "@src/base";
+import { StateEnumHelperList, StateWrite } from "@src/state";
+import { Base, BaseOptions, StateROrValue, crel } from "@src/base";
 import { grey, orange, green, red, blue, yellow } from "@src/asset";
 import { themeBuiltInRoot } from "@src/theme";
 
@@ -190,13 +190,13 @@ export abstract class FormBaseRead<V, E extends {} = any> extends Base<E> {
   /**Stores local copy of form element value*/
   protected _value?: V;
   /**icon container*/
-  protected _iconContainer: HTMLSpanElement = document.createElement("span");
+  protected _iconContainer: HTMLSpanElement = crel("span");
   /**Label container*/
-  protected _label: HTMLSpanElement = document.createElement("span");
+  protected _label: HTMLSpanElement = crel("span");
   /**Description container*/
-  protected _description?: HTMLSpanElement = document.createElement("span");
+  protected _description?: HTMLSpanElement = crel("span");
   /**Body of form element*/
-  protected _body: HTMLDivElement = document.createElement("div");
+  protected _body: HTMLDivElement = crel("div");
   /**Flag for when user has changed the value of the form element*/
   readonly changed: boolean = false;
 
@@ -276,7 +276,7 @@ export interface FormBaseWriteOptions<V> extends FormBaseReadOptions<V> {
   writer?: StateWrite<V> | ((val: V) => void);
 }
 
-interface FormBaseWriteEvents<T> {
+export interface FormBaseWriteEvents<T> {
   /**Event fired when user changes value */
   valueChangeUser: T;
 }
@@ -289,14 +289,13 @@ export abstract class FormBaseWrite<
   static elementName() {
     return "@abstract@";
   }
+  /**Buffer of linked state */
+  protected _writer?: StateWrite<V> | ((val: V) => void);
 
   constructor(options: FormBaseWriteOptions<V>) {
     super(options);
     if (options.writer) this.writer = options.writer;
   }
-
-  /**Buffer of linked state */
-  private _writer?: StateWrite<V> | ((val: V) => void);
 
   /**Changes value of form element*/
   set writer(value: StateWrite<V> | ((val: V) => void) | undefined) {
@@ -367,7 +366,14 @@ export abstract class FormNumberReadBase<
   protected _stepFunc?: StepFunc;
   protected _decimals: number = 0;
   /**Unit of input*/
-  protected _unit: HTMLSpanElement = document.createElement("span");
+  protected _unit: HTMLSpanElement = crel("span");
+  protected _legend: HTMLSpanElement = crel("span");
+  protected _minLegend: HTMLSpanElement = this._legend.appendChild(
+    crel("span")
+  );
+  protected _maxLegend: HTMLSpanElement = this._legend.appendChild(
+    crel("span")
+  );
 
   constructor(options: FormNumberReadBaseOptions) {
     super(options);
@@ -405,21 +411,19 @@ export abstract class FormNumberReadBase<
   private _updateMinMax() {
     this._span = this._max - this._min;
     if (String(this._max).length > 5) {
-      this._setMinMax(
-        this._min === -Infinity ? "" : "Min:" + this._min.toPrecision(5),
-        this._max === Infinity ? "" : "Max:" + this._max.toPrecision(5)
-      );
+      this._minLegend.textContent =
+        this._min === -Infinity ? "" : "Min:" + this._min.toPrecision(5);
+      this._maxLegend.textContent =
+        this._max === Infinity ? "" : "Max:" + this._max.toPrecision(5);
     } else {
-      this._setMinMax(
+      this._minLegend.textContent =
         this._min === -Infinity
           ? ""
-          : "Min:" + this._min.toFixed(this.decimals),
-        this._max === Infinity ? "" : "Max:" + this._max.toFixed(this.decimals)
-      );
+          : "Min:" + this._min.toFixed(this.decimals);
+      this._maxLegend.textContent =
+        this._max === Infinity ? "" : "Max:" + this._max.toFixed(this.decimals);
     }
   }
-
-  protected _setMinMax(_minLegend: string, _maxLegend: string) {}
 
   /**Gets the amount of steps on the slider*/
   get step() {
@@ -444,18 +448,13 @@ export abstract class FormNumberReadBase<
     this._decimals = Math.max(dec ?? 0, 0);
   }
 
+  /**Sets the unit of the element*/
+  set unit(unit: string | undefined) {
+    this._unit.textContent = unit ?? "";
+  }
   /**Returns the current unit value*/
   get unit(): string {
     return this._unit.textContent ?? "";
-  }
-
-  /**Sets the unit of the element*/
-  set unit(unit: string | undefined) {
-    this._setUnit(unit);
-  }
-  /**Method for ancestors to overwrite */
-  protected _setUnit(unit: string | undefined) {
-    this._unit.textContent = unit ?? "";
   }
 }
 
@@ -478,15 +477,15 @@ export abstract class FormNumberWriteBase<
   static elementName() {
     return "@abstract@";
   }
+  /**Element used to display validation warnings*/
+  protected _validator: HTMLButtonElement = this._body.appendChild(
+    crel("button")
+  );
+
   constructor(options: FormNumberWriteBaseOptions) {
     super(options);
     if (options.writer) this.writer = options.writer;
   }
-
-  /**Element used to display validation warnings*/
-  protected _validator: HTMLButtonElement = this._body.appendChild(
-    document.createElement("button")
-  );
 
   /**Buffer of linked state */
   private _writer?: StateWrite<number> | ((val: number) => void);
@@ -594,15 +593,12 @@ export interface FormStepperBaseOptions extends FormNumberWriteBaseOptions {
 /**Base for stepper elements*/
 export abstract class FormStepperBase extends FormNumberWriteBase {
   protected _live: boolean = false;
-  protected _iconDec: SVGSVGElement | undefined;
-  protected _iconInc: SVGSVGElement | undefined;
+  protected _iconDec: HTMLSpanElement = this._stepperFunc(crel("span"), false);
+  protected _iconInc: HTMLSpanElement = this._stepperFunc(crel("span"), true);
+
   constructor(options: FormStepperBaseOptions) {
     super(options);
     this.live = options.live;
-    if (options.iconDecrease)
-      this.attachStateToProp("iconLeft", options.iconDecrease);
-    if (options.iconIncrease)
-      this.attachStateToProp("iconRight", options.iconIncrease);
   }
 
   /**Gets wether the slider is in live mode*/
@@ -615,20 +611,16 @@ export abstract class FormStepperBase extends FormNumberWriteBase {
   }
 
   /**Changes the icon on the left of the slider*/
-  set iconLeft(icon: () => SVGSVGElement) {
-    let sym = icon();
-    this._iconDec?.replaceWith(sym);
-    this._stepperFunc(sym, false);
+  set iconDecrease(icon: () => SVGSVGElement) {
+    this._iconDec.replaceChildren(icon());
   }
 
   /**Changes the icon on the right of the slider*/
-  set iconRight(icon: () => SVGSVGElement) {
-    let sym = icon();
-    this._iconInc?.replaceWith(sym);
-    this._stepperFunc(sym, true);
+  set iconIncrease(icon: () => SVGSVGElement) {
+    this._iconInc.replaceChildren(icon());
   }
 
-  protected _stepperFunc(icon: SVGSVGElement, dir: boolean) {
+  private _stepperFunc(icon: HTMLSpanElement, dir: boolean) {
     icon.onpointerdown = (e) => {
       if (e.button === 0) {
         e.stopPropagation();

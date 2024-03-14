@@ -1,8 +1,8 @@
-import { Base, BaseEvents } from "./base";
+import { Base } from "./base";
 import { validateElementName } from "./validateElementName";
 
 /**Defines elements inheriting from the base*/
-export function defineElement<T extends BaseEvents>(element: typeof Base<T>) {
+export function defineElement(element: typeof Base) {
   let namespace = element.elementNameSpace();
   let check = element.elementName;
   let defineName = "";

@@ -5,7 +5,7 @@ import {
   FormSelectorOption,
 } from "../base";
 import "./toggleButtons.scss";
-import { defineElement } from "@src/base";
+import { crel, defineElement } from "@src/base";
 
 interface Selection<T> extends FormSelectionBase<T> {
   top: HTMLDivElement;
@@ -30,9 +30,9 @@ export class FormToggleButtons<
   }
 
   protected _addSelection(selection: FormSelectorOption<T>, index: number) {
-    let top = this._body.appendChild(document.createElement("div"));
+    let top = this._body.appendChild(crel("div"));
     top.tabIndex = 0;
-    let bot = this._body.appendChild(document.createElement("div"));
+    let bot = this._body.appendChild(crel("div"));
     if (selection.icon) {
       top.appendChild(selection.icon());
       bot.textContent = selection.text;

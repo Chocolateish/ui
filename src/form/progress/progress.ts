@@ -1,5 +1,5 @@
 import "./progress.scss";
-import { defineElement } from "@src/base";
+import { crel, defineElement } from "@src/base";
 import {
   FormNumberReadBaseOptions,
   NoValueText,
@@ -18,8 +18,8 @@ export class FormProgress extends FormNumberReadBase {
 
   constructor(options: FormNumberReadBaseOptions) {
     super(options);
-    this._bar = this._body.appendChild(document.createElement("div"));
-    this._val = this._body.appendChild(document.createElement("span"));
+    this._bar = this._body.appendChild(crel("div"));
+    this._val = this._body.appendChild(crel("span"));
     this._body.appendChild(this._unit);
     if (typeof options.value !== "undefined")
       this.attachStateToProp("value", options.value);

@@ -1,5 +1,5 @@
 import "./slider.scss";
-import { defineElement } from "@src/base";
+import { crel, defineElement } from "@src/base";
 import {
   material_navigation_chevron_left_rounded,
   material_navigation_chevron_right_rounded,
@@ -8,10 +8,9 @@ import { FormStepperBase, FormStepperBaseOptions } from "../base";
 
 /**Slide Selector, displays all options in a slider*/
 export class FormSlider extends FormStepperBase {
-  private _slide: HTMLDivElement;
-  private _slider: HTMLDivElement;
-  private _valueBox: HTMLSpanElement;
-  private _legend: HTMLSpanElement;
+  private _slide: HTMLDivElement = crel("div");
+  private _slider: HTMLDivElement = crel("div");
+  private _valueBox: HTMLSpanElement = crel("span");
 
   /**Returns the name used to define the element*/
   static elementName() {
@@ -20,23 +19,11 @@ export class FormSlider extends FormStepperBase {
 
   constructor(options: FormStepperBaseOptions) {
     super(options);
-    this._iconDec = this._stepperFunc(
-      this._body.appendChild(material_navigation_chevron_left_rounded()),
-      false
-    );
-    this._slide = this._body.appendChild(document.createElement("div"));
-    //this._slide.append(this._minLegend, this._maxLegend);
-    this._iconInc = this._stepperFunc(
-      this._body.appendChild(material_navigation_chevron_right_rounded()),
-      true
-    );
-    this._slider = this._slide.appendChild(document.createElement("div"));
+    this._body.append(this._iconDec, this._slide, this._iconInc, this._legend);
+    this._slide.appendChild(this._slider);
     this._slider.setAttribute("tabindex", "0");
-    this._valueBox = this._slider.appendChild(document.createElement("span"));
+    this._slider.append(this._valueBox, this._unit);
     this._valueBox.textContent = "";
-    this._slider.appendChild(this._unit);
-    this._legend = this._body.appendChild(document.createElement("span"));
-    //this._legend.append(this._minLegend, this._maxLegend);
 
     this._body.onpointerdown = (e) => {
       if (e.button === 0) {
@@ -111,6 +98,12 @@ export class FormSlider extends FormStepperBase {
           break;
       }
     };
+    if (options.iconDecrease)
+      this.attachStateToProp("iconDecrease", options.iconDecrease);
+    else this.iconDecrease = material_navigation_chevron_left_rounded;
+    if (options.iconIncrease)
+      this.attachStateToProp("iconIncrease", options.iconIncrease);
+    else this.iconIncrease = material_navigation_chevron_right_rounded;
     if (options.value) this.attachStateToProp("value", options.value);
   }
 

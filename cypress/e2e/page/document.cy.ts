@@ -50,7 +50,7 @@ describe("Document", async () => {
     });
   });
   describe("Multiple instances", async () => {
-    let frame = document.body.appendChild(document.createElement("iframe"));
+    let frame = document.body.appendChild(crel("iframe"));
     if (frame.contentDocument) {
       var docs = new DocumentHandler(frame.contentDocument);
     }

@@ -16,6 +16,7 @@ import {
 } from "@src/form";
 import { State } from "@src/state";
 import { Ok } from "@src/result";
+import { FormInput, FormInputType } from "@src/form/input/input";
 
 let ui = document.body.appendChild(new UI());
 
@@ -153,6 +154,10 @@ Lamps.appendChild(
 );
 
 let testState = new State(Ok(10), true);
+let testStateUnit = new State(Ok("%"), true);
+setTimeout(() => {
+  testStateUnit.set(Ok("°C"));
+}, 1500);
 
 Lamps.appendChild(
   new FormProgress({
@@ -160,7 +165,7 @@ Lamps.appendChild(
     value: testState,
     min: 0,
     max: 100,
-    unit: "%",
+    unit: testStateUnit,
   })
 );
 
@@ -174,7 +179,7 @@ Lamps.appendChild(
     writer: testState,
     min: 0,
     max: 100,
-    unit: "%",
+    unit: testStateUnit,
   })
 );
 Lamps.appendChild(
@@ -185,7 +190,7 @@ Lamps.appendChild(
     writer: testState,
     min: 0,
     max: 100,
-    unit: "%",
+    unit: testStateUnit,
   })
 );
 
@@ -212,5 +217,25 @@ let toggleButton = Lamps.appendChild(
       { text: "YOYO", value: 10, details: "This is a test" },
       { text: "YOYO12", value: 12 },
     ],
+  })
+);
+
+Lamps.appendChild(
+  new FormInput({
+    label: "YOYO",
+    type: FormInputType.number,
+    value: 10,
+  })
+);
+
+Lamps.appendChild(
+  new FormInput({
+    label: "YOYO",
+    type: FormInputType.number,
+    value: testState,
+    writer: testState,
+    min: 0,
+    max: 100,
+    unit: testStateUnit,
   })
 );

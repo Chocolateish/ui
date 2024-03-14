@@ -1,5 +1,5 @@
 import "./button.scss";
-import { defineElement } from "@src/base";
+import { crel, defineElement } from "@src/base";
 import {
   BasicColors,
   FormBaseRead,
@@ -20,9 +20,7 @@ interface ButtonOptions extends FormBaseWriteOptions<boolean> {
 
 /**Button for clicking*/
 export class FormButton extends FormBaseWrite<boolean> {
-  private _text: HTMLSpanElement = this._body.appendChild(
-    document.createElement("span")
-  );
+  private _text: HTMLSpanElement = this._body.appendChild(crel("span"));
   private _icon: SVGSVGElement | undefined;
   private _click: (() => void) | undefined;
   private _color: BasicColors | undefined;

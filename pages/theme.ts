@@ -48,10 +48,10 @@ varGroup.makeVariable(
 
 let setup = async (doc: Document) => {
   //Theme
-  let themeAutoSel = doc.body.appendChild(document.createElement("select"));
+  let themeAutoSel = doc.body.appendChild(crel("select"));
   let themes = theme.related().unwrap.list!;
   for (const key in themes) {
-    let option = themeAutoSel.appendChild(document.createElement("option"));
+    let option = themeAutoSel.appendChild(crel("option"));
     option.innerHTML = key;
   }
   themeAutoSel.addEventListener("change", async (e) => {
@@ -66,7 +66,7 @@ let setup = async (doc: Document) => {
   });
 
   for (const key in themes) {
-    let test = doc.body.appendChild(document.createElement("button"));
+    let test = doc.body.appendChild(crel("button"));
     test.innerHTML = key;
     test.addEventListener("click", () => {
       theme.write(key as Themes);
@@ -74,10 +74,10 @@ let setup = async (doc: Document) => {
   }
 
   //Scrollbar
-  let scrollSel = doc.body.appendChild(document.createElement("select"));
+  let scrollSel = doc.body.appendChild(crel("select"));
   let scrollbarModes = scrollBarMode.related().unwrap.list!;
   for (const key in scrollbarModes) {
-    let option = scrollSel.appendChild(document.createElement("option"));
+    let option = scrollSel.appendChild(crel("option"));
     option.innerHTML = key;
   }
   scrollSel.addEventListener("change", (e) => {
@@ -92,10 +92,10 @@ let setup = async (doc: Document) => {
   });
 
   //Animations
-  let animAutoSel = doc.body.appendChild(document.createElement("select"));
+  let animAutoSel = doc.body.appendChild(crel("select"));
   let animationLevels = animationLevel.related().unwrap.list!;
   for (const key in animationLevels) {
-    let option = animAutoSel.appendChild(document.createElement("option"));
+    let option = animAutoSel.appendChild(crel("option"));
     option.innerHTML = key;
   }
   animAutoSel.addEventListener("change", async (e) => {
@@ -110,7 +110,7 @@ let setup = async (doc: Document) => {
   });
 
   //Scale
-  let scaleIn = doc.body.appendChild(document.createElement("input"));
+  let scaleIn = doc.body.appendChild(crel("input"));
   scaleIn.type = "number";
   scaleIn.addEventListener("change", async () => {
     scale.write(scaleIn.valueAsNumber);
@@ -122,10 +122,10 @@ let setup = async (doc: Document) => {
   });
 
   //InputMode
-  let inputModeSel = doc.body.appendChild(document.createElement("select"));
+  let inputModeSel = doc.body.appendChild(crel("select"));
   let inputModes = inputMode.related().unwrap.list!;
   for (const key in inputModes) {
-    let option = inputModeSel.appendChild(document.createElement("option"));
+    let option = inputModeSel.appendChild(crel("option"));
     option.innerHTML = key;
   }
   inputModeSel.addEventListener("change", async (e) => {
@@ -140,13 +140,13 @@ let setup = async (doc: Document) => {
     inputModeSel.value = val.unwrap;
   });
 
-  doc.body.appendChild(document.createElement("div")).innerHTML =
+  doc.body.appendChild(crel("div")).innerHTML =
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum volutpat tortor non tempor viverra. Cras ullamcorper ligula massa, fringilla ornare sapien imperdiet ac. Nam sapien diam, lacinia eget ex sed, varius commodo lacus. Aliquam pharetra metus tortor, non congue metus viverra vel. Donec semper malesuada arcu, eget lobortis eros scelerisque.";
 };
 
 setup(document);
 
-let testButt = document.body.appendChild(document.createElement("button"));
+let testButt = document.body.appendChild(crel("button"));
 
 testButt.innerHTML = "Open Window";
 

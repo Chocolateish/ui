@@ -18,9 +18,9 @@ chui-form-progress {
       height: $touchHeight;
     }
 
-    .anim & {
-      transition: height var(--sizeTransitionType) var(--sizeTransitionTime),
-        background-color var(--colorTransitionType) var(--colorTransitionTime);
+    .graphics-some & {
+      transition: height $sizeTransitionType $sizeTransitionTime,
+        background-color $colorTransitionType $colorTransitionTime;
     }
 
     > div {
@@ -32,6 +32,9 @@ chui-form-progress {
       width: 0%;
       background-color: $greenColor;
       z-index: 1;
+      .graphics-some & {
+        transition: width 0.1s linear;
+      }
     }
 
     > span {
@@ -46,10 +49,6 @@ chui-form-progress {
         min-width: 3rem;
         text-align: end;
         padding-left: 0.5rem;
-
-        .touch & {
-          min-width: 5rem;
-        }
       }
 
       &:last-child {

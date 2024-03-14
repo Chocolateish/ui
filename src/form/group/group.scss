@@ -72,9 +72,8 @@ comp-group {
   }
 
   .anim & {
-    transition: border-color var(--colorTransitionType)
-        var(--colorTransitionTime),
-      box-shadow var(--colorTransitionType) var(--colorTransitionTime);
+    transition: border-color $colorTransitionType $colorTransitionTime,
+      box-shadow $colorTransitionType $colorTransitionTime;
   }
 
   &.vert {
@@ -133,9 +132,8 @@ comp-collapsiblegroup {
   }
 
   .anim & {
-    transition: border-color var(--colorTransitionType)
-        var(--colorTransitionTime),
-      box-shadow var(--colorTransitionType) var(--colorTransitionTime);
+    transition: border-color $colorTransitionType $colorTransitionTime,
+      box-shadow $colorTransitionType $colorTransitionTime;
   }
 
   > span {
@@ -165,11 +163,10 @@ comp-collapsiblegroup {
     }
 
     .anim & {
-      transition: background-color var(--colorTransitionType)
-          var(--colorTransitionTime),
-        border-color var(--colorTransitionType) var(--colorTransitionTime),
-        height var(--sizeTransitionType) var(--sizeTransitionTime),
-        padding var(--sizeTransitionType) var(--sizeTransitionTime);
+      transition: background-color $colorTransitionType $colorTransitionTime,
+        border-color $colorTransitionType $colorTransitionTime,
+        height $sizeTransitionType $sizeTransitionTime,
+        padding $sizeTransitionType $sizeTransitionTime;
     }
 
     @media (hover: hover) and (pointer: fine) {
@@ -188,7 +185,7 @@ comp-collapsiblegroup {
       }
 
       .anim & {
-        transition: color var(--colorTransitionType) var(--colorTransitionTime);
+        transition: color $colorTransitionType $colorTransitionTime;
       }
     }
 
@@ -199,7 +196,7 @@ comp-collapsiblegroup {
       fill: var(--componenticonColor);
 
       .anim & {
-        transition: fill var(--colorTransitionType) var(--colorTransitionTime);
+        transition: fill $colorTransitionType $colorTransitionTime;
       }
     }
   }

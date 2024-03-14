@@ -1,5 +1,5 @@
 import "./stepper.scss";
-import { defineElement } from "@src/base";
+import { crel, defineElement } from "@src/base";
 import {
   material_content_remove_rounded,
   material_content_add_rounded,
@@ -8,9 +8,8 @@ import { FormStepperBase, FormStepperBaseOptions } from "../base";
 
 /**Slide Selector, displays all options in a slider*/
 export class FormStepper extends FormStepperBase {
-  private _text: HTMLSpanElement;
-  private _valueBox: HTMLSpanElement;
-  private _legend: HTMLSpanElement;
+  private _text: HTMLSpanElement = crel("span");
+  private _valueBox: HTMLSpanElement = crel("span");
 
   /**Returns the name used to define the element*/
   static elementName() {
@@ -20,25 +19,13 @@ export class FormStepper extends FormStepperBase {
   constructor(options: FormStepperBaseOptions) {
     super(options);
     this._body.setAttribute("tabindex", "0");
-    this._iconDec = this._stepperFunc(
-      this._body.appendChild(material_content_remove_rounded()),
-      false
-    );
-    this._text = this._body.appendChild(document.createElement("span"));
-    this._valueBox = this._text.appendChild(document.createElement("span"));
+    this._body.append(this._iconDec, this._text, this._iconInc);
+    this._text.replaceChildren(this._valueBox, this._unit, this._legend);
     this._valueBox.setAttribute("tabindex", "-1");
     this._valueBox.contentEditable = "true";
     this._valueBox.textContent = "";
-    this._text.appendChild(this._unit);
-    this._iconInc = this._stepperFunc(
-      this._body.appendChild(material_content_add_rounded()),
-      true
-    );
-    this._legend = this._text.appendChild(document.createElement("span"));
-    //this._legend.append(this._minLegend, this._maxLegend);
 
     let dragBlocker = false;
-
     this._valueBox.onfocus = async () => {
       dragBlocker = true;
     };
@@ -145,6 +132,12 @@ export class FormStepper extends FormStepperBase {
         }
       }
     };
+    if (options.iconDecrease)
+      this.attachStateToProp("iconDecrease", options.iconDecrease);
+    else this.iconDecrease = material_content_remove_rounded;
+    if (options.iconIncrease)
+      this.attachStateToProp("iconIncrease", options.iconIncrease);
+    else this.iconIncrease = material_content_add_rounded;
     if (options.value) this.attachStateToProp("value", options.value);
   }
 

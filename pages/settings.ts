@@ -27,7 +27,7 @@ let settings = settingsInit(
     false,
     true
   );
-  let valueBool = document.createElement("input");
+  let valueBool = crel("input");
   valueBool.type = "checkbox";
   document.body.appendChild(valueBool);
   valueBool.checked = (await TestBoolSetting).unwrap;
@@ -55,7 +55,7 @@ let settings = settingsInit(
       }
     }
   );
-  let valueNumber = document.createElement("input");
+  let valueNumber = crel("input");
   valueNumber.type = "number";
   document.body.appendChild(valueNumber);
   valueNumber.value = String((await TestNumberSetting).unwrap);
@@ -75,7 +75,7 @@ let settings = settingsInit(
     }),
     true
   );
-  let valueString = document.createElement("input");
+  let valueString = crel("input");
   document.body.appendChild(valueString);
   valueString.value = (await TestStringSetting).unwrap;
   valueString.addEventListener("change", async (e) => {

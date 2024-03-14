@@ -1,14 +1,12 @@
 import "./switch.scss";
-import { defineElement } from "@src/base";
+import { crel, defineElement } from "@src/base";
 import { FormBaseWrite, FormBaseWriteOptions } from "../base";
 
 interface SwitchOptions extends FormBaseWriteOptions<boolean> {}
 
 /**Toggle Switch, switches between on and off*/
 export class FormSwitch extends FormBaseWrite<boolean> {
-  private _switch: HTMLDivElement = this._body.appendChild(
-    document.createElement("div")
-  );
+  private _switch: HTMLDivElement = this._body.appendChild(crel("div"));
   private _preventClick: boolean = false;
 
   /**Returns the name used to define the element*/

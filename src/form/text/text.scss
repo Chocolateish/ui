@@ -11,7 +11,7 @@ chui-form-text {
     min-width: 5rem;
 
     .anim & {
-      transition: color var(--colorTransitionType) var(--colorTransitionTime);
+      transition: color $colorTransitionType $colorTransitionTime;
     }
 
     &[title] {

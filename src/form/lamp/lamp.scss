@@ -22,10 +22,10 @@ chui-form-lamp {
     }
 
     .anim & {
-      transition: min-height var(--sizeTransitionType) var(--sizeTransitionTime),
+      transition: min-height $sizeTransitionType $sizeTransitionTime,
         box-shadow ease 200ms,
-        border-color var(--colorTransitionType) var(--colorTransitionTime),
-        background-color var(--colorTransitionType) var(--colorTransitionTime);
+        border-color $colorTransitionType $colorTransitionTime,
+        background-color $colorTransitionType $colorTransitionTime;
     }
 
     > svg {
@@ -44,9 +44,9 @@ chui-form-lamp {
       }
 
       .anim & {
-        transition: fill var(--colorTransitionType) var(--colorTransitionTime),
-          height var(--sizeTransitionType) var(--sizeTransitionTime),
-          max-width var(--sizeTransitionType) var(--sizeTransitionTime);
+        transition: fill $colorTransitionType $colorTransitionTime,
+          height $sizeTransitionType $sizeTransitionTime,
+          max-width $sizeTransitionType $sizeTransitionTime;
       }
     }
 
@@ -69,7 +69,7 @@ chui-form-lamp {
       }
 
       .anim & {
-        transition: color var(--colorTransitionType) var(--colorTransitionTime);
+        transition: color $colorTransitionType $colorTransitionTime;
       }
     }
 
