@@ -224,7 +224,6 @@ Lamps.appendChild(
   new FormInput({
     label: "YOYO",
     type: FormInputType.number,
-    value: 10,
   })
 );
 
@@ -234,6 +233,7 @@ Lamps.appendChild(
     type: FormInputType.number,
     value: testState,
     writer: testState,
+    live: true,
     min: 0,
     max: 100,
     unit: testStateUnit,

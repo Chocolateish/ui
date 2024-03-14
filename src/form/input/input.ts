@@ -42,6 +42,8 @@ interface InputOptions<T extends FormInputType>
   extends FormBaseWriteOptions<InputTypeMap[T]> {
   /**Input type */
   type: T;
+  /**wether the events are live as the slider is moved or only when moving stops */
+  live?: StateROrValue<boolean>;
   /**Lower limit for slider value*/
   min?: StateROrValue<number>;
   /**Upper limit for slider value*/
@@ -78,6 +80,15 @@ export class FormInput<T extends FormInputType> extends FormBaseWrite<
   protected _stepFunc?: StepFunc;
   protected _decimals: number = 0;
   /**Unit of input*/
+  protected _unitContainer: HTMLSpanElement = this._body.appendChild(
+    crel("span")
+  );
+  protected _unitSpacer: HTMLSpanElement = this._unitContainer.appendChild(
+    crel("span")
+  );
+  protected _unit: HTMLSpanElement = this._unitContainer.appendChild(
+    crel("span")
+  );
   protected _legend: HTMLSpanElement = this._body.appendChild(crel("span"));
   protected _minLegend: HTMLSpanElement = this._legend.appendChild(
     crel("span")
@@ -85,19 +96,14 @@ export class FormInput<T extends FormInputType> extends FormBaseWrite<
   protected _maxLegend: HTMLSpanElement = this._legend.appendChild(
     crel("span")
   );
-  protected _unit: HTMLSpanElement = this._body.appendChild(crel("span"));
 
   constructor(options: InputOptions<T>) {
     super(options);
     this._type = options.type;
     this._input.type = options.type;
-    this._input.oninput = () => {
-      switch (this._type) {
-        case FormInputType.number:
-          this._valueSet(this._input.valueAsNumber as InputTypeMap[T]);
-          break;
-      }
-    };
+    this.attachStateToProp("live", options.live);
+    if (typeof options.step !== "undefined")
+      this.attachStateToProp("step", options.step);
     if (typeof options.step !== "undefined")
       this.attachStateToProp("step", options.step);
     if (typeof options.decimals !== "undefined")
@@ -117,10 +123,13 @@ export class FormInput<T extends FormInputType> extends FormBaseWrite<
         this._input.valueAsNumber = value as number;
         break;
     }
-    value;
+    this._unitSpacer.textContent = this._input.value;
   }
   /**Called when value cleared */
-  protected _valueClear() {}
+  protected _valueClear() {
+    this._input.value = "";
+    this._input.placeholder = "Testing";
+  }
 
   /**Called to change value*/
   protected _valueSet(value: InputTypeMap[T]) {
@@ -199,6 +208,32 @@ export class FormInput<T extends FormInputType> extends FormBaseWrite<
     } else {
       return value;
     }
+  }
+
+  set live(live: boolean | undefined) {
+    if (live)
+      this._input.oninput = () => {
+        switch (this._type) {
+          case FormInputType.number:
+            this._valueSet(this._input.valueAsNumber as InputTypeMap[T]);
+            break;
+        }
+      };
+    else {
+      this._input.onchange = () => {
+        switch (this._type) {
+          case FormInputType.number:
+            this._valueSet(this._input.valueAsNumber as InputTypeMap[T]);
+            break;
+        }
+      };
+      this._input.oninput = () => {
+        this._unitSpacer.textContent = this._input.value;
+      };
+    }
+  }
+  get live() {
+    return this._input.onchange === null;
   }
 
   /**Set the minimum value*/

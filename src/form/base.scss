@@ -185,6 +185,7 @@ $touchUnitWidth: $touchUnitFontSize * 5.6;
 @mixin limit-legend {
   color: $textColor;
   font-size: 0.7rem;
+  pointer-events: none;
 
   .touch & {
     font-size: 0.7rem;

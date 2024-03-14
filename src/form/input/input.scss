@@ -9,8 +9,6 @@ chui-form-input {
     height: $height;
     box-sizing: border-box;
     min-width: min-content;
-    display: flex;
-    align-items: stretch;
     background-color: $backColor;
     border-radius: $cornerRadius;
     border: $border;
@@ -38,31 +36,49 @@ chui-form-input {
     > input:nth-child(2) {
       all: unset;
       @include valueFont;
+      position: absolute;
       padding-left: 0.5rem;
-      min-width: 4rem;
+      padding-right: 0.2rem;
       text-align: start;
-      flex-grow: 1;
       height: 100%;
+      width: 100%;
+      box-sizing: border-box;
     }
 
     > span:nth-child(3) {
-      color: $textColor;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0.5rem;
       display: flex;
-      flex-direction: column;
-      text-align: end;
-      padding-inline: 0.4rem;
-      align-items: flex-end;
-
-      > span {
-        @include limit-legend;
+      > span:nth-child(1) {
+        @include valueFont;
+        visibility: hidden;
+      }
+      > span:nth-child(2) {
+        @include unitContainer;
+        display: flex;
+        align-items: center;
+        padding-left: 0.3rem;
+        -webkit-user-select: none;
+        user-select: none;
       }
     }
 
     > span:nth-child(4) {
-      @include unitContainer;
-      padding-left: 0.3rem;
-      -webkit-user-select: none;
-      user-select: none;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 1.6rem;
+      display: flex;
+      flex-direction: column;
+      text-align: end;
+      align-items: flex-end;
+      pointer-events: none;
+
+      > span {
+        @include limit-legend;
+      }
     }
   }
 }
