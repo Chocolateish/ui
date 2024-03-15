@@ -1,13 +1,14 @@
 import { nameSpace } from "./shared";
 import { AnchorPoint } from "./anchorPoint";
 import { degreesToRadians } from "@src/util/math";
+import { crelns } from "..";
 
 /**This creates a svg circle
  * @param centerX x coordinate of center
  * @param centerY y coordinate of center
  * @param radius radius of circle*/
 export function circle(centerX: number, centerY: number, radius: number) {
-  let circle = <SVGCircleElement>crelNS(nameSpace, "circle");
+  let circle = <SVGCircleElement>crelns(nameSpace, "circle");
   circle.setAttribute("cx", String(centerX));
   circle.setAttribute("cy", String(centerY));
   circle.setAttribute("r", String(radius));
@@ -25,7 +26,7 @@ export function ellipse(
   radiusX: number,
   radiusY: number
 ) {
-  let ellipse = <SVGEllipseElement>crelNS(nameSpace, "ellipse");
+  let ellipse = <SVGEllipseElement>crelns(nameSpace, "ellipse");
   ellipse.setAttribute("cx", String(centerX));
   ellipse.setAttribute("cy", String(centerY));
   ellipse.setAttribute("rx", String(radiusX));
@@ -48,7 +49,7 @@ export function ellipseArc(
   startAngle: number,
   endAngle: number
 ) {
-  let circArc = <SVGPathElement>crelNS(nameSpace, "path");
+  let circArc = <SVGPathElement>crelns(nameSpace, "path");
   let startRadian = degreesToRadians(startAngle);
   endAngle = degreesToRadians(endAngle - startAngle);
   let sX = radiusX * Math.cos(startRadian) + centerX;
@@ -66,7 +67,7 @@ export function ellipseArc(
 
 /**This draws a triangle*/
 export function group() {
-  return <SVGGElement>crelNS(nameSpace, "g");
+  return <SVGGElement>crelns(nameSpace, "g");
 }
 
 /**This creates a line element
@@ -80,7 +81,7 @@ export function line(
   endX: number,
   endY: number
 ) {
-  let line = <SVGLineElement>crelNS(nameSpace, "line");
+  let line = <SVGLineElement>crelns(nameSpace, "line");
   line.setAttribute("x1", String(startX));
   line.setAttribute("y1", String(startY));
   line.setAttribute("x2", String(endX));
@@ -90,7 +91,7 @@ export function line(
 
 /**This creates a path element*/
 export function path(path: string) {
-  let node = <SVGPathElement>crelNS(nameSpace, "path");
+  let node = <SVGPathElement>crelns(nameSpace, "path");
   node.setAttribute("d", path);
   return node;
 }
@@ -106,7 +107,7 @@ export function pathLine(
   endX: number,
   endY: number
 ) {
-  let line = <SVGPathElement>crelNS(nameSpace, "path");
+  let line = <SVGPathElement>crelns(nameSpace, "path");
   line.setAttribute("d", `M ${startX} ${startY} L ${endX} ${endY}`);
   return line;
 }
@@ -124,7 +125,7 @@ export function rectangleFromCenter(
   height: number,
   cornerRadius: number
 ) {
-  let circle = <SVGRectElement>crelNS(nameSpace, "rect");
+  let circle = <SVGRectElement>crelns(nameSpace, "rect");
   circle.setAttribute("x", String(centerX - width / 2));
   circle.setAttribute("y", String(centerY - height / 2));
   circle.setAttribute("width", String(width));
@@ -146,7 +147,7 @@ export function rectangleFromCorner(
   height: number,
   cornerRadius: number
 ) {
-  let circle = <SVGRectElement>crelNS(nameSpace, "rect");
+  let circle = <SVGRectElement>crelns(nameSpace, "rect");
   circle.setAttribute("x", String(startX));
   circle.setAttribute("y", String(startY));
   circle.setAttribute("width", String(width));
@@ -164,7 +165,7 @@ export function svgsvg(
   height: number,
   viewbox: string = `0 0 ${width} ${height}`
 ) {
-  let svg = <SVGSVGElement>crelNS(nameSpace, "svg");
+  let svg = <SVGSVGElement>crelns(nameSpace, "svg");
   svg.setAttribute("width", String(width));
   svg.setAttribute("height", String(height));
   svg.setAttribute("viewBox", String(viewbox));
@@ -184,7 +185,7 @@ export function text(
   size: number,
   anchor: AnchorPoint
 ) {
-  let textElem = <SVGTextElement>crelNS(nameSpace, "text");
+  let textElem = <SVGTextElement>crelns(nameSpace, "text");
   textElem.setAttribute("x", String(x));
   textElem.setAttribute("y", String(y));
   textElem.setAttribute("font-size", String(size));
@@ -249,7 +250,7 @@ export function multiLineText(
   size: number,
   anchor: AnchorPoint
 ) {
-  let text2 = <SVGForeignObjectElement>crelNS(nameSpace, "foreignObject");
+  let text2 = <SVGForeignObjectElement>crelns(nameSpace, "foreignObject");
   let textDiv = text2.appendChild(crel("div"));
   text2.setAttribute("width", String(width));
   text2.setAttribute("height", String(height));
@@ -317,7 +318,7 @@ export function isoscelesTriangle(
   width: number,
   height: number
 ) {
-  let trig = <SVGPathElement>crelNS(nameSpace, "path");
+  let trig = <SVGPathElement>crelns(nameSpace, "path");
   let halfW = width / 2;
   let halfH = height / 2;
   trig.setAttribute(

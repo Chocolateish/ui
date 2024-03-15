@@ -6,6 +6,7 @@ import { libraryNameSpace } from "@src/globals/globalsInternals";
 import { Ok } from "@src/result";
 
 export let crel = document.createElement.bind(document);
+export let crelns = document.createElementNS.bind(document);
 
 export type StateROrValue<T> = StateRead<T> | T;
 export type StateWOrValue<T> = StateWrite<T> | T;
