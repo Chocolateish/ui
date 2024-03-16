@@ -6,42 +6,7 @@ import {
 } from "../base";
 import { StateROrValue, crel, defineElement } from "@src/base";
 
-export enum FormInputType {
-  number = "number",
-  text = "text",
-  ip = "ip",
-  password = "password",
-  email = "email",
-  url = "url",
-  tel = "tel",
-  date = "date",
-  time = "time",
-  datetime = "datetime-local",
-  month = "month",
-  week = "week",
-  color = "color",
-}
-
-type InputTypeMap = {
-  [FormInputType.number]: number;
-  [FormInputType.text]: string;
-  [FormInputType.ip]: string;
-  [FormInputType.password]: string;
-  [FormInputType.email]: string;
-  [FormInputType.url]: string;
-  [FormInputType.tel]: string;
-  [FormInputType.color]: string;
-  [FormInputType.date]: Date;
-  [FormInputType.time]: Date;
-  [FormInputType.datetime]: Date;
-  [FormInputType.month]: Date;
-  [FormInputType.week]: Date;
-};
-
-interface InputOptions<T extends FormInputType>
-  extends FormBaseWriteOptions<InputTypeMap[T]> {
-  /**Input type */
-  type: T;
+interface InputOptions extends FormBaseWriteOptions<string> {
   /**wether the events are live as the slider is moved or only when moving stops */
   live?: StateROrValue<boolean>;
   /**Lower limit for slider value*/
@@ -59,9 +24,7 @@ interface InputOptions<T extends FormInputType>
 type StepFunc = (value: number) => number;
 
 /**Base for number elements elements*/
-export class FormInput<T extends FormInputType> extends FormBaseWrite<
-  InputTypeMap[T]
-> {
+export class FormCode extends FormBaseWrite<string> {
   static elementName() {
     return "input";
   }

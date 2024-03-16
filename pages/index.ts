@@ -17,6 +17,7 @@ import {
 import { State } from "@src/state";
 import { Ok } from "@src/result";
 import { FormInput, FormInputType } from "@src/form/input/input";
+import { IP, IPType } from "@src/util";
 
 let ui = document.body.appendChild(new UI());
 
@@ -179,6 +180,8 @@ Lamps.appendChild(
     writer: testState,
     min: 0,
     max: 100,
+    step: 0.5,
+    decimals: 1,
     unit: testStateUnit,
   })
 );
@@ -190,6 +193,7 @@ Lamps.appendChild(
     writer: testState,
     min: 0,
     max: 100,
+    decimals: 1,
     unit: testStateUnit,
   })
 );
@@ -224,6 +228,10 @@ Lamps.appendChild(
   new FormInput({
     label: "YOYO",
     type: FormInputType.number,
+    value: testState,
+    writer: testState,
+    min: 0,
+    max: 100,
   })
 );
 
@@ -239,3 +247,36 @@ Lamps.appendChild(
     unit: testStateUnit,
   })
 );
+
+let testStateText = new State(Ok("10"), true);
+testStateText.subscribe((v) => {
+  console.log(v);
+});
+
+Lamps.appendChild(
+  new FormInput({
+    label: "YOYO",
+    type: FormInputType.text,
+    value: testStateText,
+    writer: testStateText,
+  })
+);
+
+let pageIP = new Content();
+//ui.content = pageIP;
+
+let test = new IP("IPV4", [192n, 168n, 1n, 1n]);
+console.warn(IP.ipv4ToNumber(test.ip));
+console.warn(IP.ipv4ToBigInt(test.ip));
+console.warn(IP.ipv4ToHex(test.ip));
+console.warn(IP.ipv4ToString(test.ip));
+
+console.warn(IP.numberToIpv4(IP.ipv4ToNumber(test.ip)));
+console.warn(IP.stringToipv4("1.1.1.1"));
+console.warn(IP.isIPv4("1.1.1.1"));
+console.warn("IPV6");
+let test2 = new IP("IPV6", [192n, 168n, 1n, 1n, 25n, 12n, 35n, 12n]);
+console.warn(IP.ipv6ToBigInt(test2.ip));
+console.warn(IP.bigintToIpv6(IP.ipv6ToBigInt(test2.ip)));
+console.warn(IP.ipv6ToString(test2.ip));
+console.warn(IP.stringToipv6("FFFF:1:1:1"));

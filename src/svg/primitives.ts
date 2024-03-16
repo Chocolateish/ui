@@ -1,7 +1,7 @@
 import { nameSpace } from "./shared";
 import { AnchorPoint } from "./anchorPoint";
 import { degreesToRadians } from "@src/util/math";
-import { crelns } from "..";
+import { crel, crelns } from "..";
 
 /**This creates a svg circle
  * @param centerX x coordinate of center
