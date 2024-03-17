@@ -1,4 +1,6 @@
-export function generateFunction(name: string, icon: string) {
+export type Icon = Icon;
+
+export function generateFunction(name: string, icon: string): Icon {
   let svg: SVGSVGElement;
   return function (this: any) {
     if (svg) {

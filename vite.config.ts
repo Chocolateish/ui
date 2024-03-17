@@ -9,6 +9,7 @@ let shared: UserConfigExport = {
       "@src": resolve(__dirname, "src"),
     },
   },
+  assetsInclude: ["**/*.woff2"],
 };
 
 export default defineConfig(({ command, mode }) => {

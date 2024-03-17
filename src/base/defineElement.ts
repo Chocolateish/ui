@@ -1,12 +1,18 @@
 import { Base } from "./base";
 import { validateElementName } from "./validateElementName";
 
+interface ElementConstructor {
+  elementNameSpace(): string;
+  elementName(): string;
+}
+
 /**Defines elements inheriting from the base*/
-export function defineElement(element: typeof Base) {
+export function defineElement(element: ElementConstructor) {
   let namespace = element.elementNameSpace();
   let check = element.elementName;
   let defineName = "";
   let runner = element;
+  //@ts-expect-error
   while (runner !== HTMLElement) {
     if (namespace !== runner.elementNameSpace()) {
       break;
@@ -27,6 +33,7 @@ export function defineElement(element: typeof Base) {
   }
   defineName = namespace + defineName;
   try {
+    //@ts-expect-error
     customElements.define(defineName, element);
   } catch (e) {
     if (

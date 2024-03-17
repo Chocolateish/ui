@@ -1,153 +1,26 @@
 import { StateEnumHelperList, StateWrite } from "@src/state";
-import { Base, BaseOptions, StateROrValue, crel } from "@src/base";
+import { Base, BaseOptions, StateROrValue, StateWOrFunc, crel } from "@src/base";
 import { grey, orange, green, red, blue, yellow } from "@src/asset";
 import { themeBuiltInRoot } from "@src/theme";
+import { Icon } from "@src/asset/icons/shared";
 
-export let variables = themeBuiltInRoot.makeSubGroup(
-  "frm",
-  "Form Elements",
-  ""
-);
-variables.makeVariable(
-  "color",
-  "Text Color",
-  "Standard text color",
-  grey["800"],
-  grey["200"],
-  "Color",
-  undefined
-);
-variables.makeVariable(
-  "selectedColor",
-  "Selected Text Color",
-  "Color of selected text",
-  grey["900"],
-  grey["50"],
-  "Color",
-  undefined
-);
-variables.makeVariable(
-  "unselectedColor",
-  "Unselected Text Color",
-  "Color of unselected text",
-  grey["600"],
-  grey["400"],
-  "Color",
-  undefined
-);
-variables.makeVariable(
-  "labelColor",
-  "Label Color",
-  "Color of label text",
-  grey["700"],
-  grey["300"],
-  "Color",
-  undefined
-);
-variables.makeVariable(
-  "backColor",
-  "Body Color",
-  "Standard body color",
-  grey["50"],
-  grey["900"],
-  "Color",
-  undefined
-);
-variables.makeVariable(
-  "hoverColor",
-  "Hover Color",
-  "Color of body at mouse hover",
-  grey["400"],
-  grey["700"],
-  "Color",
-  undefined
-);
-variables.makeVariable(
-  "borderColor",
-  "Border Color",
-  "Standard border color",
-  grey["700"],
-  grey["500"],
-  "Color",
-  undefined
-);
-variables.makeVariable(
-  "focusColor",
-  "Focus Color",
-  "Color added to selected element",
-  orange["600"],
-  orange["300"],
-  "Color",
-  undefined
-);
-let colors = variables.makeSubGroup(
-  "colors",
-  "Colors",
-  "Basic colors used by form elements"
-);
-colors.makeVariable(
-  "blackColor",
-  "Black",
-  "Basic Black",
-  grey["800"],
-  grey["900"],
-  "Color",
-  undefined
-);
-colors.makeVariable(
-  "blackColorText",
-  "Basic Black Text Color",
-  "Text color for basic black background",
-  grey["200"],
-  grey["200"],
-  "Color",
-  undefined
-);
-colors.makeVariable(
-  "greenColor",
-  "Green",
-  "Basic Green",
-  green["300"],
-  green["900"],
-  "Color",
-  undefined
-);
-colors.makeVariable(
-  "redColor",
-  "Red",
-  "Basic Red",
-  red["300"],
-  red["900"],
-  "Color",
-  undefined
-);
-colors.makeVariable(
-  "blueColor",
-  "Blue",
-  "Basic Blue",
-  blue["300"],
-  blue["900"],
-  "Color",
-  undefined
-);
-colors.makeVariable(
-  "yellowColor",
-  "Yellow",
-  "Basic Yellow",
-  yellow["300"],
-  yellow["900"],
-  "Color",
-  undefined
-);
-colors.makeVariable(
-  "white",
-  "White",
-  "Basic White",
-  grey["900"],
-  grey["900"],
-  "Color",
-  undefined
-);
+export let variables = themeBuiltInRoot.makeSubGroup("f", "Form Elements", "");
+variables.makeVariable("tc", "Text Color", "Standard text color", grey["800"], grey["200"], "Color");
+variables.makeVariable("sc", "Selected Text Color", "Color of selected text", grey["900"], grey["50"], "Color");
+variables.makeVariable("uc", "Unselected Text Color", "Color of unselected text", grey["600"], grey["400"], "Color");
+variables.makeVariable("lc", "Label Color", "Color of label text", grey["700"], grey["300"], "Color");
+variables.makeVariable("bc", "Body Color", "Standard body color", grey["50"], grey["900"], "Color");
+variables.makeVariable("hc", "Hover Color", "Color of body at mouse hover", grey["400"], grey["700"], "Color");
+variables.makeVariable("brc", "Border Color", "Standard border color", grey["700"], grey["500"], "Color");
+variables.makeVariable("fc", "Focus Color", "Color added to selected element", orange["600"], orange["300"], "Color");
+let colors = variables.makeSubGroup("c", "Colors", "Basic colors used by form elements");
+colors.makeVariable("b", "Black", "Basic Black", grey["800"], grey["900"], "Color");
+colors.makeVariable("tb", "Basic Black Text Color", "Color of text on basic black", grey["200"], grey["200"], "Color");
+colors.makeVariable("g", "Green", "Basic Green", green["300"], green["900"], "Color");
+colors.makeVariable("r", "Red", "Basic Red", red["300"], red["900"], "Color");
+colors.makeVariable("b", "Blue", "Basic Blue", blue["300"], blue["900"], "Color");
+colors.makeVariable("y", "Yellow", "Basic Yellow", yellow["300"], yellow["900"], "Color");
+colors.makeVariable("w", "White", "Basic White", grey["900"], grey["900"], "Color");
 
 export const NoValueText = "-";
 
@@ -177,7 +50,7 @@ export interface FormBaseReadOptions<V> extends BaseOptions {
   /**Longer description what form element does */
   description?: StateROrValue<string>;
   /**Icon for form element */
-  icon?: StateROrValue<() => SVGSVGElement>;
+  icon?: StateROrValue<Icon>;
 }
 
 /** Base class for form elements for shared properties and methods*/
@@ -194,7 +67,7 @@ export abstract class FormBaseRead<V, E extends {} = any> extends Base<E> {
   /**Label container*/
   protected _label: HTMLSpanElement = crel("span");
   /**Description container*/
-  protected _description?: HTMLSpanElement = crel("span");
+  protected _description: HTMLSpanElement = crel("span");
   /**Body of form element*/
   protected _body: HTMLDivElement = crel("div");
   /**Flag for when user has changed the value of the form element*/
@@ -203,12 +76,11 @@ export abstract class FormBaseRead<V, E extends {} = any> extends Base<E> {
   constructor(options: FormBaseReadOptions<V>) {
     super(options);
     this.appendChild(this._label);
+    this.appendChild(this._description);
     this.appendChild(this._body);
     if (options.label) this.attachStateToProp("label", options.label);
-    if (typeof options.id !== "undefined")
-      this.attachStateToProp("elementId", options.id);
-    if (options.description)
-      this.attachStateToProp("description", options.description);
+    if (typeof options.id !== "undefined") this.attachStateToProp("elementId", options.id);
+    if (options.description) this.attachStateToProp("description", options.description);
     if (options.icon) this.attachStateToProp("icon", options.icon);
   }
 
@@ -251,7 +123,7 @@ export abstract class FormBaseRead<V, E extends {} = any> extends Base<E> {
   }
 
   /**Sets the current icon of the element*/
-  set icon(icon: () => SVGSVGElement) {
+  set icon(icon: Icon) {
     this._iconContainer.replaceChildren(icon());
   }
 
@@ -273,7 +145,7 @@ export abstract class FormBaseRead<V, E extends {} = any> extends Base<E> {
 //       \/  \/ |_|  |_|\__\___| |____/ \__,_|___/\___|
 export interface FormBaseWriteOptions<V> extends FormBaseReadOptions<V> {
   /**Writer for change of value */
-  writer?: StateWrite<V> | ((val: V) => void);
+  writer?: StateWOrFunc<V>;
 }
 
 export interface FormBaseWriteEvents<T> {
@@ -281,16 +153,13 @@ export interface FormBaseWriteEvents<T> {
   valueChangeUser: T;
 }
 
-export abstract class FormBaseWrite<
-  V,
-  E extends FormBaseWriteEvents<V> = FormBaseWriteEvents<V>
-> extends FormBaseRead<V, E> {
+export abstract class FormBaseWrite<V, E extends FormBaseWriteEvents<V> = FormBaseWriteEvents<V>> extends FormBaseRead<V, E> {
   /**Returns the name used to define the element*/
   static elementName() {
     return "@abstract@";
   }
   /**Buffer of linked state */
-  protected _writer?: StateWrite<V> | ((val: V) => void);
+  protected _writer?: StateWOrFunc<V>;
 
   constructor(options: FormBaseWriteOptions<V>) {
     super(options);
@@ -298,7 +167,7 @@ export abstract class FormBaseWrite<
   }
 
   /**Changes value of form element*/
-  set writer(value: StateWrite<V> | ((val: V) => void) | undefined) {
+  set writer(value: StateWOrFunc<V> | undefined) {
     this._writer = value;
   }
   /**Returns value of form element*/
@@ -320,12 +189,7 @@ export abstract class FormBaseWrite<
     }
     this._value = value;
     this._valueUpdate(value);
-    this.dispatchEvent(
-      new CustomEvent<FormBaseWriteEvents<V>["valueChangeUser"]>(
-        "valueChangeUser",
-        { detail: value }
-      )
-    );
+    this.dispatchEvent(new CustomEvent<FormBaseWriteEvents<V>["valueChangeUser"]>("valueChangeUser", { detail: value }));
   }
 }
 
@@ -351,9 +215,7 @@ export interface FormNumberReadBaseOptions extends FormBaseReadOptions<number> {
 }
 
 /**Base for number elements elements*/
-export abstract class FormNumberReadBase<
-  E extends {} = any
-> extends FormBaseRead<number, E> {
+export abstract class FormNumberReadBase<E extends {} = any> extends FormBaseRead<number, E> {
   static elementName() {
     return "@abstract@";
   }
@@ -368,23 +230,15 @@ export abstract class FormNumberReadBase<
   /**Unit of input*/
   protected _unit: HTMLSpanElement = crel("span");
   protected _legend: HTMLSpanElement = crel("span");
-  protected _minLegend: HTMLSpanElement = this._legend.appendChild(
-    crel("span")
-  );
-  protected _maxLegend: HTMLSpanElement = this._legend.appendChild(
-    crel("span")
-  );
+  protected _minLegend: HTMLSpanElement = this._legend.appendChild(crel("span"));
+  protected _maxLegend: HTMLSpanElement = this._legend.appendChild(crel("span"));
 
   constructor(options: FormNumberReadBaseOptions) {
     super(options);
-    if (typeof options.step !== "undefined")
-      this.attachStateToProp("step", options.step);
-    if (typeof options.decimals !== "undefined")
-      this.attachStateToProp("decimals", options.decimals);
-    if (typeof options.min !== "undefined")
-      this.attachStateToProp("min", options.min);
-    if (typeof options.max !== "undefined")
-      this.attachStateToProp("max", options.max);
+    if (typeof options.step !== "undefined") this.attachStateToProp("step", options.step);
+    if (typeof options.decimals !== "undefined") this.attachStateToProp("decimals", options.decimals);
+    if (typeof options.min !== "undefined") this.attachStateToProp("min", options.min);
+    if (typeof options.max !== "undefined") this.attachStateToProp("max", options.max);
     if (options.unit) this.attachStateToProp("unit", options.unit);
   }
 
@@ -411,17 +265,11 @@ export abstract class FormNumberReadBase<
   private _updateMinMax() {
     this._span = this._max - this._min;
     if (String(this._max).length > 5) {
-      this._minLegend.textContent =
-        this._min === -Infinity ? "" : "Min:" + this._min.toPrecision(5);
-      this._maxLegend.textContent =
-        this._max === Infinity ? "" : "Max:" + this._max.toPrecision(5);
+      this._minLegend.textContent = this._min === -Infinity ? "" : "Min:" + this._min.toPrecision(5);
+      this._maxLegend.textContent = this._max === Infinity ? "" : "Max:" + this._max.toPrecision(5);
     } else {
-      this._minLegend.textContent =
-        this._min === -Infinity
-          ? ""
-          : "Min:" + this._min.toFixed(this.decimals);
-      this._maxLegend.textContent =
-        this._max === Infinity ? "" : "Max:" + this._max.toFixed(this.decimals);
+      this._minLegend.textContent = this._min === -Infinity ? "" : "Min:" + this._min.toFixed(this.decimals);
+      this._maxLegend.textContent = this._max === Infinity ? "" : "Max:" + this._max.toFixed(this.decimals);
     }
   }
 
@@ -467,7 +315,7 @@ export abstract class FormNumberReadBase<
 
 export interface FormNumberWriteBaseOptions extends FormNumberReadBaseOptions {
   /**Writer for change of value */
-  writer?: StateWrite<number> | ((val: number) => void);
+  writer?: StateWOrFunc<number>;
 }
 
 /**Base for number elements elements*/
@@ -478,9 +326,7 @@ export abstract class FormNumberWriteBase<
     return "@abstract@";
   }
   /**Element used to display validation warnings*/
-  protected _validator: HTMLButtonElement = this._body.appendChild(
-    crel("button")
-  );
+  protected _validator: HTMLButtonElement = this._body.appendChild(crel("button"));
 
   constructor(options: FormNumberWriteBaseOptions) {
     super(options);
@@ -488,10 +334,10 @@ export abstract class FormNumberWriteBase<
   }
 
   /**Buffer of linked state */
-  private _writer?: StateWrite<number> | ((val: number) => void);
+  private _writer?: StateWOrFunc<number>;
 
   /**Changes value of form element*/
-  set writer(writer: StateWrite<number> | ((val: number) => void) | undefined) {
+  set writer(writer: StateWOrFunc<number> | undefined) {
     this._writer = writer;
   }
   /**Returns value of form element*/
@@ -503,22 +349,10 @@ export abstract class FormNumberWriteBase<
   protected _valueSet(value: number) {
     //@ts-expect-error
     this.changed = true;
-    switch (typeof this._writer) {
-      case "function":
-        this._writer(value);
-        break;
-      case "object":
-        this._writer.write(value);
-        break;
-    }
+    this.stateWOrFunc(this._writer, value);
     this._value = value;
     this._valueUpdate(value);
-    this.dispatchEvent(
-      new CustomEvent<FormBaseWriteEvents<number>["valueChangeUser"]>(
-        "valueChangeUser",
-        { detail: value }
-      )
-    );
+    this.dispatchEvent(new CustomEvent<FormBaseWriteEvents<number>["valueChangeUser"]>("valueChangeUser", { detail: value }));
   }
 
   /**Validates given value then sets it*/
@@ -533,18 +367,12 @@ export abstract class FormNumberWriteBase<
       }
     }
     if (val < this._min) {
-      this._warnValidator(
-        "Minimum value is " + this._min.toFixed(this._decimals),
-        warn
-      );
+      this._warnValidator("Minimum value is " + this._min.toFixed(this._decimals), warn);
       this._valueSet(this._min);
       return true;
     }
     if (val > this._max) {
-      this._warnValidator(
-        "Maximum value is " + this._max.toFixed(this._decimals),
-        warn
-      );
+      this._warnValidator("Maximum value is " + this._max.toFixed(this._decimals), warn);
       this._valueSet(this._max);
       return true;
     }
@@ -565,9 +393,7 @@ export abstract class FormNumberWriteBase<
     value = Number(value.toFixed(this._decimals));
     if (this._step !== 0) {
       let modBuff = value % this._step;
-      return modBuff >= this._step / 2
-        ? value + this._step - modBuff
-        : value - modBuff;
+      return modBuff >= this._step / 2 ? value + this._step - modBuff : value - modBuff;
     } else {
       return value;
     }
@@ -585,9 +411,9 @@ export interface FormStepperBaseOptions extends FormNumberWriteBaseOptions {
   /**wether the events are live as the slider is moved or only when moving stops */
   live?: boolean;
   /**Icon to use for decreasing value*/
-  iconDecrease?: StateROrValue<() => SVGSVGElement>;
+  iconDecrease?: StateROrValue<Icon>;
   /**Icon to use for increasing value*/
-  iconIncrease?: StateROrValue<() => SVGSVGElement>;
+  iconIncrease?: StateROrValue<Icon>;
 }
 
 /**Base for stepper elements*/
@@ -611,12 +437,12 @@ export abstract class FormStepperBase extends FormNumberWriteBase {
   }
 
   /**Changes the icon on the left of the slider*/
-  set iconDecrease(icon: () => SVGSVGElement) {
+  set iconDecrease(icon: Icon) {
     this._iconDec.replaceChildren(icon());
   }
 
   /**Changes the icon on the right of the slider*/
-  set iconIncrease(icon: () => SVGSVGElement) {
+  set iconIncrease(icon: Icon) {
     this._iconInc.replaceChildren(icon());
   }
 
@@ -676,10 +502,7 @@ export abstract class FormStepperBase extends FormNumberWriteBase {
       if (this._decimals === 0) {
         var step = Math.max(1, Math.floor(Math.abs(this._value || 0) / 150));
       } else {
-        var step = Math.max(
-          1 / this._decimals,
-          Math.floor(Math.abs(this._value || 0) / 150)
-        );
+        var step = Math.max(1 / this._decimals, Math.floor(Math.abs(this._value || 0) / 150));
       }
     } else if (this._stepFunc) {
       var step = this._stepFunc(this._value || 0);
@@ -709,7 +532,7 @@ export interface FormSelectorOption<T> {
   /**Longer text shown as tooltip*/
   details?: string;
   /**icon to display for option*/
-  icon?: () => SVGSVGElement;
+  icon?: Icon;
 }
 
 export interface FormSelectorBaseOptions<T> extends FormBaseWriteOptions<T> {
@@ -725,10 +548,7 @@ export interface FormSelectionBase<T> {
 }
 
 /**Base for number elements elements*/
-export abstract class FormSelectorBase<
-  T,
-  S extends FormSelectionBase<T>
-> extends FormBaseWrite<T> {
+export abstract class FormSelectorBase<T, S extends FormSelectionBase<T>> extends FormBaseWrite<T> {
   protected _selectionValues: T[] = [];
   protected _selections: S[] = [];
   protected _selection: S | undefined;
@@ -757,28 +577,20 @@ export abstract class FormSelectorBase<
     let selections: FormSelectorOption<T>[] = [];
     for (let i = 0; i < this._selections.length; i++) {
       const { text, details, value, icon } = this._selections[i].selection;
-      selections.push(
-        icon ? { text, value, details, icon } : { text, value, details }
-      );
+      selections.push(icon ? { text, value, details, icon } : { text, value, details });
     }
     return selections;
   }
 
   /**Sets the selection options for the selector */
-  set enum(
-    enums: T extends string
-      ? StateROrValue<StateEnumHelperList>
-      : undefined | undefined
-  ) {
+  set enum(enums: T extends string ? StateROrValue<StateEnumHelperList> : undefined | undefined) {
     this._selectionValues = [];
     this._selections = [];
     this._clearSelections();
     if (enums) {
       let i = 0;
       for (const key in enums) {
-        const selection = enums![
-          key
-        ] as StateEnumHelperList[keyof StateEnumHelperList];
+        const selection = enums![key] as StateEnumHelperList[keyof StateEnumHelperList];
         this._selectionValues[i] = key as any as T;
         this._selections[i] = this._addSelection(
           {
@@ -796,10 +608,7 @@ export abstract class FormSelectorBase<
   /**Clears all selections from the element */
   protected abstract _clearSelections(): void;
   /**Add a selection to the element */
-  protected abstract _addSelection(
-    selection: FormSelectorOption<T>,
-    index: number
-  ): S;
+  protected abstract _addSelection(selection: FormSelectorOption<T>, index: number): S;
   /**Sets which selection is active*/
   protected abstract _setSelection(selection: S): void;
   /**Clears any active selection*/

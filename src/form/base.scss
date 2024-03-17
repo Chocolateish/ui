@@ -19,21 +19,21 @@ $fontSize: 1rem;
 $touchFontSize: 1.6rem;
 
 //Colors
-$backColor: var(--chui-frm-backColor);
-$borderColor: var(--chui-frm-borderColor);
-$focusColor: var(--chui-frm-focusColor);
-$hoverColor: var(--chui-frm-hoverColor);
-$textColor: var(--chui-frm-color);
-$selectedTextColor: var(--chui-frm-selectedColor);
-$unselectedTextColor: var(--chui-frm-unselectedColor);
+$backColor: var(--cifbc);
+$borderColor: var(--cifbrc);
+$focusColor: var(--ciffc);
+$hoverColor: var(--cifhc);
+$textColor: var(--ciftc);
+$selectedTextColor: var(--cifsc);
+$unselectedTextColor: var(--cifusc);
 
 //Basic Colors
-$blackColor: var(--chui-frm-colors-blackColor);
-$blackColorText: var(--chui-frm-colors-blackColorText);
-$greenColor: var(--chui-frm-colors-greenColor);
-$redColor: var(--chui-frm-colors-redColor);
-$blueColor: var(--chui-frm-colors-blueColor);
-$yellowColor: var(--chui-frm-colors-yellowColor);
+$blackColor: var(--cifcb);
+$blackColorText: var(--cifctb);
+$greenColor: var(--cifcg);
+$redColor: var(--cifcr);
+$blueColor: var(--cifcb);
+$yellowColor: var(--cifcy);
 
 //Border
 $cornerRadius: 0.4rem;

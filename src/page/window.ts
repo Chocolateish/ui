@@ -1,8 +1,13 @@
 import "./window.scss";
-import { material_navigation_close_rounded } from "@src/asset";
-import { Base, BaseOptions, crel, defineElement } from "@src/base";
-import { pxToRem, remToPx, themeRegisterContainer } from "@src/theme";
+import { material_navigation_close_rounded, red } from "@src/asset";
+import { Base, BaseOptions, StateROrValue, StateWOrFunc, crel, defineElement } from "@src/base";
+import { pxToRem, remToPx, themeBuiltInRoot, themeRegisterContainer } from "@src/theme";
 import { ContextMenuItemList, attachContextMenu } from "./contextmenu";
+import { Icon } from "@src/asset/icons/shared";
+import { clickAwayDetector } from "..";
+
+let colors = themeBuiltInRoot.makeSubGroup("w", "Window", "Window variables");
+colors.makeVariable("chc", "Close Hover Color", "Color of the close button when hovered", red[500], red[400], "Color");
 
 declare global {
   interface Window {
@@ -27,9 +32,7 @@ export class WindowContainer extends Base {
 defineElement(WindowContainer);
 
 /**Viewport for fixed position */
-window.windowContainer = document.documentElement.appendChild(
-  new WindowContainer()
-);
+window.windowContainer = document.documentElement.appendChild(new WindowContainer());
 
 export let selectedWindow: WindowVirtual | undefined;
 let windowAutoCloseHide = () => {
@@ -69,9 +72,16 @@ export type WindowExternalOptions = {
   x: number;
   /**Y position of new window on total screen area*/
   y: number;
+  /**Width of new window in px*/
   width: number;
+  /**Height of new window in px*/
   height: number;
+  /**Content to put in window */
   content: Base;
+  /**Optional title of window*/
+  title?: string;
+  /**Optional layer to use when returning the window to the main window*/
+  layer?: number;
 };
 
 /**Opens external window */
@@ -82,32 +92,50 @@ export function openWindowExternal(options: WindowExternalOptions) {
 }
 
 export class WindowExternal {
+  #title: HTMLTitleElement = crel("title");
   #window: Window;
   constructor(options: WindowExternalOptions) {
     let generatedWindow = window.open(
       "",
       "",
-      "status=no,width=" +
-        options.width +
-        ",height=" +
-        options.height +
-        ",left=" +
-        options.x +
-        ",top=" +
-        options.y
+      "status=no,width=" + options.width + ",height=" + options.height + ",left=" + options.x + ",top=" + options.y
     );
     if (generatedWindow) {
       this.#window = generatedWindow;
     } else {
       throw new Error("Failed to open window");
     }
+    this.#window.document.head.appendChild(this.#title);
     this.#window.document.documentElement.appendChild(new WindowContainer());
     themeRegisterContainer(this.#window.document.documentElement);
     if (typeof options.content !== "undefined") this.content = options.content;
+    if (options.title) this.title = options.title;
     generatedWindow.onbeforeunload = () => {
-      this.return();
+      this.return({
+        title: this.title,
+        opener: document.body,
+        layer: options.layer,
+        position: {
+          left: pxToRem(this.#window.screenX - window.screenX),
+          top: pxToRem(this.#window.screenY - window.screenY),
+        },
+        size: {
+          width: pxToRem(this.#window.innerWidth),
+          height: pxToRem(this.#window.innerHeight),
+        },
+      });
     };
   }
+
+  /**Set the content of the window*/
+  set title(title: string) {
+    this.#title.textContent = title;
+  }
+  /**Get the content of the window*/
+  get title(): string {
+    return this.#title.textContent || "";
+  }
+
   /**Set the content of the window*/
   set content(content: Base) {
     this.#window.document.body.appendChild(content);
@@ -118,7 +146,11 @@ export class WindowExternal {
   }
   async close() {}
   /**Returns window to main window as virtual window */
-  return() {
+  return(options: WindowVirtualOptions) {
+    openWindowVirtual({
+      ...options,
+      content: this.#window.document.body.firstChild as Base,
+    });
     this.unload();
   }
 
@@ -168,15 +200,17 @@ export type WindowVirtualOptions = {
   /**If the window is closeable, default is true, if content provides overwrite for this, it will be used instead*/
   closable?: boolean;
   /**icon of window to put in title bar, if content provised overwrite for this, it will be used instead*/
-  icon?: () => SVGSVGElement;
+  icon?: Icon;
   /**Title of window to put in title bar, if content provised overwrite for this, it will be used instead*/
   title?: string;
   /**Tooltip for window, only visible as a hover tooltip, if content provised overwrite for this, it will be used instead*/
   toolTip?: string;
+  /**If window should be hidden*/
+  hide?: StateROrValue<boolean>;
   /**Window is auto closed when interacting outside window*/
-  autoHide?: boolean;
+  autoHide?: StateROrValue<boolean>;
   /**Window is auto closed when interacting outside window*/
-  autoClose?: boolean;
+  autoClose?: StateROrValue<boolean>;
   /**Makes the window modal, meaning it darkens background and captures tab and pointer and keyboard */
   modal?: boolean;
   /**Determines if content is shown */
@@ -209,15 +243,14 @@ export type WindowVirtualOptions = {
     /**Height of new window in rem*/
     height: number;
   };
+  writers?: {
+    hide?: StateWOrFunc<boolean>;
+  };
 } & BaseOptions;
 
 /**Opens virtual window */
 export function openWindowVirtual(options: WindowVirtualOptions) {
   let window = new WindowVirtual(options);
-  options.opener.ownerDocument.defaultView?.windowContainer.appendWindow(
-    window,
-    options.layer || 0
-  );
   selectedWindow = window;
   return window;
 }
@@ -228,6 +261,9 @@ export class WindowVirtual extends Base {
   #titelTextContainer: HTMLDivElement;
   #titelCloserContainer: HTMLDivElement;
   #contentContainer: HTMLDivElement;
+  //@ts-expect-error
+  #layer: number;
+  #opener: HTMLElement;
   #content?: Base;
   #sizers: HTMLDivElement;
   #width: number = 0;
@@ -237,8 +273,14 @@ export class WindowVirtual extends Base {
   #leftRightPos: number = 0;
   #topBottomPos: number = 0;
   #toolTip?: string;
+  hideWriter?: StateWOrFunc<boolean>;
+  #hide: boolean = false;
+  #autoHide: boolean = false;
+  #autoClose: boolean = false;
+  #clickAwayDetector?: () => void;
+
   constructor(options: WindowVirtualOptions) {
-    super();
+    super(options);
     this.tabIndex = 0;
     this.addEventListener("pointerdown", this.select, { capture: true });
     this.setAttribute("empty", "");
@@ -281,12 +323,10 @@ export class WindowVirtual extends Base {
           label: "Pop Out",
           action: () => {
             openWindowExternal({
+              title: this.title,
+              layer: this.layer,
               x: window.screenX + remToPx(this.left),
-              y:
-                window.screenY +
-                window.outerHeight -
-                window.innerHeight +
-                remToPx(this.top),
+              y: window.screenY + window.outerHeight - window.innerHeight + remToPx(this.top),
               width: remToPx(this.width),
               height: remToPx(this.height),
               content: this.#content!,
@@ -309,19 +349,27 @@ export class WindowVirtual extends Base {
     this.#titelTextContainer = this.#titelContainer.appendChild(crel("div"));
     this.#titelCloserContainer = this.#titelContainer.appendChild(crel("div"));
     this.#titelCloserContainer.onpointerdown = (e) => {
+      this.close();
       e.stopPropagation();
     };
     this.#titelCloserContainer.appendChild(material_navigation_close_rounded());
     this.#contentContainer = this.appendChild(crel("div"));
     this.#sizers = this.appendChild(crel("div"));
     this.#sizers.tabIndex = 0;
+    this.#opener = options.opener;
+    //Options
+    this.layer = options.layer || 0;
     if (options.content) this.content = options.content;
     if (typeof options.bar !== "undefined") this.bar = options.bar;
-    if (typeof options.closable !== "undefined")
-      this.closable = options.closable;
+    if (typeof options.closable !== "undefined") this.closable = options.closable;
     if (options.icon) this.icon = options.icon;
     if (options.title) this.title = options.title;
     if (options.toolTip) this.toolTip = options.toolTip;
+
+    if (options.hide) this.attachStateToProp("hide", options.hide);
+    if (options.autoHide) this.attachStateToProp("autoHide", options.autoHide);
+    if (options.autoClose) this.attachStateToProp("autoClose", options.autoClose);
+
     if (options.position) {
       this.moveable = options.position.moveable ?? true;
       if (options.position.rotation) this.rotation = options.position.rotation;
@@ -340,6 +388,9 @@ export class WindowVirtual extends Base {
       this.sizeable = options.size.sizeable ?? true;
       this.width = options.size.width;
       this.height = options.size.height;
+    }
+    if (options.writers) {
+      if (options.writers.hide) this.hideWriter = options.writers.hide;
     }
   }
   static elementName() {
@@ -367,6 +418,15 @@ export class WindowVirtual extends Base {
     }
   }
 
+  /**Changes the layer of the window */
+  set layer(layer: number) {
+    this.#opener.ownerDocument.defaultView?.windowContainer.appendWindow(this, layer);
+    this.#layer = layer;
+  }
+  get layer(): number {
+    return this.#layer;
+  }
+
   /**Sets if title bar is visible */
   set bar(bar: boolean) {
     this.#titelContainer.hidden = !bar;
@@ -383,7 +443,7 @@ export class WindowVirtual extends Base {
   }
 
   /**Changes icon for window */
-  set icon(icon: () => SVGSVGElement) {
+  set icon(icon: Icon) {
     this.#titeliconContainer.replaceChildren(icon());
   }
 
@@ -401,6 +461,56 @@ export class WindowVirtual extends Base {
   get toolTip(): string {
     return this.#toolTip || "";
   }
+
+  /**Sets if the window is hidden*/
+  set hide(hide: boolean) {
+    if (hide !== this.hide) {
+      if (hide) this.setAttribute("hide", "");
+      else this.removeAttribute("hide");
+      this.#hide = hide;
+      this.stateWOrFunc(this.hideWriter, hide);
+    }
+  }
+  get hide(): boolean {
+    return this.#hide;
+  }
+
+  /**Sets if the window auto hides*/
+  set autoHide(auto: boolean) {
+    if (auto !== this.autoHide)
+      if (auto) {
+        if (!this.#clickAwayDetector)
+          this.#clickAwayDetector = clickAwayDetector(() => {
+            this.hide = true;
+          });
+      } else {
+        if (!this.autoClose && this.#clickAwayDetector) {
+          this.#clickAwayDetector();
+          this.#clickAwayDetector = undefined;
+        }
+      }
+  }
+  get autoHide(): boolean {
+    return this.#autoHide;
+  }
+  /**Sets if the window auto closes*/
+  set autoClose(auto: boolean) {
+    if (auto !== this.autoClose)
+      if (auto) {
+        if (!this.#clickAwayDetector)
+          this.#clickAwayDetector = clickAwayDetector(() => {
+            this.close();
+          });
+      } else {
+        if (!this.autoClose && this.#clickAwayDetector) {
+          this.#clickAwayDetector();
+          this.#clickAwayDetector = undefined;
+        }
+      }
+  }
+  get autoClose(): boolean {
+    return this.#autoClose;
+  }
   //     _____ _                _
   //    / ____| |              (_)
   //   | |    | | ___  ___  ___ _ _ __   __ _
@@ -411,6 +521,7 @@ export class WindowVirtual extends Base {
   //                                    |___/
   /**Closes the window */
   async close() {
+    this.#clickAwayDetector?.();
     this.remove();
   }
   //    _____          _ _   _
@@ -424,6 +535,7 @@ export class WindowVirtual extends Base {
     if (moveable) {
       this.setAttribute("moveable", "");
       this.#titelContainer.onpointerdown = (e) => {
+        if (e.button !== 0) return;
         this.#titelContainer.setPointerCapture(e.pointerId);
         let x = pxToRem(e.clientX) - this.left;
         let y = pxToRem(e.clientY) - this.top;
@@ -463,15 +575,10 @@ export class WindowVirtual extends Base {
     this.#topBottomPos = top;
   }
   get top(): number {
-    return this.#topBottom
-      ? pxToRem(this.getBoundingClientRect().top)
-      : this.#topBottomPos;
+    return this.#topBottom ? pxToRem(this.getBoundingClientRect().top) : this.#topBottomPos;
   }
   private set topInternal(top: number) {
-    this.top = Math.max(
-      Math.min(top, pxToRem(this.window!.innerHeight) - 3),
-      0
-    );
+    this.top = Math.max(Math.min(top, pxToRem(this.window!.innerHeight) - 3), 0);
   }
 
   /**Sets bottom position of window */
@@ -482,9 +589,7 @@ export class WindowVirtual extends Base {
     this.#topBottomPos = bottom;
   }
   get bottom(): number {
-    return this.#topBottom
-      ? this.#topBottomPos
-      : pxToRem(this.window!.innerHeight - this.getBoundingClientRect().bottom);
+    return this.#topBottom ? this.#topBottomPos : pxToRem(this.window!.innerHeight - this.getBoundingClientRect().bottom);
   }
 
   /**Sets left position of window */
@@ -496,15 +601,10 @@ export class WindowVirtual extends Base {
   }
   set leftInternal(left: number) {
     let halfWidth = this.width / 2;
-    this.left = Math.max(
-      Math.min(left, pxToRem(this.window!.innerWidth) - halfWidth),
-      -halfWidth
-    );
+    this.left = Math.max(Math.min(left, pxToRem(this.window!.innerWidth) - halfWidth), -halfWidth);
   }
   get left(): number {
-    return this.#leftRight
-      ? pxToRem(this.getBoundingClientRect().left)
-      : this.#leftRightPos;
+    return this.#leftRight ? pxToRem(this.getBoundingClientRect().left) : this.#leftRightPos;
   }
 
   /**Sets right position of window */
@@ -515,9 +615,7 @@ export class WindowVirtual extends Base {
     this.#leftRightPos = right;
   }
   get right(): number {
-    return this.#leftRight
-      ? this.#leftRightPos
-      : pxToRem(this.window!.innerWidth - this.getBoundingClientRect().right);
+    return this.#leftRight ? this.#leftRightPos : pxToRem(this.window!.innerWidth - this.getBoundingClientRect().right);
   }
 
   /**Sets rotation of window */
@@ -540,22 +638,9 @@ export class WindowVirtual extends Base {
     if (sizeable === false) return;
     let sizers: string[];
     let visible = false;
-    if (
-      sizeable === true ||
-      sizeable === "top-bottom-left-right" ||
-      sizeable === "visible"
-    ) {
+    if (sizeable === true || sizeable === "top-bottom-left-right" || sizeable === "visible") {
       if (sizeable === "visible") visible = true;
-      sizers = [
-        "top",
-        "bottom",
-        "right",
-        "left",
-        "top-right",
-        "top-left",
-        "bottom-right",
-        "bottom-left",
-      ];
+      sizers = ["top", "bottom", "right", "left", "top-right", "top-left", "bottom-right", "bottom-left"];
     } else {
       sizers = sizeable.split("-");
       if (sizers.includes("visible")) {
@@ -585,9 +670,7 @@ export class WindowVirtual extends Base {
               sizer.setPointerCapture(e.pointerId);
               if (!topBottom && top) this.bottom = this.bottom;
               if (topBottom && !top) this.top = this.top;
-              var y = top
-                ? e.clientY + remToPx(this.height)
-                : e.clientY - remToPx(this.height);
+              var y = top ? e.clientY + remToPx(this.height) : e.clientY - remToPx(this.height);
               sizer.onpointermove = top
                 ? (ev) => {
                     this.heightInternal = pxToRem(y - ev.clientY);
@@ -611,9 +694,7 @@ export class WindowVirtual extends Base {
               sizer.setPointerCapture(e.pointerId);
               if (!leftRight && left) this.right = this.right;
               if (leftRight && !left) this.left = this.left;
-              let x = left
-                ? e.clientX + remToPx(this.width)
-                : e.clientX - remToPx(this.width);
+              let x = left ? e.clientX + remToPx(this.width) : e.clientX - remToPx(this.width);
               sizer.onpointermove = left
                 ? (ev) => {
                     this.widthInternal = pxToRem(x - ev.clientX);
@@ -642,12 +723,8 @@ export class WindowVirtual extends Base {
               if (topBottom && !top) this.top = this.top;
               if (!leftRight && left) this.right = this.right;
               if (leftRight && !left) this.left = this.left;
-              var y = top
-                ? e.clientY + remToPx(this.height)
-                : e.clientY - remToPx(this.height);
-              let x = left
-                ? e.clientX + remToPx(this.width)
-                : e.clientX - remToPx(this.width);
+              var y = top ? e.clientY + remToPx(this.height) : e.clientY - remToPx(this.height);
+              let x = left ? e.clientX + remToPx(this.width) : e.clientX - remToPx(this.width);
               sizer.onpointermove = left
                 ? top
                   ? (ev) => {

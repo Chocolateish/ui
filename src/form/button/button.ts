@@ -1,27 +1,21 @@
 import "./button.scss";
-import { crel, defineElement } from "@src/base";
-import {
-  BasicColors,
-  FormBaseRead,
-  FormBaseWrite,
-  FormBaseWriteOptions,
-} from "../base";
+import { StateROrValue, crel, defineElement } from "@src/base";
+import { BasicColors, FormBaseWrite, FormBaseWriteOptions } from "../base";
 
 interface ButtonOptions extends FormBaseWriteOptions<boolean> {
   /**Buttons text */
-  text?: string;
+  text?: StateROrValue<string>;
   /**Function to call on button click */
   clickAction?: () => void;
   /**Set true to make button toggle on click instead of normal */
-  toggle?: boolean;
+  toggle?: StateROrValue<boolean>;
   /**Changes the buttons color */
-  color?: BasicColors;
+  color?: StateROrValue<BasicColors>;
 }
 
 /**Button for clicking*/
 export class FormButton extends FormBaseWrite<boolean> {
   private _text: HTMLSpanElement = this._body.appendChild(crel("span"));
-  private _icon: SVGSVGElement | undefined;
   private _click: (() => void) | undefined;
   private _color: BasicColors | undefined;
   private _toggle: boolean | undefined;

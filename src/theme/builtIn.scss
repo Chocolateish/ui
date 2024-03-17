@@ -1,18 +1,18 @@
 $chuiScrollbarSize: var(--scrollbar);
 
-$chuiColorLayer1: var(--chui-clr-l1);
-$chuiColorLayer1Txt: var(--chui-clr-l1txt);
-$chuiColorLayer2: var(--chui-clr-l2);
-$chuiColorLayer3: var(--chui-clr-l3);
-$chuiColorLayer4: var(--chui-clr-l4);
-$chuiColorLayer5: var(--chui-clr-l5);
-$chuiColorLayer6: var(--chui-clr-l6);
-$chuiColorLayer7: var(--chui-clr-l7);
-$chuiColorLayer8: var(--chui-clr-l8);
-$chuiColorLayer9: var(--chui-clr-l9);
-$chuiColorBorder: var(--chui-clr-brd);
-$chuiColorFocused: var(--chui-clr-fcs);
-$chuiColorScrollbarColor: var(--chui-clr-sbclr);
+$chuiColorLayer1: var(--ciclrl1);
+$chuiColorLayer1Txt: var(--ciclrl1txt);
+$chuiColorLayer2: var(--ciclrl2);
+$chuiColorLayer3: var(--ciclrl3);
+$chuiColorLayer4: var(--ciclrl4);
+$chuiColorLayer5: var(--ciclrl5);
+$chuiColorLayer6: var(--ciclrl6);
+$chuiColorLayer7: var(--ciclrl7);
+$chuiColorLayer8: var(--ciclrl8);
+$chuiColorLayer9: var(--ciclrl9);
+$chuiColorBorder: var(--ciclrbrd);
+$chuiColorFocused: var(--ciclrfcs);
+$chuiColorScrollbarColor: var(--ciclrsbclr);
 
 //
 $chuiBorderRadius: 0.5rem;
@@ -66,40 +66,40 @@ $chuiBorder: 0px 0px 8px 1px $chuiColorBorder, 0px 0px 1px 1px $chuiColorBorder;
   font-family: "Roboto";
   font-style: normal;
   font-weight: 100;
-  src: url("./font/Roboto-Thin.woff2") format("woff2");
+  src: url("@src/theme/font/Roboto-Thin.woff2") format("woff2");
 }
 
 @font-face {
   font-family: "Roboto";
   font-style: italic;
   font-weight: 100;
-  src: url("./font/Roboto-ThinItalic.woff2") format("woff2");
+  src: url("@src/theme/font/Roboto-ThinItalic.woff2") format("woff2");
 }
 
 @font-face {
   font-family: "Roboto";
   font-style: normal;
   font-weight: 400;
-  src: url("./font/Roboto-Regular.woff2") format("woff2");
+  src: url("@src/theme/font/Roboto-Regular.woff2") format("woff2");
 }
 
 @font-face {
   font-family: "Roboto";
   font-style: italic;
   font-weight: 400;
-  src: url("./font/Roboto-Italic.woff2") format("woff2");
+  src: url("@src/theme/font/Roboto-Italic.woff2") format("woff2");
 }
 
 @font-face {
   font-family: "Roboto";
   font-style: normal;
   font-weight: 700;
-  src: url("./font/Roboto-Bold.woff2") format("woff2");
+  src: url("@src/theme/font/Roboto-Bold.woff2") format("woff2");
 }
 
 @font-face {
   font-family: "Roboto";
   font-style: italic;
   font-weight: 700;
-  src: url("./font/Roboto-BoldItalic.woff2") format("woff2");
+  src: url("@src/theme/font/Roboto-BoldItalic.woff2") format("woff2");
 }

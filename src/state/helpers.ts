@@ -149,7 +149,7 @@ export type StateEnumHelperList = {
   [key: string | number | symbol]: {
     name: string;
     description?: string;
-    icon?: () => SVGSVGElement;
+    icon?: Icon;
   };
 };
 

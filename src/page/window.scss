@@ -1,5 +1,7 @@
 @import "../theme/builtIn.scss";
 
+$closerHoverColor: var(--ciwchc);
+
 $titleHeight: 1.6rem;
 $titleHeightTouch: 3.2rem;
 $sizerBorder: 0.6rem;
@@ -19,9 +21,12 @@ chui-window {
   border: $chuiColorBorder 1px solid;
   min-height: min-content;
 
+  &[hide] {
+    display: none;
+  }
+
   .graphics-some & {
-    box-shadow: 0px 0px 4px 0px $chuiColorBorder,
-      0px 0px 1px 1px $chuiColorBorder;
+    box-shadow: 0px 0px 4px 0px $chuiColorBorder, 0px 0px 1px 1px $chuiColorBorder;
     &:focus-within {
       box-shadow: $chuiBorder;
     }
@@ -79,13 +84,18 @@ chui-window {
     }
     > div:last-child {
       cursor: auto;
-      height: $titleHeight;
+      height: 100%;
+      display: flex;
+      align-items: center;
       .touch & {
         flex-basis: $titleHeightTouch;
       }
+      &:hover {
+        background-color: $closerHoverColor;
+      }
       > * {
         border: 0.2rem solid transparent;
-        height: 100%;
+        height: $titleHeight;
         width: auto;
         box-sizing: border-box;
       }

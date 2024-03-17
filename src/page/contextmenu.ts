@@ -1,28 +1,19 @@
+import { Icon } from "@src/asset/icons/shared";
 import {
-  StateReadSync,
+  clickAwayDetector,
   material_navigation_check_rounded,
   material_navigation_chevron_right_rounded,
   material_navigation_close_rounded,
 } from "..";
 import "./contextMenu.scss";
-import { Base, defineElement } from "@src/base";
+import { Base, BaseOptions, StateROrValue, crel, defineElement } from "@src/base";
 import {} from "@src/theme";
 
-export type ContextMenuItem = {
-  label: string | StateReadSync<string | number | boolean>;
-  action?: () => void;
-  sub?: ContextMenuItem[];
-  shortcut?: KeyboardShortcut | StateReadSync<KeyboardShortcut>;
-  icon?: (() => SVGSVGElement) | StateReadSync<() => SVGSVGElement>;
-  checked?: boolean | StateReadSync<any>;
-  disabled?: boolean | StateReadSync<any>;
-};
+export type ContextMenuItem = ContextMenuLineOptions & ContextMenuSubOptions;
 
 export type ContextMenuItemList = (ContextMenuItem | number)[];
 type ContextMenuParams = HTMLElement | ContextMenuItemList;
-export type ContextMenuParameter =
-  | ContextMenuParams
-  | (() => ContextMenuParams | Promise<ContextMenuParams>);
+export type ContextMenuParameter = ContextMenuParams | (() => ContextMenuParams | Promise<ContextMenuParams>);
 
 type KeyboardShortcut = {
   ctrl?: true;
@@ -33,9 +24,7 @@ type KeyboardShortcut = {
 };
 
 function keyboardShortcutToString(shortcut: KeyboardShortcut) {
-  let keys = Array.isArray(shortcut.keys)
-    ? shortcut.keys.map((key) => key.toUpperCase())
-    : [shortcut.keys.toUpperCase()];
+  let keys = Array.isArray(shortcut.keys) ? shortcut.keys.map((key) => key.toUpperCase()) : [shortcut.keys.toUpperCase()];
   let result = keys.join(" + ");
   if (shortcut.meta) result = "Meta + " + result;
   if (shortcut.ctrl) result = "Ctrl + " + result;
@@ -50,53 +39,52 @@ function keyboardShortcutToString(shortcut: KeyboardShortcut) {
 //   | |    | | '_ \ / _ \
 //   | |____| | | | |  __/
 //   |______|_|_| |_|\___|
+
+type ContextMenuLineOptions = {
+  label: StateROrValue<string | number | boolean>;
+  action?: () => void;
+  shortcut?: StateROrValue<KeyboardShortcut>;
+  icon?: StateROrValue<Icon>;
+  checked?: StateROrValue<boolean>;
+} & BaseOptions;
+
 export class ContextMenuLine extends Base {
   #icon: HTMLDivElement;
   #label: HTMLTableCellElement;
   #shortcut: HTMLTableCellElement;
-  constructor(line: ContextMenuItem) {
-    super();
+  constructor(options: ContextMenuLineOptions) {
+    super(options);
     this.#icon = this.appendChild(crel("td")).appendChild(crel("div"));
     this.#label = this.appendChild(crel("td"));
     this.#shortcut = this.appendChild(crel("td"));
     this.tabIndex = 0;
     this.onclick = (e) => {
       e.stopPropagation();
-      line.action?.();
+      options.action?.();
       contextMenuClose();
     };
     this.onkeydown = (e) => {
       if (e.key === "Enter" || e.key === " ") {
-        line.action?.();
+        options.action?.();
         contextMenuClose();
       }
     };
-    if (typeof line.checked !== "undefined")
-      this.attachState(line.checked, (checked) => {
-        this.#icon.replaceChildren(
-          (checked.ok ? material_navigation_check_rounded() : undefined) as any
-        );
+    if (typeof options.checked !== "undefined")
+      this.attachState(options.checked, (checked) => {
+        this.#icon.replaceChildren((checked.ok ? material_navigation_check_rounded() : undefined) as any);
       });
-    else if (line.icon)
-      this.attachState(line.icon, (icon) => {
+    else if (options.icon)
+      this.attachState(options.icon, (icon) => {
         this.#icon.replaceChildren((icon.ok ? icon.value() : undefined) as any);
       });
 
-    if (line.label)
-      this.attachState(line.label, (label) => {
-        this.#label.innerHTML = label.ok
-          ? String(label.value)
-          : String(label.error.reason);
+    if (options.label)
+      this.attachState(options.label, (label) => {
+        this.#label.innerHTML = label.ok ? String(label.value) : String(label.error.reason);
       });
-    if (line.shortcut)
-      this.attachState(line.shortcut, (shortcut) => {
-        this.#shortcut.innerHTML = shortcut.ok
-          ? String(keyboardShortcutToString(shortcut.value))
-          : String(shortcut.error.reason);
-      });
-    if (typeof line.disabled !== "undefined")
-      this.attachState(line.disabled, (disabled) => {
-        this.inert = disabled.ok ? disabled.value : false;
+    if (options.shortcut)
+      this.attachState(options.shortcut, (shortcut) => {
+        this.#shortcut.innerHTML = shortcut.ok ? String(keyboardShortcutToString(shortcut.value)) : String(shortcut.error.reason);
       });
   }
   static elementName() {
@@ -111,20 +99,26 @@ defineElement(ContextMenuLine);
 //    \___ \| |  | |  _ <
 //    ____) | |__| | |_) |
 //   |_____/ \____/|____/
+
+type ContextMenuSubOptions = {
+  label: StateROrValue<string | number | boolean>;
+  sub?: ContextMenuItem[];
+  icon?: StateROrValue<Icon>;
+  checked?: StateROrValue<boolean>;
+} & BaseOptions;
+
 export class ContextMenuSub extends Base {
   #icon: HTMLDivElement;
   #label: HTMLTableCellElement;
   #opener: HTMLDivElement;
   #sub: ContextMenuParameter;
   #container?: ContextMenuContainer;
-  constructor(line: ContextMenuItem) {
-    super();
+  constructor(options: ContextMenuSubOptions) {
+    super(options);
     this.#icon = this.appendChild(crel("td")).appendChild(crel("div"));
     this.#label = this.appendChild(crel("td"));
     this.#opener = this.appendChild(crel("td"));
-    this.#opener
-      .appendChild(crel("div"))
-      .appendChild(material_navigation_chevron_right_rounded());
+    this.#opener.appendChild(crel("div")).appendChild(material_navigation_chevron_right_rounded());
     this.tabIndex = 0;
     this.onclick = (e) => {
       e.stopPropagation();
@@ -147,30 +141,22 @@ export class ContextMenuSub extends Base {
         (this.#container?.firstChild as ContextMenu)!.doFocus(undefined, true);
       }
     };
-    if (line.sub) {
-      this.#sub = line.sub;
+    if (options.sub) {
+      this.#sub = options.sub;
     } else {
       throw new Error("Submenu not defined");
     }
-    if (typeof line.checked !== "undefined")
-      this.attachState(line.checked, (checked) => {
-        this.#icon.replaceChildren(
-          (checked.ok ? material_navigation_check_rounded() : undefined) as any
-        );
+    if (typeof options.checked !== "undefined")
+      this.attachState(options.checked, (checked) => {
+        this.#icon.replaceChildren((checked.ok ? material_navigation_check_rounded() : undefined) as any);
       });
-    else if (line.icon)
-      this.attachState(line.icon, (icon) => {
+    else if (options.icon)
+      this.attachState(options.icon, (icon) => {
         this.#icon.replaceChildren((icon.ok ? icon.value() : undefined) as any);
       });
-    if (line.label)
-      this.attachState(line.label, (label) => {
-        this.#label.innerHTML = label.ok
-          ? String(label.value)
-          : String(label.error.reason);
-      });
-    if (line.disabled)
-      this.attachState(line.disabled, (disabled) => {
-        this.inert = disabled.ok ? disabled.value : false;
+    if (options.label)
+      this.attachState(options.label, (label) => {
+        this.#label.innerHTML = label.ok ? String(label.value) : String(label.error.reason);
       });
   }
   static elementName() {
@@ -178,11 +164,8 @@ export class ContextMenuSub extends Base {
   }
   async toggle(toggle: boolean = !this.#container) {
     if (toggle && !this.#container) {
-      if ((this.parentElement as ContextMenu).subOpen)
-        (this.parentElement as ContextMenu).subOpen!.toggle(false);
-      this.#container = this.#opener.appendChild(
-        new ContextMenuContainer(this.#sub, this)
-      );
+      if ((this.parentElement as ContextMenu).subOpen) (this.parentElement as ContextMenu).subOpen!.toggle(false);
+      this.#container = this.#opener.appendChild(new ContextMenuContainer(this.#sub, this));
       (this.parentElement as ContextMenu).subOpen = this;
     } else if (!toggle && this.#container) {
       this.#container.remove();
@@ -228,11 +211,7 @@ export class ContextMenu extends Base {
     for (let i = 0; i < lines.length; i++) {
       let line = lines[i];
       this.appendChild(
-        typeof line === "number"
-          ? new ContextMenuDevider()
-          : line.sub
-          ? new ContextMenuSub(line)
-          : new ContextMenuLine(line)
+        typeof line === "number" ? new ContextMenuDevider() : line.sub ? new ContextMenuSub(line) : new ContextMenuLine(line)
       );
     }
     this.tabIndex = -1;
@@ -259,11 +238,7 @@ export class ContextMenu extends Base {
     else this.focus();
   }
 
-  nextFocus(
-    from?: AnyLine | null,
-    direction?: boolean,
-    top?: AnyLine | null
-  ): AnyLine | null {
+  nextFocus(from?: AnyLine | null, direction?: boolean, top?: AnyLine | null): AnyLine | null {
     let next = (
       typeof direction === "undefined"
         ? from
@@ -276,12 +251,7 @@ export class ContextMenu extends Base {
         : this.lastElementChild
     ) as AnyLine | null;
     if (next === top) return null;
-    if (
-      next === null ||
-      next instanceof ContextMenuDevider ||
-      next.inert ||
-      !next.getBoundingClientRect().height
-    )
+    if (next === null || next instanceof ContextMenuDevider || next.inert || !next.getBoundingClientRect().height)
       return this.nextFocus(next, direction ?? true, top || next);
     return next;
   }
@@ -295,12 +265,7 @@ defineElement(ContextMenu);
 //    \_____\___/|_| |_|\__\__,_|_|_| |_|\___|_|
 export class ContextMenuContainer extends Base {
   #position: HTMLElement | { x: number; y: number };
-  constructor(
-    element: ContextMenuParameter,
-    position: HTMLElement | { x: number; y: number },
-    width?: number,
-    height?: number
-  ) {
+  constructor(element: ContextMenuParameter, position: HTMLElement | { x: number; y: number }, width?: number, height?: number) {
     super();
     this.#position = position;
     this.style.width = width + "rem";
@@ -316,31 +281,21 @@ export class ContextMenuContainer extends Base {
       this.appendChild(crel("div"));
       (async () => {
         let result = await element();
-        this.replaceChild(
-          result instanceof HTMLElement ? result : new ContextMenu(result),
-          this.firstChild!
-        );
+        this.replaceChild(result instanceof HTMLElement ? result : new ContextMenu(result), this.firstChild!);
         (this.firstChild as HTMLElement).focus();
         this.updatePosition();
       })();
-    } else
-      this.appendChild(
-        element instanceof HTMLElement ? element : new ContextMenu(element)
-      );
+    } else this.appendChild(element instanceof HTMLElement ? element : new ContextMenu(element));
     let catcher = this.appendChild(crel("div"));
     catcher.tabIndex = 0;
     this.onkeydown = (e) => {
       if (e.key === "Escape") contextMenuClose();
     };
     catcher.addEventListener("focus", () => {
-      this.firstChild instanceof ContextMenu
-        ? this.firstChild.doFocus(undefined, true)
-        : (this.firstChild as HTMLElement).focus();
+      this.firstChild instanceof ContextMenu ? this.firstChild.doFocus(undefined, true) : (this.firstChild as HTMLElement).focus();
     });
     this.addEventListener("focus", () => {
-      this.firstChild instanceof ContextMenu
-        ? this.firstChild.doFocus(undefined, false)
-        : (this.firstChild as HTMLElement).focus();
+      this.firstChild instanceof ContextMenu ? this.firstChild.doFocus(undefined, false) : (this.firstChild as HTMLElement).focus();
     });
   }
   static elementName() {
@@ -363,24 +318,20 @@ export class ContextMenuContainer extends Base {
       let box2 = this.#position.getBoundingClientRect();
       if (box2.x + box2.width + box.width > window.innerWidth)
         if (box2.x - box.width < 0)
-          if (box2.x + box.width > window.innerWidth)
-            this.style.right = 0 + "px";
+          if (box2.x + box.width > window.innerWidth) this.style.right = 0 + "px";
           else this.style.left = box2.x + "px";
         else this.style.right = window.innerWidth - box2.x + "px";
       else this.style.left = box2.x + box2.width + "px";
 
       if (box2.y + box.height > window.innerHeight)
         if (box2.y - box.height < 0) this.style.bottom = 0 + "px";
-        else
-          this.style.bottom = window.innerHeight - box2.y - box2.height + "px";
+        else this.style.bottom = window.innerHeight - box2.y - box2.height + "px";
       else this.style.top = box2.y + "px";
     } else {
       let box = this.getBoundingClientRect();
-      if (this.#position.x + box.width > window.innerWidth)
-        this.style.right = 0 + "px";
+      if (this.#position.x + box.width > window.innerWidth) this.style.right = 0 + "px";
       else this.style.left = this.#position.x + "px";
-      if (this.#position.y + box.height > window.innerHeight)
-        this.style.bottom = window.innerHeight - this.#position.y + "px";
+      if (this.#position.y + box.height > window.innerHeight) this.style.bottom = window.innerHeight - this.#position.y + "px";
       else this.style.top = this.#position.y + "px";
     }
   }
@@ -413,12 +364,7 @@ export async function openContextMenu(
 //          |_|
 type ContextMenuOpenFunction = (e: MouseEvent) => void;
 
-export function attachContextMenu(
-  element: HTMLElement,
-  menu: ContextMenuParams,
-  width?: number,
-  height?: number
-): ContextMenuOpenFunction;
+export function attachContextMenu(element: HTMLElement, menu: ContextMenuParams, width?: number, height?: number): ContextMenuOpenFunction;
 export function attachContextMenu(
   element: HTMLElement,
   menu: () => ContextMenuParams,
@@ -443,22 +389,13 @@ export function attachContextMenu(
 ): ContextMenuOpenFunction {
   let openFunc = (e: MouseEvent) => {
     e.preventDefault();
-    openContextMenu(
-      menu,
-      { x: e.clientX, y: e.clientY },
-      element.ownerDocument,
-      width,
-      height
-    );
+    openContextMenu(menu, { x: e.clientX, y: e.clientY }, element.ownerDocument, width, height);
   };
   element.addEventListener("contextmenu", openFunc);
   return openFunc;
 }
 /**Dettaches a context menu from the element by the context menu handle */
-export function dettachContextMenu(
-  element: HTMLElement,
-  func: ContextMenuOpenFunction
-) {
+export function dettachContextMenu(element: HTMLElement, func: ContextMenuOpenFunction) {
   element.removeEventListener("contextmenu", func);
 }
 
@@ -466,13 +403,4 @@ let contextMenuCloser = () => {};
 let contextMenuClose = () => {
   contextMenuCloser();
 };
-document.addEventListener("contextmenu", contextMenuClose, {
-  passive: true,
-  capture: true,
-});
-document.addEventListener("pointerdown", contextMenuClose, {
-  passive: true,
-});
-window.addEventListener("blur", contextMenuClose, {
-  passive: true,
-});
+clickAwayDetector(contextMenuClose);

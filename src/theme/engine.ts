@@ -87,11 +87,9 @@ themeInternal.subscribe((val) => {
 export const theme = themeInternal.StateWrite;
 
 //Sets up automatic theme change based on operating system
-window
-  .matchMedia("(prefers-color-scheme: dark)")
-  .addEventListener("change", (e) => {
-    themeInternal.write(e.matches ? Themes.Dark : Themes.Light);
-  });
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+  themeInternal.write(e.matches ? Themes.Dark : Themes.Light);
+});
 
 //Scale
 let scaleValue = 16;
@@ -240,19 +238,11 @@ export function themeSetNameTransform(transform: (name: string) => string) {
  * @param packageName use import {name} from "../package.json"
  * @param name name of group formatted for user reading
  * @param description a description of what the setting group is about*/
-export function themeInitVariableRoot(
-  packageName: string,
-  name: string,
-  description: string
-) {
+export function themeInitVariableRoot(packageName: string, name: string, description: string) {
   if (nameTransformer) {
     packageName = nameTransformer(packageName);
   }
-  bottomGroups[packageName] = new ThemeVariableGroup(
-    packageName,
-    name,
-    description
-  );
+  bottomGroups[packageName] = new ThemeVariableGroup(packageName, name, description);
   return bottomGroups[packageName];
 }
 
@@ -287,11 +277,7 @@ export class ThemeVariableGroup {
     if (id in this.subGroups) {
       throw new Error("Sub group already registered " + id);
     } else {
-      return (this.subGroups[id] = new ThemeVariableGroup(
-        this.pathID + "-" + id,
-        name,
-        description
-      ));
+      return (this.subGroups[id] = new ThemeVariableGroup(this.pathID + id, name, description));
     }
   }
 
@@ -310,13 +296,13 @@ export class ThemeVariableGroup {
     light: string,
     dark: string,
     type: K,
-    typeParams: ThemeVariableType[K],
+    typeParams?: ThemeVariableType[K],
     example?: () => Element
   ) {
     if (id in this.variables) {
       throw new Error("Settings already registered " + id);
     }
-    let key = "--" + this.pathID + "-" + id;
+    let key = "--" + this.pathID + id;
     let variable = (this.variables[key] = {
       name,
       desc: description,
@@ -417,8 +403,7 @@ function applyAnimationToDoc(container: HTMLElement, anim: GraphicsLevels) {
   }
 }
 function applyThemeToDoc(container: HTMLElement, theme: Themes) {
-  for (const key in bottomGroups)
-    bottomGroups[key].applyThemes(container.style, theme);
+  for (const key in bottomGroups) bottomGroups[key].applyThemes(container.style, theme);
 }
 function applyScaleToDoc(container: HTMLElement, scale: number) {
   container.style.fontSize = scale + "px";

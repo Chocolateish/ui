@@ -2,17 +2,7 @@ import "./ui.scss";
 import { Base, crel, defineElement } from "@src/base";
 import { Menubar } from "@src/menu";
 import { ContentBase } from "./content";
-import {
-  GraphicsLevels,
-  InputModes,
-  ScrollbarModes,
-  Themes,
-  graphicsLevel,
-  inputMode,
-  scale,
-  scrollBarMode,
-  theme,
-} from "@src/theme";
+import { GraphicsLevels, InputModes, ScrollbarModes, Themes, graphicsLevel, inputMode, scale, scrollBarMode, theme } from "@src/theme";
 import { openWindowVirtual } from "./window";
 import { FormStepper, FormToggleButtons } from "@src/form";
 
@@ -32,22 +22,24 @@ export class UI extends Base {
     let test2 = new Base();
     test2.innerHTML = "UI Menu";
     test2.onclick = () => {
-      openWindowVirtual({
-        opener: document.body,
-        bar: false,
-        position: {
-          moveable: false,
-          left: 2,
-          top: 2,
-        },
-        size: {
-          sizeable: false,
-          width: 10,
-          height: 10,
-        },
-        content: new UIMenu(),
-      });
+      uiMenu.hide = !uiMenu.hide;
     };
+    let uiMenu = openWindowVirtual({
+      opener: document.body,
+      bar: false,
+      autoHide: true,
+      position: {
+        moveable: false,
+        left: 2,
+        top: 2,
+      },
+      size: {
+        sizeable: false,
+        width: 10,
+        height: 10,
+      },
+      content: new UIMenu(),
+    });
     this.menubar.appendItem(test2, "start");
   }
   static elementName() {
@@ -90,9 +82,7 @@ export class UIMenu extends ContentBase {
         enum: graphicsLevel.related().unwrap.list,
       })
     );
-    this.appendChild(
-      new FormStepper({ label: "UI Scale", value: scale, writer: scale })
-    );
+    this.appendChild(new FormStepper({ label: "UI Scale", value: scale, writer: scale }));
     this.appendChild(
       new FormToggleButtons({
         label: "Input Mode",

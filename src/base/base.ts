@@ -10,6 +10,7 @@ export let crelns = document.createElementNS.bind(document);
 
 export type StateROrValue<T> = StateRead<T> | T;
 export type StateWOrValue<T> = StateWrite<T> | T;
+export type StateWOrFunc<T> = StateWrite<T> | ((val: T) => void);
 
 /**Base options for base class */
 export interface BaseOptions {
@@ -70,26 +71,17 @@ export class Base<CE extends { [K: string]: any } = any> extends HTMLElement {
   constructor(options?: BaseOptions) {
     super();
     if (options) {
-      if (options.access)
-        this.attachStateToProp("access", options.access ?? AccessTypes.write);
-      if (options.observerOptions)
-        this.#observerOptions = options.observerOptions;
+      if (options.access) this.attachStateToProp("access", options.access ?? AccessTypes.write);
+      if (options.observerOptions) this.#observerOptions = options.observerOptions;
     }
   }
 
   addEventListener<K extends keyof HTMLElementEventMap | keyof CE>(
     type: K,
-    listener: (
-      this: HTMLElement,
-      ev: (HTMLElementEventMap & BaseCustomEvent<CE>)[K]
-    ) => any,
+    listener: (this: HTMLElement, ev: (HTMLElementEventMap & BaseCustomEvent<CE>)[K]) => any,
     options?: boolean | AddEventListenerOptions | undefined
   ): void;
-  addEventListener(
-    type: string,
-    listener: EventListenerOrEventListenerObject,
-    options?: boolean | AddEventListenerOptions
-  ): void;
+  addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
   addEventListener(type: unknown, listener: unknown, options?: unknown): void {
     super.addEventListener(type as any, listener as any, options as any);
   }
@@ -97,8 +89,7 @@ export class Base<CE extends { [K: string]: any } = any> extends HTMLElement {
   /**Runs when element is attached to document*/
   connectedCallback() {
     if (this.#connectStates && this.#connectSubscribers)
-      for (let i = 0; i < this.#connectStates.length; i++)
-        this.#connectStates[i].subscribe(this.#connectSubscribers[i], true);
+      for (let i = 0; i < this.#connectStates.length; i++) this.#connectStates[i].subscribe(this.#connectSubscribers[i], true);
     if (this.#attachedObserver) {
       this.#attachedObserver.observe(this);
     } else {
@@ -109,8 +100,7 @@ export class Base<CE extends { [K: string]: any } = any> extends HTMLElement {
   /**Runs when element is dettached from document*/
   disconnectedCallback() {
     if (this.#connectStates && this.#connectSubscribers)
-      for (let i = 0; i < this.#connectStates.length; i++)
-        this.#connectStates[i].unsubscribe(this.#connectSubscribers[i]);
+      for (let i = 0; i < this.#connectStates.length; i++) this.#connectStates[i].unsubscribe(this.#connectSubscribers[i]);
     if (this.#attachedObserver) {
       this.#attachedObserver.unobserve(this);
       this._setVisible(false);
@@ -123,12 +113,10 @@ export class Base<CE extends { [K: string]: any } = any> extends HTMLElement {
       this.isVisible = is;
       if (is) {
         if (this.#visibleStates && this.#visibleSubscribers)
-          for (let i = 0; i < this.#visibleStates.length; i++)
-            this.#visibleStates[i].subscribe(this.#visibleSubscribers[i], true);
+          for (let i = 0; i < this.#visibleStates.length; i++) this.#visibleStates[i].subscribe(this.#visibleSubscribers[i], true);
       } else {
         if (this.#visibleStates && this.#visibleSubscribers)
-          for (let i = 0; i < this.#visibleStates.length; i++)
-            this.#visibleStates[i].unsubscribe(this.#visibleSubscribers[i]);
+          for (let i = 0; i < this.#visibleStates.length; i++) this.#visibleStates[i].unsubscribe(this.#visibleSubscribers[i]);
       }
     }
   }
@@ -183,11 +171,7 @@ export class Base<CE extends { [K: string]: any } = any> extends HTMLElement {
   /**Attaches a state to a function, so that the function is subscribed to the state when the component is connected
    * @param state the state to attach to the function, a normal value can also be passed, in which case the function is called with the value
    * @param visible when set true the function is only subscribed when the element is visible, this requires an observer to be attached to the element*/
-  attachState<T>(
-    state: StateRead<T> | T,
-    func: StateSubscriber<T>,
-    visible?: boolean
-  ) {
+  attachState<T>(state: StateRead<T> | T, func: StateSubscriber<T>, visible?: boolean) {
     if (state instanceof StateRead) {
       if (visible) {
         if (!this.#visibleStates) {
@@ -277,12 +261,7 @@ export class Base<CE extends { [K: string]: any } = any> extends HTMLElement {
   /**Dettaches the state from the property */
   dettachStateFromProp<T extends keyof this>(prop: T) {
     if (this.#propStates && prop in this.#propStates)
-      this.dettachState(
-        ...(this.#propStates[prop] as [
-          StateSubscriber<any>,
-          boolean | undefined
-        ])
-      );
+      this.dettachState(...(this.#propStates[prop] as [StateSubscriber<any>, boolean | undefined]));
   }
 
   /**Attaches a state to a property, so that the property is updated when the state changes
@@ -322,12 +301,19 @@ export class Base<CE extends { [K: string]: any } = any> extends HTMLElement {
   /**Dettaches the state from the property */
   dettachStateFromAttribute(qualifiedName: string) {
     if (this.#attributeStates && qualifiedName in this.#attributeStates)
-      this.dettachState(
-        ...(this.#attributeStates[qualifiedName] as [
-          StateSubscriber<any>,
-          boolean | undefined
-        ])
-      );
+      this.dettachState(...(this.#attributeStates[qualifiedName] as [StateSubscriber<any>, boolean | undefined]));
+  }
+
+  /**Updates a stateWOrFunc with a value */
+  stateWOrFunc<T>(state: StateWOrFunc<T> | undefined, value: T) {
+    switch (typeof state) {
+      case "function":
+        state(value);
+        break;
+      case "object":
+        state.write(value);
+        break;
+    }
   }
 
   /**Sets the access of the element, passing undefined is the same as passing write access*/
