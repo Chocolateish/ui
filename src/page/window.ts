@@ -1,10 +1,8 @@
 import "./window.scss";
-import { material_navigation_close_rounded, red } from "@src/asset";
+import { material_navigation_close_rounded, red, Icon } from "@src/asset";
 import { Base, BaseOptions, StateROrValue, StateWOrFunc, crel, defineElement } from "@src/base";
 import { pxToRem, remToPx, themeBuiltInRoot, themeRegisterContainer } from "@src/theme";
 import { ContextMenuItemList, attachContextMenu } from "./contextmenu";
-import { Icon } from "@src/asset/icons/shared";
-import { clickAwayDetector } from "..";
 
 let colors = themeBuiltInRoot.makeSubGroup("w", "Window", "Window variables");
 colors.makeVariable("chc", "Close Hover Color", "Color of the close button when hovered", red[500], red[400], "Color");
@@ -17,6 +15,19 @@ declare global {
 
 export class WindowContainer extends Base {
   layers: HTMLDivElement[] = [];
+  clickAways: WindowVirtual[] = [];
+
+  connectedCallback(): void {
+    this.ownerDocument.addEventListener("contextmenu", () => this.runClickAway(), {
+      passive: true,
+    });
+    this.ownerDocument.addEventListener("pointerdown", () => this.runClickAway(), {
+      passive: true,
+    });
+    this.ownerDocument.defaultView!.addEventListener("blur", () => this.runClickAway(), {
+      passive: true,
+    });
+  }
 
   static elementName() {
     return "windowcontainer";
@@ -28,6 +39,23 @@ export class WindowContainer extends Base {
     }
     this.layers[layer].appendChild(window);
   }
+
+  appendClickAway(window: WindowVirtual) {
+    this.clickAways.push(window);
+    return () => {
+      let index = this.clickAways.indexOf(window);
+      if (index !== -1) this.clickAways.splice(index, 1);
+    };
+  }
+
+  runClickAway(skip?: WindowVirtual) {
+    // for (let i = 0; i < this.clickAways.length; i++) {
+    //   if (this.clickAways[i] === skip) continue;
+    //   if (this.clickAways[i].autoHide) this.clickAways[i].hide = true;
+    //   if (this.clickAways[i].autoClose) this.clickAways[i].close();
+    // }
+    // this.clickAways = skip ? [skip] : [];
+  }
 }
 defineElement(WindowContainer);
 
@@ -35,15 +63,6 @@ defineElement(WindowContainer);
 window.windowContainer = document.documentElement.appendChild(new WindowContainer());
 
 export let selectedWindow: WindowVirtual | undefined;
-let windowAutoCloseHide = () => {
-  //selectedWindow?.close();
-};
-document.addEventListener("pointerdown", windowAutoCloseHide, {
-  passive: true,
-});
-window.addEventListener("blur", windowAutoCloseHide, {
-  passive: true,
-});
 
 //################################################################################################
 //################################################################################################
@@ -61,9 +80,9 @@ window.addEventListener("blur", windowAutoCloseHide, {
 let externalWindows: WindowExternal[] = [];
 
 window.addEventListener("beforeunload", () => {
-  for (let i = 0; i < externalWindows.length; i++) {
+  while (externalWindows.length) {
     //@ts-expect-error
-    externalWindows[i].unload();
+    externalWindows[0].unload();
   }
 });
 
@@ -104,6 +123,25 @@ export class WindowExternal {
       this.#window = generatedWindow;
     } else {
       throw new Error("Failed to open window");
+    }
+    /**Copies all head nodes to the new window */
+    let headNodes = document.head.childNodes;
+    for (let i = 0, m = headNodes.length; i < m; i++) {
+      let node = headNodes[i];
+      if (node instanceof HTMLLinkElement) {
+        let link = node.cloneNode(true) as HTMLLinkElement;
+        let href = link.href;
+        link.href = href;
+        this.#window.document.head.appendChild(link);
+      }
+      if (headNodes[i] instanceof HTMLMetaElement || headNodes[i] instanceof HTMLTitleElement || headNodes[i] instanceof HTMLStyleElement) {
+        this.#window.document.head.appendChild(headNodes[i].cloneNode(true));
+      }
+    }
+    //Copy styles on root node
+    for (let i = 0, m = document.documentElement.style.length; i < m; i++) {
+      let prop = document.documentElement.style[i];
+      this.#window.document.documentElement.style.setProperty(prop, document.documentElement.style.getPropertyValue(prop));
     }
     this.#window.document.head.appendChild(this.#title);
     this.#window.document.documentElement.appendChild(new WindowContainer());
@@ -277,12 +315,19 @@ export class WindowVirtual extends Base {
   #hide: boolean = false;
   #autoHide: boolean = false;
   #autoClose: boolean = false;
-  #clickAwayDetector?: () => void;
+  #clickAway?: () => void;
 
   constructor(options: WindowVirtualOptions) {
     super(options);
     this.tabIndex = 0;
-    this.addEventListener("pointerdown", this.select, { capture: true });
+    this.onpointerdown = (e) => {
+      //e.stopPropagation();
+      this.select();
+    };
+    // this.addEventListener("pointerdown", (e: Event) => {
+    //   e.stopPropagation();
+    //   this.ownerDocument.defaultView?.windowContainer.runClickAway(this);
+    // });
     this.setAttribute("empty", "");
     //    _  __          _                         _
     //   | |/ /         | |                       | |
@@ -477,36 +522,35 @@ export class WindowVirtual extends Base {
 
   /**Sets if the window auto hides*/
   set autoHide(auto: boolean) {
-    if (auto !== this.autoHide)
+    if (auto !== this.autoHide) {
       if (auto) {
-        if (!this.#clickAwayDetector)
-          this.#clickAwayDetector = clickAwayDetector(() => {
-            this.hide = true;
-          });
+        if (!this.#clickAway) this.#clickAway = this.ownerDocument.defaultView?.windowContainer.appendClickAway(this);
       } else {
-        if (!this.autoClose && this.#clickAwayDetector) {
-          this.#clickAwayDetector();
-          this.#clickAwayDetector = undefined;
+        if (!this.autoClose && this.#clickAway) {
+          this.#clickAway();
+          this.#clickAway = undefined;
         }
       }
+      this.#autoHide = auto;
+    }
   }
   get autoHide(): boolean {
     return this.#autoHide;
   }
+
   /**Sets if the window auto closes*/
   set autoClose(auto: boolean) {
-    if (auto !== this.autoClose)
+    if (auto !== this.autoClose) {
       if (auto) {
-        if (!this.#clickAwayDetector)
-          this.#clickAwayDetector = clickAwayDetector(() => {
-            this.close();
-          });
+        if (!this.#clickAway) this.#clickAway = this.ownerDocument.defaultView?.windowContainer.appendClickAway(this);
       } else {
-        if (!this.autoClose && this.#clickAwayDetector) {
-          this.#clickAwayDetector();
-          this.#clickAwayDetector = undefined;
+        if (!this.autoClose && this.#clickAway) {
+          this.#clickAway();
+          this.#clickAway = undefined;
         }
       }
+      this.#autoClose = auto;
+    }
   }
   get autoClose(): boolean {
     return this.#autoClose;
@@ -521,7 +565,7 @@ export class WindowVirtual extends Base {
   //                                    |___/
   /**Closes the window */
   async close() {
-    this.#clickAwayDetector?.();
+    this.#clickAway?.();
     this.remove();
   }
   //    _____          _ _   _

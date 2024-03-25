@@ -1,10 +1,9 @@
 import { Icon } from "@src/asset/icons/shared";
 import {
-  clickAwayDetector,
   material_navigation_check_rounded,
   material_navigation_chevron_right_rounded,
   material_navigation_close_rounded,
-} from "..";
+} from "@src/asset";
 import "./contextMenu.scss";
 import { Base, BaseOptions, StateROrValue, crel, defineElement } from "@src/base";
 import {} from "@src/theme";
@@ -48,7 +47,7 @@ type ContextMenuLineOptions = {
   checked?: StateROrValue<boolean>;
 } & BaseOptions;
 
-export class ContextMenuLine extends Base {
+class ContextMenuLine extends Base {
   #icon: HTMLDivElement;
   #label: HTMLTableCellElement;
   #shortcut: HTMLTableCellElement;
@@ -107,7 +106,7 @@ type ContextMenuSubOptions = {
   checked?: StateROrValue<boolean>;
 } & BaseOptions;
 
-export class ContextMenuSub extends Base {
+class ContextMenuSub extends Base {
   #icon: HTMLDivElement;
   #label: HTMLTableCellElement;
   #opener: HTMLDivElement;
@@ -198,7 +197,7 @@ defineElement(ContextMenuDevider);
 //   |_|  |_|\___|_| |_|\__,_|
 
 type AnyLine = ContextMenuLine | ContextMenuSub | ContextMenuDevider;
-export class ContextMenu extends Base {
+class ContextMenu extends Base {
   subOpen?: ContextMenuSub;
   constructor(lines: (ContextMenuItem | number)[]) {
     super();
@@ -263,7 +262,8 @@ defineElement(ContextMenu);
 //   | |    / _ \| '_ \| __/ _` | | '_ \ / _ \ '__|
 //   | |___| (_) | | | | || (_| | | | | |  __/ |
 //    \_____\___/|_| |_|\__\__,_|_|_| |_|\___|_|
-export class ContextMenuContainer extends Base {
+class ContextMenuContainer extends Base {
+  resolve?: () => void;
   #position: HTMLElement | { x: number; y: number };
   constructor(element: ContextMenuParameter, position: HTMLElement | { x: number; y: number }, width?: number, height?: number) {
     super();
@@ -271,9 +271,6 @@ export class ContextMenuContainer extends Base {
     this.style.width = width + "rem";
     this.style.height = height + "rem";
     this.tabIndex = 0;
-    this.onpointerdown = (e) => {
-      e.stopPropagation();
-    };
     this.oncontextmenu = (e) => {
       e.preventDefault();
     };
@@ -345,11 +342,13 @@ export async function openContextMenu(
   width?: number,
   height?: number
 ) {
+  if (contextMenuCloser) contextMenuClose();
   let container = new ContextMenuContainer(element, position, width, height);
   document.documentElement.appendChild(container);
   container.focus();
   await new Promise<void>((resolve) => {
-    contextMenuCloser = resolve;
+    container.resolve = resolve;
+    contextMenuCloser = container;
   });
   container.remove();
 }
@@ -399,8 +398,28 @@ export function dettachContextMenu(element: HTMLElement, func: ContextMenuOpenFu
   element.removeEventListener("contextmenu", func);
 }
 
-let contextMenuCloser = () => {};
+let contextMenuCloser: ContextMenuContainer | undefined;
 let contextMenuClose = () => {
-  contextMenuCloser();
+  contextMenuCloser?.resolve?.();
+  contextMenuCloser = undefined;
 };
-clickAwayDetector(contextMenuClose);
+document.addEventListener(
+  "pointerdown",
+  (e) => {
+    if (contextMenuCloser && !e.composedPath().includes(contextMenuCloser)) contextMenuClose();
+  },
+  {
+    passive: true,
+    capture: true,
+  }
+);
+window.addEventListener(
+  "blur",
+  (e) => {
+    if (contextMenuCloser && e.target === window) contextMenuClose();
+  },
+  {
+    passive: true,
+    capture: true,
+  }
+);

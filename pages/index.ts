@@ -18,6 +18,7 @@ import { State } from "@src/state";
 import { Ok } from "@src/result";
 import { FormInput, FormInputType } from "@src/form/input/input";
 import { IP, IPType } from "@src/util";
+import { at } from "cypress/types/lodash";
 
 let ui = document.body.appendChild(new UI());
 
@@ -25,12 +26,17 @@ attachContextMenu(ui, [
   {
     label: "Open External Window",
     action: () => {
+      let base = new Base();
+      base.style.width = "100%";
+      base.style.height = "100%";
+      attachContextMenu(base, []);
+
       openWindowExternal({
         x: 100,
         y: 100,
         width: 200,
         height: 200,
-        content: new Base(),
+        content: base,
       });
     },
   },
