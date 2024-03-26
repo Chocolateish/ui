@@ -19,6 +19,7 @@ import { Ok } from "@src/result";
 import { FormInput, FormInputType } from "@src/form/input/input";
 import { IP, IPType } from "@src/util";
 import { at } from "cypress/types/lodash";
+import { SVGViewport } from "@src/editor";
 
 let ui = document.body.appendChild(new UI());
 
@@ -64,26 +65,30 @@ testHideState.subscribe((v) => {
   console.log(v);
 });
 
-let window = openWindowVirtual({
-  opener: document.body,
-  title: "ornare arcu dui vivamus arcu felis bibendum ut tristique et",
-  toolTip: "2ornare arcu dui vivamus arcu felis bibendum ut tristique et",
-  layer: 1,
-  position: {
-    left: 2,
-    top: 2,
-  },
-  size: {
-    width: 10,
-    height: 10,
-  },
-  content: new Base(),
-  autoClose: true,
-  hide: testHideState,
-  writers: {
-    hide: testHideState,
-  },
-});
+// let window = openWindowVirtual({
+//   opener: document.body,
+//   title: "ornare arcu dui vivamus arcu felis bibendum ut tristique et",
+//   toolTip: "2ornare arcu dui vivamus arcu felis bibendum ut tristique et",
+//   layer: 1,
+//   position: {
+//     left: 2,
+//     top: 2,
+//   },
+//   size: {
+//     width: 10,
+//     height: 10,
+//   },
+//   content: new Base(),
+//   autoClose: true,
+//   hide: testHideState,
+//   writers: {
+//     hide: testHideState,
+//   },
+// });
+
+let svgViewportContent = new Content();
+ui.content = svgViewportContent;
+svgViewportContent.appendChild(new SVGViewport({}));
 
 // openWindowVirtual({
 //   opener: document.body,

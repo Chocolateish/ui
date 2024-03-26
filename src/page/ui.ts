@@ -40,6 +40,7 @@ export class UI extends Base {
       },
       content: new UIMenu(),
     });
+    uiMenu.hide = true;
     this.menubar.appendItem(test2, "start");
   }
   static elementName() {
