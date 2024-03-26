@@ -9,7 +9,7 @@ const zoomDecimals = 2;
 const canvasDefaultWidth = 50;
 const canvasDefaultHeight = 50;
 
-const canvasBorderPercievedThickness = 3;
+const canvasBorderPercievedThickness = 2;
 
 export class SVGViewport extends Base {
   static elementName() {
@@ -46,6 +46,10 @@ export class SVGViewport extends Base {
     this.#moverContainer.appendChild(this.#mover);
     this.#mover.appendChild(this.#canvasBorder);
     this.#mover.appendChild(this.#canvas);
+    this.#canvasBorder.setAttribute(
+      "stroke-width",
+      String(canvasBorderPercievedThickness * Math.pow(this.#zoom, Math.cos(1.8) * 4.401368))
+    );
 
     this.#moverContainer.onpointerdown = (e) => {
       if (e.button === 1 || e.pointerType === "touch") {
@@ -104,8 +108,7 @@ export class SVGViewport extends Base {
   set zoom(zoom: number) {
     this.#mover.setAttribute("viewBox", -this.#x + " " + -this.#y + " " + this.#widthHalf / zoom + " " + this.#heightHalf / zoom);
     this.#zoom = zoom;
-    let border = canvasBorderPercievedThickness * Math.pow(zoom, Math.cos(1.8) * 4.401368);
-    this.#canvasBorder.setAttribute("stroke-width", String(border));
+    this.#canvasBorder.setAttribute("stroke-width", String(canvasBorderPercievedThickness * Math.pow(zoom, Math.cos(1.8) * 4.401368)));
   }
   get zoom() {
     return this.#zoom;
