@@ -123,12 +123,7 @@ chui-window {
     inset: 0;
     z-index: -1;
     outline: none;
-    border: $chuiColorBorder 1px solid;
-
-    .graphics-some & {
-      box-shadow: 0px 0px 6px 1px $chuiColorBorder;
-      border: none;
-    }
+    box-shadow: 0px 0px 6px 1px $chuiColorBorder;
 
     &.top {
       top: -$sizerBorder;
