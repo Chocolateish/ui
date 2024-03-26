@@ -86,9 +86,9 @@ testHideState.subscribe((v) => {
 //   },
 // });
 
-let svgViewportContent = new Content();
-ui.content = svgViewportContent;
-svgViewportContent.appendChild(new SVGViewport({}));
+// let svgViewportContent = new Content();
+// ui.content = svgViewportContent;
+// svgViewportContent.appendChild(new SVGViewport({}));
 
 // openWindowVirtual({
 //   opener: document.body,

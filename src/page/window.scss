@@ -18,19 +18,10 @@ chui-window {
   outline: none;
   border-radius: $chuiBorderRadius;
   box-sizing: border-box;
-  border: $chuiColorBorder 1px solid;
   min-height: min-content;
 
   &[hide] {
     display: none;
-  }
-
-  .graphics-some & {
-    box-shadow: 0px 0px 4px 0px $chuiColorBorder, 0px 0px 1px 1px $chuiColorBorder;
-    &:focus-within {
-      box-shadow: $chuiBorder;
-    }
-    border: none;
   }
 
   //    _______ _ _   _      _
@@ -129,30 +120,73 @@ chui-window {
   //   |_____/|_/___\___|_|
   > div:last-child {
     position: absolute;
-    inset: -$sizerBorder;
+    inset: 0;
     z-index: -1;
     outline: none;
+    border: $chuiColorBorder 1px solid;
+
+    .graphics-some & {
+      box-shadow: 0px 0px 6px 1px $chuiColorBorder;
+      border: none;
+    }
+
+    &.top {
+      top: -$sizerBorder;
+    }
+    &.bottom {
+      bottom: -$sizerBorder;
+    }
+    &.right {
+      right: -$sizerBorder;
+    }
+    &.left {
+      left: -$sizerBorder;
+    }
 
     &.visible {
       background-color: $chuiColorLayer6;
       border-radius: $chuiBorderRadius * 1.2;
-      > .top::after,
-      > .bottom::after {
+
+      > *::after {
         content: "";
         display: block;
         background-color: $chuiColorLayer1Txt;
-        width: 2rem;
+        width: 0.2rem;
         height: 0.2rem;
-        border-radius: 0.2rem;
+        border-radius: 0.4rem;
+      }
+      > .top::after,
+      > .bottom::after {
+        width: 2rem;
       }
       > .left::after,
       > .right::after {
-        content: "";
-        display: block;
-        background-color: $chuiColorLayer1Txt;
         height: 2rem;
-        width: 0.2rem;
-        border-radius: 0.2rem;
+      }
+      > .top-right::after,
+      > .top-left::after,
+      > .bottom-right::after,
+      > .bottom-left::after {
+        position: absolute;
+        height: 0.35rem;
+        width: 0.35rem;
+        border-radius: 0.4rem;
+      }
+      > .top-right::after {
+        top: 0.3rem;
+        right: 0.3rem;
+      }
+      > .top-left::after {
+        top: 0.3rem;
+        left: 0.3rem;
+      }
+      > .bottom-right::after {
+        bottom: 0.3rem;
+        right: 0.3rem;
+      }
+      > .bottom-left::after {
+        bottom: 0.3rem;
+        left: 0.3rem;
       }
     }
 

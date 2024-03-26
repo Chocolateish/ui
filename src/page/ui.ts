@@ -2,7 +2,7 @@ import "./ui.scss";
 import { Base, crel, defineElement } from "@src/base";
 import { Menubar } from "@src/menu";
 import { ContentBase } from "./content";
-import { GraphicsLevels, InputModes, ScrollbarModes, Themes, graphicsLevel, inputMode, scale, scrollBarMode, theme } from "@src/theme";
+import { graphicsLevel, inputMode, scale, scrollBarMode, theme } from "@src/theme";
 import { openWindowVirtual } from "./window";
 import { FormStepper, FormToggleButtons } from "@src/form";
 
@@ -27,20 +27,20 @@ export class UI extends Base {
     let uiMenu = openWindowVirtual({
       opener: document.body,
       bar: false,
-      autoHide: true,
+      hide: false,
+      autoHide: false,
       position: {
         moveable: false,
         left: 2,
         top: 2,
       },
       size: {
-        sizeable: false,
-        width: 10,
-        height: 10,
+        sizeable: "bottom-right-visible",
+        width: 20,
+        height: 20,
       },
       content: new UIMenu(),
     });
-    uiMenu.hide = true;
     this.menubar.appendItem(test2, "start");
   }
   static elementName() {

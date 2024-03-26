@@ -18,15 +18,24 @@ export class WindowContainer extends Base {
   clickAways: WindowVirtual[] = [];
 
   connectedCallback(): void {
-    this.ownerDocument.addEventListener("contextmenu", () => this.runClickAway(), {
-      passive: true,
-    });
-    this.ownerDocument.addEventListener("pointerdown", () => this.runClickAway(), {
-      passive: true,
-    });
-    this.ownerDocument.defaultView!.addEventListener("blur", () => this.runClickAway(), {
-      passive: true,
-    });
+    this.ownerDocument.addEventListener(
+      "pointerdown",
+      (e) => {
+        this.runClickAway(e.composedPath().find((el) => el instanceof WindowVirtual) as WindowVirtual | undefined);
+      },
+      {
+        passive: true,
+      }
+    );
+    this.ownerDocument.defaultView!.addEventListener(
+      "blur",
+      () => {
+        this.runClickAway();
+      },
+      {
+        passive: true,
+      }
+    );
   }
 
   static elementName() {
@@ -49,12 +58,16 @@ export class WindowContainer extends Base {
   }
 
   runClickAway(skip?: WindowVirtual) {
-    // for (let i = 0; i < this.clickAways.length; i++) {
-    //   if (this.clickAways[i] === skip) continue;
-    //   if (this.clickAways[i].autoHide) this.clickAways[i].hide = true;
-    //   if (this.clickAways[i].autoClose) this.clickAways[i].close();
-    // }
-    // this.clickAways = skip ? [skip] : [];
+    this.clickAways.forEach((w) => {
+      if (w !== skip) {
+        if (w.autoHide) w.hide = true;
+        //@ts-expect-error
+        delete w.__clickAway;
+        if (w.autoClose) w.close();
+      }
+    });
+
+    this.clickAways = skip ? [skip] : [];
   }
 }
 defineElement(WindowContainer);
@@ -315,19 +328,12 @@ export class WindowVirtual extends Base {
   #hide: boolean = false;
   #autoHide: boolean = false;
   #autoClose: boolean = false;
-  #clickAway?: () => void;
+  private __clickAway?: () => void;
 
   constructor(options: WindowVirtualOptions) {
     super(options);
     this.tabIndex = 0;
-    this.onpointerdown = (e) => {
-      //e.stopPropagation();
-      this.select();
-    };
-    // this.addEventListener("pointerdown", (e: Event) => {
-    //   e.stopPropagation();
-    //   this.ownerDocument.defaultView?.windowContainer.runClickAway(this);
-    // });
+    this.onpointerdown = () => this.select;
     this.setAttribute("empty", "");
     //    _  __          _                         _
     //   | |/ /         | |                       | |
@@ -510,8 +516,13 @@ export class WindowVirtual extends Base {
   /**Sets if the window is hidden*/
   set hide(hide: boolean) {
     if (hide !== this.hide) {
-      if (hide) this.setAttribute("hide", "");
-      else this.removeAttribute("hide");
+      if (hide) {
+        this.setAttribute("hide", "");
+        if (this.#autoHide && !this.#autoClose) this.__clearClickAway();
+      } else {
+        this.removeAttribute("hide");
+        if (this.#autoHide) this.__createClickAway();
+      }
       this.#hide = hide;
       this.stateWOrFunc(this.hideWriter, hide);
     }
@@ -524,13 +535,8 @@ export class WindowVirtual extends Base {
   set autoHide(auto: boolean) {
     if (auto !== this.autoHide) {
       if (auto) {
-        if (!this.#clickAway) this.#clickAway = this.ownerDocument.defaultView?.windowContainer.appendClickAway(this);
-      } else {
-        if (!this.autoClose && this.#clickAway) {
-          this.#clickAway();
-          this.#clickAway = undefined;
-        }
-      }
+        if (!this.#hide) this.__createClickAway();
+      } else if (!this.#autoClose) this.__clearClickAway();
       this.#autoHide = auto;
     }
   }
@@ -541,19 +547,25 @@ export class WindowVirtual extends Base {
   /**Sets if the window auto closes*/
   set autoClose(auto: boolean) {
     if (auto !== this.autoClose) {
-      if (auto) {
-        if (!this.#clickAway) this.#clickAway = this.ownerDocument.defaultView?.windowContainer.appendClickAway(this);
-      } else {
-        if (!this.autoClose && this.#clickAway) {
-          this.#clickAway();
-          this.#clickAway = undefined;
-        }
-      }
+      if (auto) this.__createClickAway();
+      else if (!this.#autoHide) this.__clearClickAway();
       this.#autoClose = auto;
     }
   }
   get autoClose(): boolean {
     return this.#autoClose;
+  }
+
+  private __createClickAway() {
+    if (this.__clickAway) return;
+    this.__clickAway = this.ownerDocument.defaultView?.windowContainer.appendClickAway(this);
+  }
+
+  private __clearClickAway() {
+    if (this.__clickAway) {
+      this.__clickAway();
+      delete this.__clickAway;
+    }
   }
   //     _____ _                _
   //    / ____| |              (_)
@@ -565,7 +577,7 @@ export class WindowVirtual extends Base {
   //                                    |___/
   /**Closes the window */
   async close() {
-    this.#clickAway?.();
+    this.__clickAway?.();
     this.remove();
   }
   //    _____          _ _   _
@@ -803,7 +815,8 @@ export class WindowVirtual extends Base {
         return sizer;
       })
     );
-    if (visible) this.#sizers.className = "visible";
+    if (visible) this.#sizers.className = "visible " + sizers.join(" ");
+    else this.#sizers.className = sizers.join(" ");
   }
 
   /**Sets the width of the window */
