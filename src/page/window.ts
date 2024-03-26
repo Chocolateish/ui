@@ -20,22 +20,10 @@ export class WindowContainer extends Base {
   connectedCallback(): void {
     this.ownerDocument.addEventListener(
       "pointerdown",
-      (e) => {
-        this.runClickAway(e.composedPath().find((el) => el instanceof WindowVirtual) as WindowVirtual | undefined);
-      },
-      {
-        passive: true,
-      }
+      (e) => this.runClickAway(e.composedPath().find((el) => el instanceof WindowVirtual) as WindowVirtual | undefined),
+      { passive: true }
     );
-    this.ownerDocument.defaultView!.addEventListener(
-      "blur",
-      () => {
-        this.runClickAway();
-      },
-      {
-        passive: true,
-      }
-    );
+    this.ownerDocument.defaultView!.addEventListener("blur", () => this.runClickAway, { passive: true });
   }
 
   static elementName() {
@@ -195,6 +183,7 @@ export class WindowExternal {
   get content(): Base | undefined {
     return undefined;
   }
+
   async close() {}
   /**Returns window to main window as virtual window */
   return(options: WindowVirtualOptions) {
@@ -282,8 +271,6 @@ export type WindowVirtualOptions = {
     bottom?: number;
     /**Element to position window relative to*/
     element?: Element;
-    /**Rotation of new window in degrees*/
-    rotation?: number;
   };
   /**Optional size for window */
   size?: {
@@ -293,6 +280,8 @@ export type WindowVirtualOptions = {
     width: number;
     /**Height of new window in rem*/
     height: number;
+    /**Rotation of new window in degrees*/
+    rotation?: number;
   };
   writers?: {
     hide?: StateWOrFunc<boolean>;
@@ -316,9 +305,11 @@ export class WindowVirtual extends Base {
   #layer: number;
   #opener: HTMLElement;
   #content?: Base;
+  //Size
   #sizers: HTMLDivElement;
   #width: number = 0;
   #height: number = 0;
+  //Position
   #leftRight: boolean = false;
   #topBottom: boolean = false;
   #leftRightPos: number = 0;
@@ -333,7 +324,10 @@ export class WindowVirtual extends Base {
   constructor(options: WindowVirtualOptions) {
     super(options);
     this.tabIndex = 0;
-    this.onpointerdown = () => this.select;
+    this.addEventListener("pointerdown", this.select, { capture: true });
+    this.addEventListener("pointerdown", (e) => {
+      e.stopPropagation();
+    });
     this.setAttribute("empty", "");
     //    _  __          _                         _
     //   | |/ /         | |                       | |
@@ -423,11 +417,12 @@ export class WindowVirtual extends Base {
 
     if (options.position) {
       this.moveable = options.position.moveable ?? true;
-      if (options.position.rotation) this.rotation = options.position.rotation;
       if (options.position.element) {
         let rect = options.position.element.getBoundingClientRect();
-        this.left = rect.left;
-        this.top = rect.top;
+        if (options.position.left) this.left = rect.left + options.position.left;
+        else if (options.position.right) this.right = options.position.right;
+        if (options.position.top) this.top = rect.top + options.position.top;
+        else if (options.position.bottom) this.bottom = options.position.bottom;
       } else {
         if (options.position.left) this.left = options.position.left;
         else if (options.position.right) this.right = options.position.right;
@@ -439,6 +434,7 @@ export class WindowVirtual extends Base {
       this.sizeable = options.size.sizeable ?? true;
       this.width = options.size.width;
       this.height = options.size.height;
+      if (options.size.rotation) this.rotation = options.size.rotation;
     }
     if (options.writers) {
       if (options.writers.hide) this.hideWriter = options.writers.hide;
@@ -463,6 +459,8 @@ export class WindowVirtual extends Base {
   }
 
   select() {
+    console.warn("Selecting");
+
     if (selectedWindow !== this) {
       this.parentElement?.appendChild(this);
       selectedWindow = this;
@@ -815,14 +813,19 @@ export class WindowVirtual extends Base {
         return sizer;
       })
     );
-    if (visible) this.#sizers.className = "visible " + sizers.join(" ");
-    else this.#sizers.className = sizers.join(" ");
+    if (visible) {
+      this.#sizers.className = "visible " + sizers.join(" ");
+      this.classList.add("visible");
+    } else {
+      this.#sizers.className = sizers.join(" ");
+      this.classList.remove("visible");
+    }
   }
 
   /**Sets the width of the window */
   set width(width: number) {
-    this.style.width = width + "rem";
-    this.#width = width;
+    this.#width = Math.max(width, 6);
+    this.style.width = this.#width + "rem";
   }
   get width(): number {
     return this.#width;
@@ -833,8 +836,9 @@ export class WindowVirtual extends Base {
 
   /**Sets the height of the window */
   set height(height: number) {
-    this.style.height = height + "rem";
+    //this.#height = Math.max(height, this.bar ? (this.#content ? 4 : 2) : 2);
     this.#height = height;
+    this.style.height = this.#height + "rem";
   }
   get height(): number {
     return this.#height;

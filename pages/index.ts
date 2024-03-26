@@ -20,6 +20,7 @@ import { FormInput, FormInputType } from "@src/form/input/input";
 import { IP, IPType } from "@src/util";
 import { at } from "cypress/types/lodash";
 import { SVGViewport } from "@src/editor";
+import { material_av_3k_rounded } from "@src/asset";
 
 let ui = document.body.appendChild(new UI());
 
@@ -90,46 +91,46 @@ testHideState.subscribe((v) => {
 // ui.content = svgViewportContent;
 // svgViewportContent.appendChild(new SVGViewport({}));
 
-// openWindowVirtual({
-//   opener: document.body,
-//   bar: false,
-//   position: {
-//     left: 14,
-//     top: 14,
-//   },
-//   size: {
-//     width: 10,
-//     height: 10,
-//   },
-//   content: new Base(),
-// });
-// openWindowVirtual({
-//   opener: document.body,
-//   icon: material_av_3k_rounded,
-//   position: {
-//     left: 2,
-//     top: 14,
-//   },
-//   size: {
-//     sizeable: "visible",
-//     width: 10,
-//     height: 10,
-//   },
-//   content: new Base(),
-// });
-// openWindowVirtual({
-//   opener: document.body,
-//   icon: material_av_3k_rounded,
-//   closable: false,
-//   position: {
-//     left: 14,
-//     top: 2,
-//   },
-//   size: {
-//     width: 10,
-//     height: 10,
-//   },
-// });
+openWindowVirtual({
+  opener: document.body,
+  bar: false,
+  position: {
+    left: 14,
+    top: 14,
+  },
+  size: {
+    width: 10,
+    height: 10,
+  },
+  content: new Base(),
+});
+openWindowVirtual({
+  opener: document.body,
+  icon: material_av_3k_rounded,
+  position: {
+    left: 2,
+    top: 14,
+  },
+  size: {
+    sizeable: "visible",
+    width: 10,
+    height: 10,
+  },
+  content: new Base(),
+});
+openWindowVirtual({
+  opener: document.body,
+  icon: material_av_3k_rounded,
+  closable: false,
+  position: {
+    left: 14,
+    top: 2,
+  },
+  size: {
+    width: 10,
+    height: 10,
+  },
+});
 
 // let testStateBool = new State(Ok(false), true);
 

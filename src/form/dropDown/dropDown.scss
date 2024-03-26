@@ -93,10 +93,6 @@ chui-form-dropdownbox {
             &:last-child {
               padding-left: $padding;
               padding-right: 0.4rem;
-
-              .touch & {
-                font-size: $touchFontSize;
-              }
             }
 
             .touch & {
@@ -178,10 +174,6 @@ chui-form-dropdown {
       fill: $textColor;
       outline: none;
       position: relative;
-
-      .touch & {
-        font-size: $touchFontSize;
-      }
 
       > div {
         display: table-cell;

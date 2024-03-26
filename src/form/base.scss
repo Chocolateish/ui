@@ -6,9 +6,9 @@
 
 //Sizes
 $minWidth: 14rem;
-$minWidthTouch: $minWidth * 1.6;
+$minWidthTouch: $minWidth * 1.1;
 $height: 1.8rem;
-$touchHeight: 3rem;
+$touchHeight: 2.4rem;
 $scrollBarWidth: 0.5rem;
 
 //Padding
@@ -16,7 +16,6 @@ $padding: 0.2rem;
 
 //Font
 $fontSize: 1rem;
-$touchFontSize: 1.6rem;
 
 //Colors
 $backColor: var(--cifbc);
@@ -87,10 +86,6 @@ $sizeTransitionTime: 0.2s;
 
   .graphics-all & {
     transition: color ease-in-out 0.2s;
-  }
-
-  .touch & {
-    font-size: 1.3rem;
   }
 }
 

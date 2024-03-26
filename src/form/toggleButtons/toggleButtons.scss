@@ -11,10 +11,6 @@ chui-form-togglebutton {
     grid-template-rows: auto auto;
     grid-auto-columns: 1fr;
 
-    .touch & {
-      font-size: $touchFontSize;
-    }
-
     > div {
       color: $unselectedTextColor;
       fill: $unselectedTextColor;

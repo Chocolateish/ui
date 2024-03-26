@@ -1,12 +1,12 @@
 import "./ui.scss";
 import { Base, crel, defineElement } from "@src/base";
-import { Menubar } from "@src/menu";
-import { ContentBase } from "./content";
-import { graphicsLevel, inputMode, scale, scrollBarMode, theme } from "@src/theme";
+import { Menubar, UIMenu } from "@src/menu";
 import { openWindowVirtual } from "./window";
-import { FormStepper, FormToggleButtons } from "@src/form";
 
 export class UI extends Base {
+  static elementName() {
+    return "ui";
+  }
   readonly menubar: Menubar;
   #contentContainer: HTMLDivElement = crel("div");
   constructor() {
@@ -27,24 +27,23 @@ export class UI extends Base {
     let uiMenu = openWindowVirtual({
       opener: document.body,
       bar: false,
-      hide: false,
-      autoHide: false,
+      hide: true,
+      autoHide: true,
+      layer: 9999,
       position: {
         moveable: false,
+        element: test2,
         left: 2,
         top: 2,
       },
       size: {
-        sizeable: "bottom-right-visible",
+        sizeable: "bottom-visible",
         width: 20,
         height: 20,
       },
       content: new UIMenu(),
     });
     this.menubar.appendItem(test2, "start");
-  }
-  static elementName() {
-    return "ui";
   }
 
   set content(content: HTMLElement) {
@@ -55,46 +54,3 @@ export class UI extends Base {
   }
 }
 defineElement(UI);
-
-export class UIMenu extends ContentBase {
-  constructor() {
-    super();
-    this.appendChild(
-      new FormToggleButtons({
-        label: "UI Theme",
-        value: theme,
-        writer: theme,
-        enum: theme.related().unwrap.list,
-      })
-    );
-    this.appendChild(
-      new FormToggleButtons({
-        label: "Scrollbar Mode",
-        value: scrollBarMode,
-        writer: scrollBarMode,
-        enum: scrollBarMode.related().unwrap.list,
-      })
-    );
-    this.appendChild(
-      new FormToggleButtons({
-        label: "Graphics Level",
-        value: graphicsLevel,
-        writer: graphicsLevel,
-        enum: graphicsLevel.related().unwrap.list,
-      })
-    );
-    this.appendChild(new FormStepper({ label: "UI Scale", value: scale, writer: scale }));
-    this.appendChild(
-      new FormToggleButtons({
-        label: "Input Mode",
-        value: inputMode,
-        writer: inputMode,
-        enum: inputMode.related().unwrap.list,
-      })
-    );
-  }
-  static elementName() {
-    return "uimenu";
-  }
-}
-defineElement(UIMenu);

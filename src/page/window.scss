@@ -3,9 +3,13 @@
 $closerHoverColor: var(--ciwchc);
 
 $titleHeight: 1.6rem;
-$titleHeightTouch: 3.2rem;
+$titleHeightTouch: 2rem;
 $sizerBorder: 0.6rem;
 $sizerBorderTouch: 1.2rem;
+$sizerPillThickness: 0.2rem;
+$sizerPillThicknessTouch: 0.3rem;
+$sizerPillSize: 2rem;
+$sizerPillSizeTouch: 3rem;
 
 chui-window {
   position: absolute;
@@ -22,6 +26,13 @@ chui-window {
 
   &[hide] {
     display: none;
+  }
+
+  &:not(.visible) {
+    box-shadow: 0px 0px 6px 1px $chuiColorBorder;
+  }
+  &:not(.visible):focus-within {
+    box-shadow: 0px 0px 6px 2.5px $chuiColorBorder;
   }
 
   //    _______ _ _   _      _
@@ -52,9 +63,12 @@ chui-window {
       display: none;
     }
     > div:first-child {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       height: $titleHeight;
       .touch & {
-        flex-basis: $titleHeightTouch;
+        height: $titleHeightTouch;
       }
       > * {
         border: 0.2rem solid transparent;
@@ -78,6 +92,7 @@ chui-window {
       height: 100%;
       display: flex;
       align-items: center;
+      justify-content: center;
       .touch & {
         flex-basis: $titleHeightTouch;
       }
@@ -118,70 +133,99 @@ chui-window {
   //    \___ \| |_  / _ \ '__|
   //    ____) | |/ /  __/ |
   //   |_____/|_/___\___|_|
+  &:focus-within > div.visible:last-child {
+    box-shadow: 0px 0px 6px 2.5px $chuiColorBorder;
+  }
+
   > div:last-child {
     position: absolute;
     inset: 0;
     z-index: -1;
     outline: none;
-    box-shadow: 0px 0px 6px 1px $chuiColorBorder;
 
     &.top {
       top: -$sizerBorder;
+      .touch & {
+        top: -$sizerBorderTouch;
+      }
     }
     &.bottom {
       bottom: -$sizerBorder;
+      .touch & {
+        bottom: -$sizerBorderTouch;
+      }
     }
     &.right {
       right: -$sizerBorder;
+      .touch & {
+        right: -$sizerBorderTouch;
+      }
     }
     &.left {
       left: -$sizerBorder;
+      .touch & {
+        left: -$sizerBorderTouch;
+      }
     }
 
     &.visible {
-      background-color: $chuiColorLayer6;
+      background-color: $chuiColorLayer4;
       border-radius: $chuiBorderRadius * 1.2;
+      box-shadow: 0px 0px 6px 1px $chuiColorBorder;
 
       > *::after {
         content: "";
         display: block;
         background-color: $chuiColorLayer1Txt;
-        width: 0.2rem;
-        height: 0.2rem;
-        border-radius: 0.4rem;
+        width: $sizerPillThickness;
+        height: $sizerPillThickness;
+        border-radius: 1rem;
+        .touch & {
+          width: $sizerPillThicknessTouch;
+          height: $sizerPillThicknessTouch;
+        }
       }
       > .top::after,
       > .bottom::after {
-        width: 2rem;
+        width: $sizerPillSize;
+        .touch & {
+          width: $sizerPillSizeTouch;
+        }
       }
       > .left::after,
       > .right::after {
-        height: 2rem;
+        height: $sizerPillSize;
+        .touch & {
+          height: $sizerPillSizeTouch;
+        }
       }
       > .top-right::after,
       > .top-left::after,
       > .bottom-right::after,
       > .bottom-left::after {
         position: absolute;
-        height: 0.35rem;
         width: 0.35rem;
-        border-radius: 0.4rem;
+        height: 0.35rem;
+        .touch & {
+          width: 0.5rem;
+          height: 0.5rem;
+        }
       }
       > .top-right::after {
-        top: 0.3rem;
-        right: 0.3rem;
+        top: 20%;
+        right: 20%;
       }
       > .top-left::after {
-        top: 0.3rem;
-        left: 0.3rem;
+        top: 20%;
+        left: 20%;
       }
       > .bottom-right::after {
-        bottom: 0.3rem;
-        right: 0.3rem;
+        bottom: 20%;
+        right: 20%;
       }
       > .bottom-left::after {
-        bottom: 0.3rem;
-        left: 0.3rem;
+        bottom: 20%;
+        left: 20%;
       }
     }
 
@@ -262,6 +306,9 @@ chui-window {
 
 chui-windowcontainer {
   pointer-events: none;
-  position: fixed;
-  inset: 0;
+
+  > div {
+    position: fixed;
+    inset: 0;
+  }
 }
