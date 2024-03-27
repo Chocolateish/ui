@@ -2,7 +2,7 @@ import "./base.scss";
 import { BaseObserver, BaseObserverOptions } from "./observer";
 import { StateError, StateRead, StateSubscriber, StateWrite } from "@src/state";
 import { AccessTypes } from "./access";
-import { libraryNameSpace } from "@src/globals/globalsInternals";
+import { libraryNameSpace } from "@src/util/globalsInternals";
 import { Ok } from "@src/result";
 
 export let crel = document.createElement.bind(document);

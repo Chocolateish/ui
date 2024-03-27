@@ -1,7 +1,7 @@
 import { nameSpace } from "./shared";
 import { AnchorPoint } from "./anchorPoint";
 import { degreesToRadians } from "@src/util/math";
-import { crel, crelns } from "..";
+import { crel, crelns } from "../..";
 
 /**This creates a svg circle
  * @param centerX x coordinate of center
@@ -20,12 +20,7 @@ export function circle(centerX: number, centerY: number, radius: number) {
  * @param centerY y coordinate of center
  * @param radiusX x radius of circle
  * @param radiusY y radius of circle*/
-export function ellipse(
-  centerX: number,
-  centerY: number,
-  radiusX: number,
-  radiusY: number
-) {
+export function ellipse(centerX: number, centerY: number, radiusX: number, radiusY: number) {
   let ellipse = <SVGEllipseElement>crelns(nameSpace, "ellipse");
   ellipse.setAttribute("cx", String(centerX));
   ellipse.setAttribute("cy", String(centerY));
@@ -41,14 +36,7 @@ export function ellipse(
  * @param radiusY radius in y axis
  * @param startAngle start angle in radians
  * @param endAngle distance/amount of radians in circle*/
-export function ellipseArc(
-  centerX: number,
-  centerY: number,
-  radiusX: number,
-  radiusY: number,
-  startAngle: number,
-  endAngle: number
-) {
+export function ellipseArc(centerX: number, centerY: number, radiusX: number, radiusY: number, startAngle: number, endAngle: number) {
   let circArc = <SVGPathElement>crelns(nameSpace, "path");
   let startRadian = degreesToRadians(startAngle);
   endAngle = degreesToRadians(endAngle - startAngle);
@@ -58,10 +46,7 @@ export function ellipseArc(
   let eY = radiusY * Math.sin(startRadian + endAngle) + centerY;
   let fA = endAngle > Math.PI ? 1 : 0;
   let fS = endAngle > 0 ? 1 : 0;
-  circArc.setAttribute(
-    "d",
-    `M ${sX} ${sY} A ${radiusX} ${radiusY} 0 ${fA} ${fS} ${eX} ${eY}`
-  );
+  circArc.setAttribute("d", `M ${sX} ${sY} A ${radiusX} ${radiusY} 0 ${fA} ${fS} ${eX} ${eY}`);
   return circArc;
 }
 
@@ -75,12 +60,7 @@ export function group() {
  * @param startY start point on y axis
  * @param endX end point on x axis
  * @param endY end point on y axis*/
-export function line(
-  startX: number,
-  startY: number,
-  endX: number,
-  endY: number
-) {
+export function line(startX: number, startY: number, endX: number, endY: number) {
   let line = <SVGLineElement>crelns(nameSpace, "line");
   line.setAttribute("x1", String(startX));
   line.setAttribute("y1", String(startY));
@@ -101,12 +81,7 @@ export function path(path: string) {
  * @param startY start point on y axis
  * @param endX end point on x axis
  * @param endY end point on y axis*/
-export function pathLine(
-  startX: number,
-  startY: number,
-  endX: number,
-  endY: number
-) {
+export function pathLine(startX: number, startY: number, endX: number, endY: number) {
   let line = <SVGPathElement>crelns(nameSpace, "path");
   line.setAttribute("d", `M ${startX} ${startY} L ${endX} ${endY}`);
   return line;
@@ -118,13 +93,7 @@ export function pathLine(
  * @param width width
  * @param height height
  * @param cornerRadius radius of corner*/
-export function rectangleFromCenter(
-  centerX: number,
-  centerY: number,
-  width: number,
-  height: number,
-  cornerRadius: number
-) {
+export function rectangleFromCenter(centerX: number, centerY: number, width: number, height: number, cornerRadius: number) {
   let circle = <SVGRectElement>crelns(nameSpace, "rect");
   circle.setAttribute("x", String(centerX - width / 2));
   circle.setAttribute("y", String(centerY - height / 2));
@@ -140,13 +109,7 @@ export function rectangleFromCenter(
  * @param width width
  * @param height height
  * @param cornerRadius radius of corner*/
-export function rectangleFromCorner(
-  startX: number,
-  startY: number,
-  width: number,
-  height: number,
-  cornerRadius: number
-) {
+export function rectangleFromCorner(startX: number, startY: number, width: number, height: number, cornerRadius: number) {
   let circle = <SVGRectElement>crelns(nameSpace, "rect");
   circle.setAttribute("x", String(startX));
   circle.setAttribute("y", String(startY));
@@ -160,11 +123,7 @@ export function rectangleFromCorner(
  * @param {number} width width of svg
  * @param {number} height height of svg
  * @param {string} viewbox viewbox of svg*/
-export function svgsvg(
-  width: number,
-  height: number,
-  viewbox: string = `0 0 ${width} ${height}`
-) {
+export function svgsvg(width: number, height: number, viewbox: string = `0 0 ${width} ${height}`) {
   let svg = <SVGSVGElement>crelns(nameSpace, "svg");
   svg.setAttribute("width", String(width));
   svg.setAttribute("height", String(height));
@@ -178,13 +137,7 @@ export function svgsvg(
  * @param text text
  * @param size size of text in px
  * @param anchor anchor point of text*/
-export function text(
-  x: number,
-  y: number,
-  text: string,
-  size: number,
-  anchor: AnchorPoint
-) {
+export function text(x: number, y: number, text: string, size: number, anchor: AnchorPoint) {
   let textElem = <SVGTextElement>crelns(nameSpace, "text");
   textElem.setAttribute("x", String(x));
   textElem.setAttribute("y", String(y));
@@ -241,15 +194,7 @@ export function text(
  * @param text text
  * @param size size of text in px
  * @param anchor anchor point of */
-export function multiLineText(
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-  text: string,
-  size: number,
-  anchor: AnchorPoint
-) {
+export function multiLineText(x: number, y: number, width: number, height: number, text: string, size: number, anchor: AnchorPoint) {
   let text2 = <SVGForeignObjectElement>crelns(nameSpace, "foreignObject");
   let textDiv = text2.appendChild(crel("div"));
   text2.setAttribute("width", String(width));
@@ -312,12 +257,7 @@ export function multiLineText(
  * @param centerY y coordinate of center
  * @param width width
  * @param height height*/
-export function isoscelesTriangle(
-  centerX: number,
-  centerY: number,
-  width: number,
-  height: number
-) {
+export function isoscelesTriangle(centerX: number, centerY: number, width: number, height: number) {
   let trig = <SVGPathElement>crelns(nameSpace, "path");
   let halfW = width / 2;
   let halfH = height / 2;

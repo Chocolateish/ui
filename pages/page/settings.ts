@@ -1,32 +1,21 @@
 import "./index.css";
-import { settingsInit, settingsSetNameTransform } from "../src";
-import { name, version } from "../package.json";
-import { State, StateAsync } from "@chocolatelib/state";
-import { Ok } from "@chocolatelib/result";
+import { name, version } from "../../package.json";
+import { StateAsync } from "@src/state";
+import { settingsInit, settingsSetNameTransform } from "@src/page";
+import { crel } from "@src/base";
 
 settingsSetNameTransform((name) => {
   return name + "2";
 });
 
-let settings = settingsInit(
-  name,
-  version,
-  "Test Settings",
-  "Description of test settings"
-);
+let settings = settingsInit(name, version, "Test Settings", "Description of test settings");
 
 (async () => {
   let state = new StateAsync<number>(new Promise((a) => setTimeout(a, 500, 1)));
   state.write(2);
   console.log(await state);
 
-  let TestBoolSetting = settings.addSetting(
-    "TestBool",
-    "Test Bool",
-    "Bool Test",
-    false,
-    true
-  );
+  let TestBoolSetting = settings.addSetting("TestBool", "Test Bool", "Bool Test", false, true);
   let valueBool = crel("input");
   valueBool.type = "checkbox";
   document.body.appendChild(valueBool);
@@ -35,16 +24,14 @@ let settings = settingsInit(
     TestBoolSetting.write(valueBool.checked);
   });
 
-  let TestNumberSetting = settings.addSetting(
+  let TestNumberSetting = settings.addSetting<number>(
     "TestNumber",
     " Test Number",
     "Number Test",
-    () => {
-      return 99;
-    },
+    99,
     true,
     undefined,
-    (oldValue, oldVersion) => {
+    (_oldValue, oldVersion) => {
       switch (oldVersion) {
         case "0.1.1":
           return 100;

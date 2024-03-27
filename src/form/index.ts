@@ -11,11 +11,4 @@ export * from "./stepper/stepper";
 export * from "./dropDown/dropDown";
 export * from "./toggleButtons/toggleButtons";
 
-//export * from "./input/numberInput/numberInput";
-// export * from "./input/color/colorInput";
-// export * from "./input/dateTime/dateTimeInput";
-// export * from "./input/ip/ipInput";
-// export * from "./input/password/passwordInput";
-// export * from "./input/phone/phoneInput";
-// export * from "./input/text/textInput";
-// export * from "./input/url/urlInput";
+export * from "./input/input";

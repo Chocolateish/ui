@@ -1,7 +1,7 @@
 import "./ui.scss";
 import { Base, crel, defineElement } from "@src/base";
 import { Menubar, UIMenu } from "@src/menu";
-import { openWindowVirtual } from "./window";
+import { openWindowVirtual } from "../page/window";
 
 export class UI extends Base {
   static elementName() {

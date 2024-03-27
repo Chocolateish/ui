@@ -15,6 +15,8 @@ declare global {
 
 export class WindowContainer extends Base {
   layers: HTMLDivElement[] = [];
+  layersZIndex: number[] = [];
+  layersOrder: [][] = [];
   clickAways: WindowVirtual[] = [];
 
   connectedCallback(): void {
@@ -33,9 +35,13 @@ export class WindowContainer extends Base {
     if (!this.layers[layer]) {
       this.layers[layer] = this.appendChild(crel("div"));
       this.layers[layer].style.zIndex = String(layer);
+      this.layersOrder[layer] = [];
+      this.layersZIndex[layer] = 0;
     }
     this.layers[layer].appendChild(window);
   }
+
+  focusWindow(window: WindowVirtual) {}
 
   appendClickAway(window: WindowVirtual) {
     this.clickAways.push(window);
@@ -324,7 +330,13 @@ export class WindowVirtual extends Base {
   constructor(options: WindowVirtualOptions) {
     super(options);
     this.tabIndex = 0;
-    this.addEventListener("pointerdown", this.select, { capture: true });
+    this.addEventListener(
+      "pointerdown",
+      () => {
+        this.select();
+      },
+      { capture: true }
+    );
     this.addEventListener("pointerdown", (e) => {
       e.stopPropagation();
     });
@@ -459,8 +471,6 @@ export class WindowVirtual extends Base {
   }
 
   select() {
-    console.warn("Selecting");
-
     if (selectedWindow !== this) {
       this.parentElement?.appendChild(this);
       selectedWindow = this;
@@ -482,13 +492,6 @@ export class WindowVirtual extends Base {
   }
   get bar(): boolean {
     return !this.#titelContainer.hidden;
-  }
-  /**Sets if the window is closable*/
-  set closable(closable: boolean) {
-    this.#titelCloserContainer.hidden = !closable;
-  }
-  get closable(): boolean {
-    return !this.#titelCloserContainer.hidden;
   }
 
   /**Changes icon for window */
@@ -578,6 +581,15 @@ export class WindowVirtual extends Base {
     this.__clickAway?.();
     this.remove();
   }
+
+  /**Sets if the window is closable*/
+  set closable(closable: boolean) {
+    this.#titelCloserContainer.hidden = !closable;
+  }
+  get closable(): boolean {
+    return !this.#titelCloserContainer.hidden;
+  }
+
   //    _____          _ _   _
   //   |  __ \        (_) | (_)
   //   | |__) |__  ___ _| |_ _  ___  _ __
@@ -836,8 +848,7 @@ export class WindowVirtual extends Base {
 
   /**Sets the height of the window */
   set height(height: number) {
-    //this.#height = Math.max(height, this.bar ? (this.#content ? 4 : 2) : 2);
-    this.#height = height;
+    this.#height = Math.max(height, this.bar ? (this.#content ? 4 : 2) : 2);
     this.style.height = this.#height + "rem";
   }
   get height(): number {

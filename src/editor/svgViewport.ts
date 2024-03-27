@@ -1,6 +1,6 @@
 import "./svgViewport.scss";
 import { Base, BaseOptions, crel, defineElement } from "@src/base";
-import { crsvgel, rectangleFromCorner, svgsvg } from "@src/svg";
+import { crsvgel, rectangleFromCorner, svgsvg } from "@src/util/svg";
 
 const zoomMax = 200;
 const zoomMin = 0.02;

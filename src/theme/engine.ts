@@ -1,12 +1,7 @@
 import { version } from "../../package.json";
 import { settingsInit } from "@src/page/settings";
-import { libraryNameSpace } from "@src/globals/globalsInternals";
-import {
-  StateEnumHelper,
-  StateEnumHelperList,
-  StateNumberHelper,
-  StateWriteSync,
-} from "@src/state";
+import { libraryNameSpace } from "@src/util/globalsInternals";
+import { StateEnumHelper, StateEnumHelperList, StateNumberHelper, StateWriteSync } from "@src/state";
 import {
   material_hardware_mouse_rounded,
   material_image_edit_rounded,
@@ -42,12 +37,7 @@ export function themeDeregisterContainer(container: HTMLElement) {
 //    \___ \|  __|    | |     | |    | | | . ` | | |_ |\___ \
 //    ____) | |____   | |     | |   _| |_| |\  | |__| |____) |
 //   |_____/|______|  |_|     |_|  |_____|_| \_|\_____|_____/
-const settings = settingsInit(
-  libraryNameSpace,
-  version,
-  "Theme/UI",
-  "Settings for UI elements and and color themes"
-);
+const settings = settingsInit(libraryNameSpace, version, "Theme/UI", "Settings for UI elements and and color themes");
 
 //Theme
 export const enum Themes {
@@ -71,9 +61,7 @@ const themeInternal = settings.addSetting(
   "theme",
   "Theme",
   "Theme to use for the UI",
-  window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? Themes.Dark
-    : Themes.Light,
+  window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? Themes.Dark : Themes.Light,
   true,
   new StateEnumHelper(themesInternal)
 );
@@ -93,14 +81,7 @@ window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e)
 
 //Scale
 let scaleValue = 16;
-const scaleInternal = settings.addSetting(
-  "scale",
-  "Scale",
-  "UI scale",
-  100,
-  true,
-  new StateNumberHelper(50, 300, "%", 0, 1)
-);
+const scaleInternal = settings.addSetting("scale", "Scale", "UI scale", 100, true, new StateNumberHelper(50, 300, "%", 0, 1));
 scaleInternal.subscribe((val) => {
   scaleValue = (val.unwrap / 100) * 16;
   for (let i = 0; i < containers.length; i++) {

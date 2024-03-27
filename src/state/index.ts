@@ -6,3 +6,4 @@ export * from "./stateBase";
 export * from "./stateDerived";
 export * from "./stateDerivedAsync";
 export * from "./types";
+export * from "./state-use";

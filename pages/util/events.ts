@@ -1,8 +1,7 @@
-import { createEventHandler } from "../src";
+import { createEventHandler } from "../../src";
 
 let handler = createEventHandler<{ test: number }, undefined>(undefined);
 handler.consumer.on("test", (e) => {
-    console.warn('Test');
-
+  console.warn("Test");
 });
-handler.producer.emit('test', 10);
+handler.producer.emit("test", 10);

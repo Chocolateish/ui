@@ -1,7 +1,7 @@
 import "./index.scss";
 import DocumentHandler from "@chocolatelibui/document";
-import { name } from "../package.json";
-import { initVariableRoot, ThemeEngine } from "../src";
+import { name } from "../../package.json";
+import { initVariableRoot, ThemeEngine } from "@src/theme";
 import {
   animationLevel,
   AnimationLevels,
@@ -18,33 +18,9 @@ let documentHandler = new DocumentHandler(document);
 let themeEngine = new ThemeEngine(documentHandler);
 
 let varGroup = initVariableRoot(name, "TestVars", "TestDescription");
-varGroup.makeVariable(
-  "test",
-  "Test Name",
-  "Test Description",
-  "lightblue",
-  "black",
-  "Angle",
-  undefined
-);
-varGroup.makeVariable(
-  "testText",
-  "Test Name",
-  "Test Description",
-  "black",
-  "white",
-  "Angle",
-  undefined
-);
-varGroup.makeVariable(
-  "test2",
-  "Test 2 Name",
-  "Test 2 Description",
-  "test",
-  "asdf",
-  "Number",
-  { min: 0, max: 1 }
-);
+varGroup.makeVariable("test", "Test Name", "Test Description", "lightblue", "black", "Angle", undefined);
+varGroup.makeVariable("testText", "Test Name", "Test Description", "black", "white", "Angle", undefined);
+varGroup.makeVariable("test2", "Test 2 Name", "Test 2 Description", "test", "asdf", "Number", { min: 0, max: 1 });
 
 let setup = async (doc: Document) => {
   //Theme
@@ -55,10 +31,7 @@ let setup = async (doc: Document) => {
     option.innerHTML = key;
   }
   themeAutoSel.addEventListener("change", async (e) => {
-    theme.write(
-      (<HTMLSelectElement>e.currentTarget).selectedOptions[0]
-        .innerHTML as Themes
-    );
+    theme.write((<HTMLSelectElement>e.currentTarget).selectedOptions[0].innerHTML as Themes);
   });
   themeAutoSel.value = theme.get().unwrap;
   theme.subscribe((val) => {
@@ -81,10 +54,7 @@ let setup = async (doc: Document) => {
     option.innerHTML = key;
   }
   scrollSel.addEventListener("change", (e) => {
-    scrollBarMode.write(
-      (<HTMLSelectElement>e.currentTarget).selectedOptions[0]
-        .innerHTML as ScrollbarModes
-    );
+    scrollBarMode.write((<HTMLSelectElement>e.currentTarget).selectedOptions[0].innerHTML as ScrollbarModes);
   });
   scrollSel.value = scrollBarMode.get().unwrap;
   scrollBarMode.subscribe((val) => {
@@ -99,10 +69,7 @@ let setup = async (doc: Document) => {
     option.innerHTML = key;
   }
   animAutoSel.addEventListener("change", async (e) => {
-    animationLevel.write(
-      (<HTMLSelectElement>e.currentTarget).selectedOptions[0]
-        .innerHTML as AnimationLevels
-    );
+    animationLevel.write((<HTMLSelectElement>e.currentTarget).selectedOptions[0].innerHTML as AnimationLevels);
   });
   animAutoSel.value = animationLevel.get().unwrap;
   animationLevel.subscribe((val) => {
@@ -129,10 +96,7 @@ let setup = async (doc: Document) => {
     option.innerHTML = key;
   }
   inputModeSel.addEventListener("change", async (e) => {
-    inputMode.write(
-      (<HTMLSelectElement>e.currentTarget).selectedOptions[0]
-        .innerHTML as InputModes
-    );
+    inputMode.write((<HTMLSelectElement>e.currentTarget).selectedOptions[0].innerHTML as InputModes);
   });
   inputModeSel.value = inputMode.get().unwrap;
 

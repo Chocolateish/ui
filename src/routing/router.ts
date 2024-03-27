@@ -1,5 +1,5 @@
 import "./router.scss";
-import { Content } from "./content";
+import { Content } from "../page/content";
 import { Base, defineElement } from "@src/base";
 
 type RouteLevel = {
